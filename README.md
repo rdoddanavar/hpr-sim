@@ -16,14 +16,25 @@ Future work may include a user interface using PyQt5.
 
 Other projects with a similar scope & application are Rocksim, OpenRocket, and RASAero II. 
 
-## Setup
+## Project Index
 
-### Dependencies
+`tree -L 1 --dirsfirst`
 
-### Build
-
-## Pre-processing
-
-## Program Execution
-
-## Post-Processing
+```
+.                                                                                         
+├── bin                                                                                   
+├── build                                                                                 
+├── input                                                                                 
+├── output                                                                                
+├── src                                                                                   
+├── MANUAL.md                                                                             
+└── README.md                                                                             
+                                                                                          
+5 directories, 2 files   
+```
+- `./bin/` - All binary object(s)
+- `./build/` - Makefile & build config
+- `./input/` - Input file(s)
+- `./output/` - Simulation output
+- `./src/` - Python & C++ source
+- `./MANUAL.md` - Program manual
