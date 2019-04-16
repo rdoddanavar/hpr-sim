@@ -1,47 +1,26 @@
 # hpr-sim
-High Power Rocketry - Flight Simulation
 
 ## Overview
 
-The goal of this project is to build a extensbile flight simulation package for high power rocketry, using only open-source tools. Other projects with a similar scope & application are OpenRocket & RASAero II:
+The goal of this project is to build a robust, extensible flight simulation package for high power rocketry, with open-source dependencies. Key features considered to constitute a "robust" simulation include:
 
-OpenRocket
-http://openrocket.info/
- - Base: Java
- - Open-source? Yes
+ - 6-DOF kinematic model
+ - Built-in Monte Carlo functionality
+ - Standard atmospheric modeling
+ - Stochastic wind turbulence model
+ - Comptability w/ RASP (`*.eng`) engine files (http://www.thrustcurve.org/raspformat.shtml)
 
-Strengths:
- - item
- - item
-
-Weaknesses:
- - item
- - item
-
-RASAero II
-http://www.rasaero.com/
- - Base: who knows
- - Open-source? No
-
-Strengths:
- - item
- - item
-
-Weaknesses:
- - item
- - item
- 
-The intent is to use a python-C++ binding library to interface between python and C++ source. Simulation input & post-processing is to be handled by python, while the bulk of the numerical work done with C++.
+The intent is to lean on the respective strengths of python and C++ to build a modern, efficient simulation package. Python is to be used for pre-processing, post-processing, and data visualization, while C++ will constitue the bulk of the numerical routines. A python-C++ binding library will be used to interface between the two sets of source code. 
 
 Future work may include a user interface using PyQt5.
 
+Other projects with a similar scope & application are Rocksim, OpenRocket, and RASAero II. 
+
 ## Setup
 
-### Python
+### Dependencies
 
-### C++
-
-### Pybind11
+### Build
 
 ## Pre-processing
 
