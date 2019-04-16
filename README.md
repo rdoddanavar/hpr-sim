@@ -14,7 +14,7 @@ The intent is to lean on the respective strengths of python and C++ to build a m
 
 Future work may include a user interface using PyQt5.
 
-Other projects with a similar scope & application are Rocksim, OpenRocket, and RASAero II. 
+Other (more professional) projects with a similar scope & application are OpenRocket and RASAero II. 
 
 ## Project Index
 
