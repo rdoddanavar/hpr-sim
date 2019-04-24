@@ -18,23 +18,23 @@ Other (more professional) projects with a similar scope & application are OpenRo
 
 ## Project Index
 
-`tree -L 1 --dirsfirst`
-
-```
-.                                                                                         
-├── bin                                                                                   
-├── build                                                                                 
-├── input                                                                                 
-├── output                                                                                
-├── src                                                                                   
-├── MANUAL.md                                                                             
-└── README.md                                                                             
-                                                                                          
-5 directories, 2 files   
-```
 - `./bin/` - All binary object(s)
 - `./build/` - Makefile & build config
 - `./input/` - Input file(s)
 - `./output/` - Simulation output
 - `./src/` - Python & C++ source
 - `./MANUAL.md` - Program manual
+
+```
+.
+├── bin
+├── build
+├── input
+├── output
+├── src
+├── tools
+├── MANUAL.md
+└── README.md
+
+6 directories, 2 files
+```
