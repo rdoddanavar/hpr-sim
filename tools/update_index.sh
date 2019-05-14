@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 # update_index.sh
+# Takes one positional argument - tree depth level (int)
+# ex. (2 levels) ./update_index.sh 2
 
-FILE="/home/${USER}/Git/hpr-sim/README.md"
-BLK='```'
-LVL=1 # No. lvl in tree
+target="/home/${USER}/Git/hpr-sim/"
+file="/home/${USER}/Git/hpr-sim/README.md"
+blk='```'
+lvl=$1 # No. lvl in tree
 
 # Delete old index 
-sed "1,/$BLK/!d" $FILE > temp
-mv temp $FILE
+sed "1,/$blk/!d" $file > temp
+mv temp $file
 
 # Generate new index, append to file
-cd ..
-tree -L $LVL --dirsfirst >> $FILE
-echo "$BLK" >> $FILE
+cd $target
+tree -L $lvl --dirsfirst >> $file
+echo "$blk" >> $file
