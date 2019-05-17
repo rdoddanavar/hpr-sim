@@ -3,6 +3,8 @@
 `High Power Rocketry - Flight Simulation`
 
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-sim.svg)
+![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-sim.svg)
+![](https://img.shields.io/github/release/rdoddanavar/hpr-sim.svg)
 
 ## Overview
 
