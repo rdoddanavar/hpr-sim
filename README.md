@@ -41,20 +41,31 @@ See `./MANUAL.md` for program installation \& execution.
 ```
 .
 ├── bin
-│   └── example.cpython-37m-x86_64-linux-gnu.so
+│   └── input.cpython-37m-x86_64-linux-gnu.so
 ├── build
 │   └── makefile
+├── figs
+│   ├── architecture.aux
+│   ├── architecture.fdb_latexmk
+│   ├── architecture.fls
+│   ├── architecture.log
+│   ├── architecture.pdf
+│   ├── architecture.png
+│   ├── architecture.synctex.gz
+│   └── architecture.tex
 ├── input
 │   └── placeholder
 ├── output
 │   └── placeholder
 ├── src
 │   ├── example.cpp
-│   └── input.cpp
+│   ├── input.cpp
+│   └── input.h
 ├── tools
 │   └── update_index.sh
+├── LICENSE
 ├── MANUAL.md
 └── README.md
 
-6 directories, 9 files
+7 directories, 19 files
 ```
