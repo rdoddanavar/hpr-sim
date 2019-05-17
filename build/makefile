@@ -14,5 +14,8 @@ all: example
 example: 
 	$(CXX) $(CXXFLAGS) $(PYINCLUDE) $(SRCDIR)$(SRC) -o $(BINDIR)$@$(PYSUFFIX)
 
+input: 
+	$(CXX) $(CXXFLAGS) $(PYINCLUDE) $(SRCDIR)input.cpp -o $(BINDIR)$@$(PYSUFFIX)
+
 clean:
 	cd ../bin/ && rm *

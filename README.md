@@ -2,6 +2,8 @@
 
 `High Power Rocketry - Flight Simulation`
 
+![](https://img.shields.io/github/license/rdoddanavar/hpr-sim.svg)
+
 ## Overview
 
 The goal of this project is to build a robust, extensible flight simulation package for high power rocketry, with open-source dependencies. Key features considered to constitute a "robust" simulation include:
@@ -22,14 +24,16 @@ Other (more professional) projects with a similar scope & application are OpenRo
 
 See `./MANUAL.md` for program installation \& execution.
 
-## Project Index
+![](./figs/architecture.png)
+
+## Directory Index
 
 - `./bin/` - All binary object(s)
 - `./build/` - Makefile & build config
 - `./input/` - Input file(s)
 - `./output/` - Simulation output
 - `./src/` - Python & C++ source
-- `./tools/` - Misc. utilities
+- `./tools/` - Project utilities
 - `./MANUAL.md` - Program manual
 
 ```

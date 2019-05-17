@@ -1,16 +1,21 @@
+#include <pybind11/pybind11.h>
 #include <string>
+
+namespace py = pybind11;
 
 // group ---> input / file --> dist?
 
-class input 
+// Class definition 
+class Input 
 {
     double value;
     double min;
     double max;
-} 
+};
 
-class file
+// Binding code
+PYBIND11_MODULE(input, m)
 {
-    std::string path;
-     
+    m.doc() = "sim input module"; // optional module docstring
+    py::class_<Input>(m, "Input");
 }
