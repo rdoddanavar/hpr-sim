@@ -24,7 +24,7 @@ Future work may include a user interface using PyQt5.
 
 Other (more professional) projects with a similar scope & application are OpenRocket and RASAero II. 
 
-See `./doc//MANUAL.md` for program installation \& execution.
+See `./doc/MANUAL.md` for program installation \& execution.
 
 ![](./doc/figs/diagram.png)
 
