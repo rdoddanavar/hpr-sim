@@ -1,9 +1,9 @@
 # Fdb version 3
-["pdflatex"] 1558051008 "/home/roshan/Git/hpr-sim/figs/architecture.tex" "/home/roshan/Git/hpr-sim/figs/architecture.pdf" "architecture" 1558051009
-  "/dev/null" 1558020489 0 d41d8cd98f00b204e9800998ecf8427e ""
+["pdflatex"] 1558139676 "/home/roshan/Git/hpr-sim/doc/figs/diagram.tex" "/home/roshan/Git/hpr-sim/doc/figs/diagram.pdf" "diagram" 1558139677
+  "/dev/null" 1558137975 0 d41d8cd98f00b204e9800998ecf8427e ""
   "/etc/texmf/web2c/texmf.cnf" 1554660483 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/roshan/Git/hpr-sim/figs/architecture.aux" 1558051009 8 a94a2480d3289e625eea47cd1b285758 ""
-  "/home/roshan/Git/hpr-sim/figs/architecture.tex" 1558050762 1122 069ca8c2334ac387f448c6f26e2d5b49 ""
+  "/home/roshan/Git/hpr-sim/doc/figs/diagram.aux" 1558139677 8 a94a2480d3289e625eea47cd1b285758 ""
+  "/home/roshan/Git/hpr-sim/doc/figs/diagram.tex" 1558050762 1122 069ca8c2334ac387f448c6f26e2d5b49 ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1511824771 3332 103109f5612ad95229751940c61aada0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmtt10.tfm" 1480098701 768 1321e9409b4137d6fb428ac9dc956269 ""
   "/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb" 1480098733 35752 024fb6c41858982481f6968b5fc26508 ""
@@ -124,11 +124,11 @@
   "/usr/share/texmf/web2c/texmf.cnf" 1520210507 32485 c64754543d8ac501bea6e75e209ea521 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1554660538 2700761 ac0584cc9514ab21918550a6948c4ee2 ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1554660578 4131696 0ab6c54eae7e672644510e0e8fab90c9 ""
-  "architecture.aux" 1558051009 8 a94a2480d3289e625eea47cd1b285758 ""
-  "architecture.tex" 1558050762 1122 069ca8c2334ac387f448c6f26e2d5b49 ""
+  "diagram.aux" 1558139677 8 a94a2480d3289e625eea47cd1b285758 ""
+  "diagram.tex" 1558050762 1122 069ca8c2334ac387f448c6f26e2d5b49 ""
   (generated)
-  "architecture.pdf"
-  "/home/roshan/Git/hpr-sim/figs/architecture.pdf"
-  "architecture.aux"
-  "/home/roshan/Git/hpr-sim/figs/architecture.log"
-  "architecture.log"
+  "/home/roshan/Git/hpr-sim/doc/figs/diagram.log"
+  "diagram.aux"
+  "/home/roshan/Git/hpr-sim/doc/figs/diagram.pdf"
+  "diagram.pdf"
+  "diagram.log"

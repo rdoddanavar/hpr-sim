@@ -24,19 +24,20 @@ Future work may include a user interface using PyQt5.
 
 Other (more professional) projects with a similar scope & application are OpenRocket and RASAero II. 
 
-See `./MANUAL.md` for program installation \& execution.
+See `./doc//MANUAL.md` for program installation \& execution.
 
-![](./figs/architecture.png)
+![](./doc/figs/diagram.png)
 
 ## Directory Index
 
 - `./bin/` - All binary object(s)
 - `./build/` - Makefile & build config
-- `./input/` - Input file(s)
+- `./doc/` - Supporting documentation
+- `./input/` - Simulation input
 - `./output/` - Simulation output
 - `./src/` - Python & C++ source
 - `./tools/` - Project utilities
-- `./MANUAL.md` - Program manual
+
 
 ```
 .
@@ -44,28 +45,26 @@ See `./MANUAL.md` for program installation \& execution.
 │   └── input.cpython-37m-x86_64-linux-gnu.so
 ├── build
 │   └── makefile
-├── figs
-│   ├── architecture.aux
-│   ├── architecture.fdb_latexmk
-│   ├── architecture.fls
-│   ├── architecture.log
-│   ├── architecture.pdf
-│   ├── architecture.png
-│   ├── architecture.synctex.gz
-│   └── architecture.tex
+├── doc
+│   ├── figs
+│   └── MANUAL.md
 ├── input
 │   └── placeholder
 ├── output
 │   └── placeholder
 ├── src
+│   ├── models
+│   ├── solvers
+│   ├── utilities
 │   ├── example.cpp
 │   ├── input.cpp
-│   └── input.h
+│   ├── input.h
+│   ├── load_data.py
+│   └── load_input.py
 ├── tools
 │   └── update_index.sh
 ├── LICENSE
-├── MANUAL.md
 └── README.md
 
-7 directories, 19 files
+11 directories, 13 files
 ```
