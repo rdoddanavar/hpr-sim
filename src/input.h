@@ -8,7 +8,7 @@
 namespace py = pybind11;
 
 // Class definition 
-class Input 
+class Param 
 {
     
     private:
@@ -22,8 +22,8 @@ class Input
         std::string unit;
 
         // Function(s)
-        Input();
-        Input(float);
+        Param();
+        Param(float);
 
 };
 
@@ -31,13 +31,13 @@ class Input
 PYBIND11_MODULE(input, m)
 {
     m.doc() = "sim input module"; // Optional module docstring
-    py::class_<Input>(m, "Input")
+    py::class_<Param>(m, "Param")
         .def(py::init<>())
         .def(py::init<float>())
-        .def_readwrite("value", &Input::value)
-        .def_readwrite("min", &Input::min)
-        .def_readwrite("max", &Input::max)
-        .def_readwrite("unit", &Input::unit);
+        .def_readwrite("value", &Param::value)
+        .def_readwrite("min", &Param::min)
+        .def_readwrite("max", &Param::max)
+        .def_readwrite("unit", &Param::unit);
 }
 
 #endif 

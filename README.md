@@ -41,30 +41,31 @@ See `./doc/MANUAL.md` for program installation \& execution.
 
 ```
 .
-├── bin
-│   └── input.cpython-37m-x86_64-linux-gnu.so
-├── build
+├── bin/
+│   └── input.cpython-37m-x86_64-linux-gnu.so*
+├── build/
 │   └── makefile
-├── doc
-│   ├── figs
+├── doc/
+│   ├── figs/
 │   └── MANUAL.md
-├── input
+├── input/
+│   ├── input.yaml
 │   └── placeholder
-├── output
+├── output/
 │   └── placeholder
-├── src
-│   ├── models
-│   ├── solvers
-│   ├── utilities
+├── src/
+│   ├── models/
+│   ├── solvers/
+│   ├── utilities/
 │   ├── example.cpp
 │   ├── input.cpp
 │   ├── input.h
 │   ├── load_data.py
 │   └── load_input.py
-├── tools
-│   └── update_index.sh
+├── tools/
+│   └── update_index.sh*
 ├── LICENSE
 └── README.md
 
-11 directories, 13 files
+11 directories, 14 files
 ```

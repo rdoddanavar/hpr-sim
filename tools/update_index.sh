@@ -14,5 +14,5 @@ mv temp $file
 
 # Generate new index, append to file
 cd $target
-tree -L $lvl --dirsfirst >> $file
+tree -F -L $lvl --dirsfirst >> $file
 echo "$blk" >> $file
