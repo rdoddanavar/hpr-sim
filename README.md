@@ -47,6 +47,8 @@ See `./doc/MANUAL.md` for program installation \& execution.
 │   └── makefile
 ├── doc/
 │   ├── figs/
+│   ├── FEATURES.md
+│   ├── INPUT.md
 │   └── MANUAL.md
 ├── input/
 │   ├── input.yaml
@@ -67,5 +69,5 @@ See `./doc/MANUAL.md` for program installation \& execution.
 ├── LICENSE
 └── README.md
 
-11 directories, 14 files
+11 directories, 16 files
 ```
