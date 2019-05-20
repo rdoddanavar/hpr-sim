@@ -1,5 +1,10 @@
-input:
-    group1:
-        param1: 1.0
-        param2: 2.0
-        param3: "3.0"
+# /input/input.yaml
+# Input file unit test
+---
+
+sim:
+    type: "nominal"
+    mode: "serial"
+    numMC: 100
+
+...
