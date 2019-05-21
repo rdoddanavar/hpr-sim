@@ -1,10 +1,8 @@
 # /input/input.yaml
 # Input file unit test
 ---
-
 sim:
-    type: "nominal"
-    mode: "serial"
+    modeRand: "nominal"
+    modeProc: "serial"
     numMC: 100
-
 ...
