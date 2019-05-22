@@ -27,9 +27,9 @@ void Param::checkDist()
 }
 
 // "Name" class
-Name::Name() : value("") {}
+Name::Name() : value(""), path(false) {}
 
-Name::Name(std::string val) : value(val) {}
+Name::Name(std::string val) : value(val), path(false) {}
 
 bool Name::checkPath()
 {

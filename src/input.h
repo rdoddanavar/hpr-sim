@@ -79,7 +79,8 @@ PYBIND11_MODULE(input, m)
         .def(py::init<>())
         .def(py::init<std::string>())
         .def("checkPath", &Name::checkPath)
-        .def_readwrite("value", &Name::value);
+        .def_readwrite("value", &Name::value)
+        .def_readwrite("path", &Name::path);
 }
 
 #endif 

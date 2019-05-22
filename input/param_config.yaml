@@ -1,14 +1,14 @@
-# /input/input.yaml
+# /input/param_config.yaml
 # Input file unit test
 ---
-# sim
-modeRand: 
-    path: False
-modeProc: 
-    path: False
-numMC: 
-    min: 0
-    max: .inf    
-    unit: []
-    dist: []
+sim:
+    modeRand: 
+        path: False
+    modeProc: 
+        path: False
+    numMC: 
+        min: 0
+        max: .inf    
+        unit: []
+        dist: []
 ...

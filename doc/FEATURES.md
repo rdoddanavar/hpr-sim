@@ -9,6 +9,9 @@
  - Regression set --> input files
  - Regression report
  - Debug compile mode
+ - Exception catching
+   - Output to console
+   - Output to error log? Combine with event log?
 
 ### Pre-processing
 
@@ -35,6 +38,7 @@
  - Plain text `*.dat` & `*.log` dumps
    - `*.dat`: comma delimited, variable and unit headers
    - `*.log`: sim stats & events
+     - YAML format?
  - Pickle archive --> after processing raw dump
  - PyQt5 inspection GUI?
  - Simple LaTeX sim report

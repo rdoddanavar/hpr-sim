@@ -11,7 +11,7 @@
 
 ### Template Classes
  - http://www.cplusplus.com/doc/oldtutorial/templates/
-   - Declaration & implmentation in same file
+   - Declaration & implementation in same file
  - Default constructors
    - https://stackoverflow.com/questions/15604277/default-constructor-in-template-class-with-attribute-of-unknown-type
 
