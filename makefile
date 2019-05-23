@@ -9,10 +9,7 @@ BINDIR=../bin/
 SRC=example.cpp
 
 # Build process
-all: example
-
-example: 
-	$(CXX) $(CXXFLAGS) $(PYINCLUDE) $(SRCDIR)$(SRC) -o $(BINDIR)$@$(PYSUFFIX)
+all: input
 
 input: 
 	$(CXX) $(CXXFLAGS) $(PYINCLUDE) $(SRCDIR)input.cpp -o $(BINDIR)$@$(PYSUFFIX)

@@ -46,17 +46,17 @@ class Name
         Name(std::string);
 };
 
-/*
 struct Sim
 {
-    Param 
+    Name modeRand;
+    Name modeProc;
+    Param numMC;
 };
 
 struct Input
 {
-    Group sim;
+    Sim sim;
 };
-*/
 
 // Binding code
 PYBIND11_MODULE(input, m)
@@ -81,6 +81,16 @@ PYBIND11_MODULE(input, m)
         .def("checkPath", &Name::checkPath)
         .def_readwrite("value", &Name::value)
         .def_readwrite("path", &Name::path);
+
+    py::class_<Sim>(m, "Sim")
+        .def(py::init<>())
+        .def_readwrite("modeRand", &Sim::modeRand)
+        .def_readwrite("modeProc", &Sim::modeProc)
+        .def_readwrite("numMC", &Sim::numMC);
+
+    py::class_<Input>(m, "Input")
+        .def(py::init<>())
+        .def_readwrite("sim", &Input::sim);
 }
 
 #endif 

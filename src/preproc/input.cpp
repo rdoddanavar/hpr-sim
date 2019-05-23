@@ -7,7 +7,7 @@
 #include "input.h"
 
 // "Param" class
-Param::Param() : value(0.0), min(0.0), max(0.0), unit(""), dist("") {}
+Param::Param() : value(5.0), min(0.0), max(0.0), unit(""), dist("") {}
 
 Param::Param(float val) : value(val), min(0.0), max(0.0), unit(""), dist("") {}
 

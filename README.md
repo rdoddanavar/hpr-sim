@@ -43,8 +43,6 @@ See `./doc/MANUAL.md` for program installation \& execution.
 .
 ├── bin/
 │   └── input.cpython-37m-x86_64-linux-gnu.so*
-├── build/
-│   └── makefile
 ├── doc/
 │   ├── figs/
 │   ├── DEV.md
@@ -57,18 +55,17 @@ See `./doc/MANUAL.md` for program installation \& execution.
 ├── output/
 │   └── placeholder
 ├── src/
+│   ├── exec/
 │   ├── models/
+│   ├── postproc/
+│   ├── preproc/
 │   ├── solvers/
-│   ├── utilities/
-│   ├── example.cpp
-│   ├── input.cpp
-│   ├── input.h
-│   ├── load_data.py
-│   └── load_input.py
+│   └── util/
 ├── tools/
 │   └── update_index.sh*
 ├── LICENSE
+├── makefile
 └── README.md
 
-11 directories, 17 files
+13 directories, 12 files
 ```
