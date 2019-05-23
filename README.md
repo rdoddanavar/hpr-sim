@@ -30,8 +30,7 @@ See `./doc/MANUAL.md` for program installation \& execution.
 
 ## Directory Index
 
-- `./bin/` - All binary object(s)
-- `./build/` - Makefile & build config
+- `./bin/` - All binary objects
 - `./doc/` - Supporting documentation
 - `./input/` - Simulation input
 - `./output/` - Simulation output
@@ -42,11 +41,11 @@ See `./doc/MANUAL.md` for program installation \& execution.
 ```
 .
 ├── bin/
-│   └── input.cpython-37m-x86_64-linux-gnu.so*
 ├── doc/
 │   ├── figs/
 │   ├── DEV.md
 │   ├── FEATURES.md
+│   ├── HEADER.md
 │   ├── INPUT.md
 │   └── MANUAL.md
 ├── input/
