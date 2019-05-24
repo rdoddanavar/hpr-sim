@@ -1,4 +1,37 @@
-# /src/load_input.py
+#------------------------------------------------------------#
+# High Power Rocketry - Flight Simulation
+# GNU General Public License v3.0
+# Roshan Doddanavar
+# https://rdoddanavar.github.io
+#------------------------------------------------------------#
+#     ___       ___       ___       ___       ___       ___
+#    /\__\     /\  \     /\  \     /\  \     /\  \     /\__\  
+#   /:/__/_   /::\  \   /::\  \   /::\  \   _\:\  \   /::L_L_
+#  /::\/\__\ /::\:\__\ /::\:\__\ /\:\:\__\ /\/::\__\ /:/L:\__\
+#  \/\::/  / \/\::/  / \;:::/  / \:\:\/__/ \::/\/__/ \/_/:/  /
+#    /:/  /     \/__/   |:\/__/   \::/  /   \:\__\     /:/  /
+#    \/__/               \|__|     \/__/     \/__/     \/__/  
+# 
+#------------------------------------------------------------#
+# Path:
+#     hpr-sim/src/preproc/load_input.py
+# Created:
+#     2019-05-17
+# Type:
+#     Python3 script
+# Description:
+#     Parses input file(s) (*.yaml) to populate input classes
+# Input:
+#     *.yaml
+# Output:
+#     None
+# Dependencies:
+#     hpr-sim/
+#         src/
+#         preproc/
+#             input.cpp
+#             input.h
+#------------------------------------------------------------#
 
 # Installed modules
 import sys  # System utilities
