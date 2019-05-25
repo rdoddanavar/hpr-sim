@@ -26,10 +26,7 @@ Input:
 Output:
     None
 Dependencies:
-    hpr-sim/
-        src/
-            preproc/
-                input.h
+    hpr-sim/src/preproc/input.h
 //--------------------------------------------------------*/
 
 // Installed libraries
@@ -41,34 +38,31 @@ Dependencies:
 #include "input.h"
 
 // "Param" class
-Param::Param() : value(5.0), min(0.0), max(0.0), unit(""), dist("") {}
+Param::Param() : value(0.0), min(0.0), max(0.0), unit(""), type(""), dist("") {}
 
-Param::Param(float val) : value(val), min(0.0), max(0.0), unit(""), dist("") {}
-
-void Param::checkValue()
+bool Param::checkValue()
 {
-    std::cout << "checkValue" << std::endl;
-}
+    
+    bool cond = (value >= min) && (value <= max);
+    return cond;
 
-void Param::checkUnit()
-{
-    std::cout << "checkUnit" << std::endl;
-}
-
-void Param::checkDist()
-{
-    std::cout << "checkDist" << std::endl;
 }
 
 // "Name" class
 Name::Name() : value(""), path(false) {}
 
-Name::Name(std::string val) : value(val), path(false) {}
-
 bool Name::checkPath()
 {
-    std::ifstream file(value);
-    return file.good();
+    
+    if (path)
+    {
+        std::ifstream file(value);
+        return file.good();
+    }
+    else
+    {
+        return true
+    }
+    
+    
 }
-
-// "Input" class 

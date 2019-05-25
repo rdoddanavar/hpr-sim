@@ -34,7 +34,7 @@ CXX=g++
 CXXFLAGS=-O3 -Wall -shared -std=c++11 -fPIC
 PYINCLUDE=`python3 -m pybind11 --includes`
 PYSUFFIX=`python3-config --extension-suffix`
-SRCDIR=./src/
+SRCDIR=./src/preproc/
 BINDIR=./bin/
 
 SRC=example.cpp
@@ -42,8 +42,12 @@ SRC=example.cpp
 # Build process
 all: input
 
-input: 
-	$(CXX) $(CXXFLAGS) $(PYINCLUDE) $(SRCDIR)input.cpp -o $(BINDIR)$@$(PYSUFFIX)
+input: input.cpp input.h
+	$(CXX) $(CXXFLAGS) $(PYINCLUDE) $(SRCDIR)$< -o $(BINDIR)$@$(PYSUFFIX)
+
+input.cpp:
+
+input.h:
 
 clean:
 	cd ./bin/ && rm *

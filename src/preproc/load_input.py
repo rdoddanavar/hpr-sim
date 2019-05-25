@@ -26,11 +26,8 @@
 # Output:
 #     None
 # Dependencies:
-#     hpr-sim/
-#         src/
-#         preproc/
-#             input.cpp
-#             input.h
+#     hpr-sim/src/preproc/input.cpp
+#                        /input.h
 #------------------------------------------------------------#
 
 # Installed modules
@@ -39,53 +36,76 @@ import pdb  # Python debugger
 import yaml # YAML parser
 
 # Path modifications
-sys.path.insert(0, "../bin/")
+sys.path.insert(0, "../../bin/")
 
 # Program modules
 import input # Input classes 
 
-#----------------------------#
+def load_yaml(filePath):
 
-# YAML parse
-inputDir   = "../input/"
-inputName  = "input.yaml"
-configName = "param_config.yaml"
+    stream   = open(filePath, 'r')
+    yamlDict = yaml.safe_load(stream)
 
-filePath  = inputDir + inputName
-stream    = open(filePath,'r')
-inputDict = yaml.safe_load(stream)
+    return yamlDict
 
-filePath   = inputDir + configName
-stream     = open(filePath,'r')
-configDict = yaml.safe_load(stream)  
+def load_input(inputPath):
 
-# test
-class Object:
-    pass
+    # YAML parse
+    configPath = "./param_config.yaml"
+    configDict = load_yaml(configPath)
+    inputDict  = load_yaml(inputPath)
 
-inputObj = Object()
+    # Instantiate input object
+    inp = input.Input()
 
-# Param assignment & validation
-for group in inputDict.keys():
-    for param in inputDict[group].keys():
-        for field in inputDict[group][param].keys():
+    # Param config
 
-            value = inputDict[group][param][field]
+    for group in configDict.keys():
+        for param in configDict[group].keys():
+                for field in configDict[group][param].keys():
 
-            if (isinstance(value,float) or isinstance(value, int)):
-                paramObj = input.Param(float(value))
+                    value = configDict[group][param][field]
+                    setattr(getattr(getattr(inp,group),param),field,value)
 
-            elif (isinstance(value,str)):
-                paramObj = input.Name(value)
+    # Param assignment
 
-            else:
-                print("Input error: invalid type\n")
+    for group in inputDict.keys():
 
-            pdb.set_trace()
+        for param in inputDict[group].keys():
 
-# None of this is correct buddy
-# Remove constructor, only use default 
-# Nah accept both cases; if not a dict, or if all fields provided
-# isinstance(inputObj,dist)
+            # Multiple fields specified by user
+            if (isinstance(inputDict[group][param], dict)):
 
-pdb.set_trace()
+                for field in inputDict[group][param].keys():
+
+                    value = inputDict[group][param][field]
+                    setattr(getattr(getattr(inp,group),param),field,value)
+
+            # Only "value" is specified by user
+            else: 
+
+                value = inputDict[group][param]
+                getattr(getattr(inp,group),param).value = value
+
+    # Param conversion
+
+
+    # Param validation 
+
+    for group in inputDict.keys():
+        for param in inputDict[group].keys():
+                
+                value = getattr(getattr(inp,group),param).value
+
+                if (isinstance(value, float)):
+                    cond = getattr(getattr(inp,group),param).checkValue()
+
+                elif (isinstance(value, str)):
+                    cond = getattr(getattr(inp,group),param).checkPath()
+
+                print(param + ": ", cond)
+
+    pdb.set_trace()
+
+if __name__ == "__main__":
+    load_input(sys.argv[1])
