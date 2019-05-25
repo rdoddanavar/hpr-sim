@@ -1,0 +1,48 @@
+#------------------------------------------------------------#
+# High Power Rocketry - Flight Simulation
+# GNU General Public License v3.0
+# Roshan Doddanavar
+# https://rdoddanavar.github.io
+#------------------------------------------------------------#
+#     ___       ___       ___       ___       ___       ___
+#    /\__\     /\  \     /\  \     /\  \     /\  \     /\__\  
+#   /:/__/_   /::\  \   /::\  \   /::\  \   _\:\  \   /::L_L_
+#  /::\/\__\ /::\:\__\ /::\:\__\ /\:\:\__\ /\/::\__\ /:/L:\__\
+#  \/\::/  / \/\::/  / \;:::/  / \:\:\/__/ \::/\/__/ \/_/:/  /
+#    /:/  /     \/__/   |:\/__/   \::/  /   \:\__\     /:/  /
+#    \/__/               \|__|     \/__/     \/__/     \/__/  
+# 
+#------------------------------------------------------------#
+# Path:
+#     hpr-sim/src/util/unit_convert.yaml
+# Created:
+#     2019-05-24
+# Type:
+#     YAML config file
+# Description:
+#     Provides unit conversion factors relative to a default unit for a given measurement type
+# Input:
+#     None
+# Output:
+#     None
+# Dependencies:
+#     hpr-sim/src/util/unit_convert.py
+#------------------------------------------------------------#
+---
+default:
+    time: sec
+    length: m
+time: 
+    msec: 1.0e-3
+    sec: 1.0
+    min: 60
+    hour: 3600
+length:
+    mm: 1.0e-3
+    cm: 1.0e-2
+    m: 1.0
+    km: 1.0e+3
+    in: 0.0254
+    ft: 0.3048
+    mi: 1609.34
+...
