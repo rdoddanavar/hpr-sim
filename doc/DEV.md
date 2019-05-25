@@ -6,6 +6,10 @@
 
 ### General 
 
+ - Order of operations
+   - https://en.cppreference.com/w/cpp/language/operator_precedence
+ - Reserved keywords
+   - https://en.cppreference.com/w/cpp/keyword
  - Check for file existence
    - https://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
 
@@ -24,7 +28,16 @@
 
 ## Python
 
+ - `if __name__ == "__main__"` stuff
+   - https://stackoverflow.com/questions/419163/what-does-if-name-main-do
+
 ## YAML
+
+ - Online parser
+   - https://yaml-online-parser.appspot.com/
+ - References
+   - https://yaml.org/refcard.html
+   - https://en.wikipedia.org/wiki/YAML
 
 ### Specification
  - Infinity --> `.inf`

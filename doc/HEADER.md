@@ -48,10 +48,8 @@ Block comment(s)
 # Output:
 #     None
 # Dependencies:
-#     hpr-sim/
-#         <dir1>/
-#             <dep1>.<ext>
-#             <dep2>.<ext>
+#     hpr-sim/<dir1>/<dep1>.<ext>
+#                   /<dep2>.<ext>
 #------------------------------------------------------------#
 ```
 
@@ -86,9 +84,7 @@ Input:
 Output:
     None
 Dependencies:
-    hpr-sim/
-        <dir1>/
-            <dep1>.<ext>
-            <dep2>.<ext>
+    hpr-sim/<dir1>/<dep1>.<ext>
+                  /<dep2>.<ext>
 //--------------------------------------------------------*/
 ```
