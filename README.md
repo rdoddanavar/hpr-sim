@@ -41,6 +41,7 @@ See `./doc/MANUAL.md` for program installation \& execution.
 ```
 .
 ├── bin/
+│   └── input.cpython-37m-x86_64-linux-gnu.so*
 ├── doc/
 │   ├── figs/
 │   ├── DEV.md
@@ -49,8 +50,9 @@ See `./doc/MANUAL.md` for program installation \& execution.
 │   ├── INPUT.md
 │   └── MANUAL.md
 ├── input/
-│   ├── input.yaml
-│   └── param_config.yaml
+│   ├── aero/
+│   ├── prop/
+│   └── input.yaml
 ├── output/
 │   └── placeholder
 ├── src/
@@ -66,5 +68,5 @@ See `./doc/MANUAL.md` for program installation \& execution.
 ├── makefile
 └── README.md
 
-13 directories, 12 files
+15 directories, 12 files
 ```

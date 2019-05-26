@@ -1,34 +1,34 @@
-#------------------------------------------------------------#
-# High Power Rocketry - Flight Simulation
-# GNU General Public License v3.0
-# Copyright (C) 2019 Roshan Doddanavar
-# https://rdoddanavar.github.io
-#------------------------------------------------------------#
-#     ___       ___       ___       ___       ___       ___
-#    /\__\     /\  \     /\  \     /\  \     /\  \     /\__\  
-#   /:/__/_   /::\  \   /::\  \   /::\  \   _\:\  \   /::L_L_
-#  /::\/\__\ /::\:\__\ /::\:\__\ /\:\:\__\ /\/::\__\ /:/L:\__\
-#  \/\::/  / \/\::/  / \;:::/  / \:\:\/__/ \::/\/__/ \/_/:/  /
-#    /:/  /     \/__/   |:\/__/   \::/  /   \:\__\     /:/  /
-#    \/__/               \|__|     \/__/     \/__/     \/__/  
-# 
-#------------------------------------------------------------#
-# Path:
-#     hpr-sim/src/preproc/load_input.py
-# Created:
-#     2019-05-17
-# Type:
-#     Python3 module
-# Description:
-#     Parses input file(s) (*.yaml) to populate input classes
-# Functions:
-#     load_input
-# Classes:
-#     None
-# Dependencies:
-#     hpr-sim/src/preproc/input.cpp
-#                        /input.h
-#------------------------------------------------------------#
+'''
+High Power Rocketry - Flight Simulation
+GNU General Public License v3.0
+Copyright (C) 2019 Roshan Doddanavar
+https://rdoddanavar.github.io
+
+██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
+██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
+███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
+██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
+██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
+╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
+
+Path:
+    hpr-sim/src/preproc/preproc_input.py
+Created:
+    2019-05-17
+Type:
+    Python3 module
+Description:
+    Parses YAML input files to populate input classes.
+Functions:
+    load
+Classes:
+    None
+Dependencies:
+    hpr-sim/src/preproc/input.cpp
+                       /input.h
+                /util/util_yaml.py
+                     /util_unit.py
+'''
 
 # System modules
 import sys  # System utilities
@@ -46,7 +46,7 @@ import util_unit
 # Pybind11 modules
 import input # Input classes 
 
-def load_input(inputPath):
+def preproc_input(inputPath):
 
     '''
     Populates input parameters via YAML input; converts and validates parameters.

@@ -6,85 +6,112 @@
 
 Block comment(s)
  - Python (`*.py`)
-   - All lines prefixed with `#`
-   - NOTE:
-     - Docstrings (`''' ... '''`) are reserved for class & method descriptions (PEP-8 standard)
+   - Docstring style
+   - Block start: `'''`
+   - Block end: `'''`
  - C++ (`*.cpp`, `*.h`)
    - Block start: `/*`
    - Block end: `*/`
- - Bash (`*.sh`)
-   - All lines prefixed with `#`
- - Makefile (`makefile*`)
+ - Bash (`*.sh`), Makefile, & YAML (`*.yaml`)
    - All lines prefixed with `#`
 
-### Example: Python/Bash/Makefile
+### Example: Python
 
 ```
-#------------------------------------------------------------#
-# High Power Rocketry - Flight Simulation
-# GNU General Public License v3.0
-# Roshan Doddanavar
-# https://rdoddanavar.github.io
-#------------------------------------------------------------#
-#     ___       ___       ___       ___       ___       ___
-#    /\__\     /\  \     /\  \     /\  \     /\  \     /\__\  
-#   /:/__/_   /::\  \   /::\  \   /::\  \   _\:\  \   /::L_L_
-#  /::\/\__\ /::\:\__\ /::\:\__\ /\:\:\__\ /\/::\__\ /:/L:\__\
-#  \/\::/  / \/\::/  / \;:::/  / \:\:\/__/ \::/\/__/ \/_/:/  /
-#    /:/  /     \/__/   |:\/__/   \::/  /   \:\__\     /:/  /
-#    \/__/               \|__|     \/__/     \/__/     \/__/  
-# 
-#------------------------------------------------------------#
-# Path:
-#     hpr-sim/<dir>/.../<filename>.<ext>
-# Created:
-#     20YY-MM-DD
-# Type:
-#     <language> <source/script/etc.>
-# Description:
-#     < >
-# Input:
-#     None
-# Output:
-#     None
-# Dependencies:
-#     hpr-sim/<dir1>/<dep1>.<ext>
-#                   /<dep2>.<ext>
-#------------------------------------------------------------#
+'''
+High Power Rocketry - Flight Simulation
+GNU General Public License v3.0
+Copyright (C) 2019 Roshan Doddanavar
+https://rdoddanavar.github.io
+
+██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
+██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
+███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
+██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
+██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
+╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
+
+Path:
+    hpr-sim/<dir>/.../<filename>.<ext>
+Created:
+    2019-MM-DD
+Type:
+    Python3 <module/script>
+Description:
+    < >
+Functions:
+    < >
+Classes:
+    < >
+Dependencies:
+    hpr-sim/<dir1>/<dep1>.<ext>
+                  /<dep2>.<ext>
+'''
 ```
 
 ### Example: C++ 
 
 ```
-/*--------------------------------------------------------//
+/*
 High Power Rocketry - Flight Simulation
 GNU General Public License v3.0
-Roshan Doddanavar
+Copyright (C) 2019 Roshan Doddanavar
 https://rdoddanavar.github.io
-//--------------------------------------------------------//
-    ___       ___       ___       ___       ___       ___
-   /\__\     /\  \     /\  \     /\  \     /\  \     /\__\  
-  /:/__/_   /::\  \   /::\  \   /::\  \   _\:\  \   /::L_L_
- /::\/\__\ /::\:\__\ /::\:\__\ /\:\:\__\ /\/::\__\ /:/L:\__\
- \/\::/  / \/\::/  / \;:::/  / \:\:\/__/ \::/\/__/ \/_/:/  /
-   /:/  /     \/__/   |:\/__/   \::/  /   \:\__\     /:/  /
-   \/__/               \|__|     \/__/     \/__/     \/__/ 
 
-//--------------------------------------------------------//
+██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
+██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
+███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
+██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
+██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
+╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
+
 Path:
     hpr-sim/<dir>/.../<filename>.<ext>
 Created:
-    20YY-MM-DD
+    2019-MM-DD
 Type:
-    <language> <source/script/etc.>
+    C++11 <header/source>
 Description:
     < >
-Input:
-    None
-Output:
-    None
+Functions:
+    < >
+Classes:
+    < >
 Dependencies:
     hpr-sim/<dir1>/<dep1>.<ext>
                   /<dep2>.<ext>
-//--------------------------------------------------------*/
+*/
 ```
+
+### Example: Bash/Makefile/YAML
+
+```
+# High Power Rocketry - Flight Simulation
+# GNU General Public License v3.0
+# Copyright (C) 2019 Roshan Doddanavar
+# https://rdoddanavar.github.io
+# 
+# ██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
+# ██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
+# ███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
+# ██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
+# ██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
+# ╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
+# 
+# Path:
+#     hpr-sim/<dir>/.../<filename>.<ext>
+# Created:
+#     2019-MM-DD
+# Type:
+#     <Bash/Makefile/YAML> <script/config file>
+# Description:
+#     < >
+# Functions:
+#     < >
+# Classes:
+#     < >
+# Dependencies:
+#     hpr-sim/<dir1>/<dep1>.<ext>
+#                   /<dep2>.<ext>
+```
+

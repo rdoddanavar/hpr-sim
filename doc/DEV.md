@@ -2,6 +2,11 @@
 
 `High Power Rocketry - Flight Simulation`
 
+## Reading Backlog
+
+ - Python error handling
+   - https://docs.python.org/3/tutorial/errors.html
+
 ## Python
 
 ### Style
@@ -19,6 +24,8 @@
    - https://stackoverflow.com/questions/7370801/measure-time-elapsed-in-python
  - Mutiple function arguments
    - https://stackoverflow.com/questions/919680/can-a-variable-number-of-arguments-be-passed-to-a-function
+ - `__pycache__` bullshit
+   - https://stackoverflow.com/questions/16869024/what-is-pycache
 
 
 ## C++
@@ -90,5 +97,7 @@ PYBIND11_MODULE(module, m)
    - https://docs.python-guide.org/writing/documentation/
  - Docstring conventions
    - https://stackoverflow.com/questions/3898572/what-is-the-standard-python-docstring-format
+ - Python default: Sphinx, C++ default: doxygen
+   - interface library: breathe? and exhale? 
 
 ## Testing

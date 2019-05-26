@@ -1,38 +1,39 @@
-/*--------------------------------------------------------//
+/*
 High Power Rocketry - Flight Simulation
 GNU General Public License v3.0
-Roshan Doddanavar
+Copyright (C) 2019 Roshan Doddanavar
 https://rdoddanavar.github.io
-//--------------------------------------------------------//
-    ___       ___       ___       ___       ___       ___
-   /\__\     /\  \     /\  \     /\  \     /\  \     /\__\  
-  /:/__/_   /::\  \   /::\  \   /::\  \   _\:\  \   /::L_L_
- /::\/\__\ /::\:\__\ /::\:\__\ /\:\:\__\ /\/::\__\ /:/L:\__\
- \/\::/  / \/\::/  / \;:::/  / \:\:\/__/ \::/\/__/ \/_/:/  /
-   /:/  /     \/__/   |:\/__/   \::/  /   \:\__\     /:/  /
-   \/__/               \|__|     \/__/     \/__/     \/__/ 
 
-//--------------------------------------------------------//
+██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
+██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
+███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
+██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
+██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
+╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
+
 Path:
     hpr-sim/src/preproc/input.h
 Created:
     2019-05-17
 Type:
-    C++ header
+    C++11 header
 Description:
-    Header for input classes: Input, Sim, Param, & Name
-Input:
+    Declaration for input classes.
+Functions:
     None
-Output:
-    None
+Classes:
+    Input
+    Sim
+    Param
+    Name
 Dependencies:
     hpr-sim/src/preproc/input.cpp
-//--------------------------------------------------------*/
+*/
 
 #ifndef INPUT_H
 #define INPUT_H
 
-// Installed libraries
+// System libraries
 #include <pybind11/pybind11.h>
 #include <string>
 
@@ -89,6 +90,7 @@ struct Input
 };
 
 // Binding code
+
 PYBIND11_MODULE(input, m)
 {
     m.doc() = "sim input module"; // Optional module docstring
