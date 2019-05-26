@@ -2,6 +2,8 @@
 *.so
 
 # Python aritifacts
+__pycache__
+*.pyc
 
 # LaTeX artifiacts
 *.aux
@@ -11,4 +13,4 @@
 *.synctex.gz
 
 # VSCode config
-.vscode/
+.vscode
