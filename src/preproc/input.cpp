@@ -38,7 +38,7 @@ Dependencies:
 #include "input.h"
 
 // "Param" class
-Param::Param() : value(0.0), min(0.0), max(0.0), unit(""), type(""), dist("") {}
+Param::Param() : value(0.0), min(0.0), max(0.0), unit(""), quantity(""), dist("") {}
 
 bool Param::checkValue()
 {
@@ -53,7 +53,7 @@ Name::Name() : value(""), path(false) {}
 
 bool Name::checkPath()
 {
-    
+
     if (path)
     {
         std::ifstream file(value);
@@ -61,8 +61,6 @@ bool Name::checkPath()
     }
     else
     {
-        return true
+        return true;
     }
-    
-    
 }

@@ -14,7 +14,7 @@
 # 
 #------------------------------------------------------------#
 # Path:
-#     hpr-sim/src/util/unit_convert.yaml
+#     hpr-sim/src/util/config_unit.yaml
 # Created:
 #     2019-05-24
 # Type:
@@ -30,13 +30,13 @@
 #------------------------------------------------------------#
 ---
 default:
-    time: sec
+    time: s
     length: m
 time: 
-    msec: 1.0e-3
-    sec: 1.0
+    ms: 1.0e-3
+    s: 1.0
     min: 60
-    hour: 3600
+    h: 3600
 length:
     mm: 1.0e-3
     cm: 1.0e-2

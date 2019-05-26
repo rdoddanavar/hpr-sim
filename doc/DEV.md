@@ -2,6 +2,25 @@
 
 `High Power Rocketry - Flight Simulation`
 
+## Python
+
+### Style
+
+ - PEP-8 style guide
+   - https://www.python.org/dev/peps/pep-0008/
+ - PEP-257 docstrings
+   - https://www.python.org/dev/peps/pep-0257/
+
+### General
+
+ - `if __name__ == "__main__"` stuff
+   - https://stackoverflow.com/questions/419163/what-does-if-name-main-do
+ - Program timing (`tic` + `toc` alternative)
+   - https://stackoverflow.com/questions/7370801/measure-time-elapsed-in-python
+ - Mutiple function arguments
+   - https://stackoverflow.com/questions/919680/can-a-variable-number-of-arguments-be-passed-to-a-function
+
+
 ## C++
 
 ### General 
@@ -22,31 +41,54 @@
 ### OpenMP
 
 ### Pybind11
- - Template class binding
+
+ - Example binding
+
+```
+PYBIND11_MODULE(module, m)
+{
+    m.doc() = "docstring"; // Optional module docstring
+
+    py::class_<Class>(m, "Class")
+        .def(py::init<>()) // Specify type as template parameter
+        .def("method", &Class::method)
+        .def_readwrite("attribute", &Class::attribute)
+}
+```
+
+ - Template class binding (unresolved)
    - https://github.com/pybind/pybind11/issues/199
    - https://stackoverflow.com/questions/47487888/pybind11-template-class-of-many-types
 
-## Python
-
- - `if __name__ == "__main__"` stuff
-   - https://stackoverflow.com/questions/419163/what-does-if-name-main-do
-
 ## YAML
 
+### References
+
+ - https://yaml.org/refcard.html
+ - https://en.wikipedia.org/wiki/YAML
  - Online parser
    - https://yaml-online-parser.appspot.com/
- - References
-   - https://yaml.org/refcard.html
-   - https://en.wikipedia.org/wiki/YAML
+
 
 ### Specification
+
  - Infinity --> `.inf`
  - Scientific notation must have period in mantissa and sign on exponent
    - ex. `1.0e+5`
  - Empty array --> `field: []`
 
 ### pyYAML
+
  - Get stream and pass to parser
    - `stream = open("filename",'r')` --> `dict = yaml.load(stream)`
  - Call obj using dict format, double up for levels
    - `value = dict["lvl1"]["lvl2"]` etc.
+
+## Documentation
+
+ - Sphinx - "Read the Docs" - "reST" - restructured text
+   - https://docs.python-guide.org/writing/documentation/
+ - Docstring conventions
+   - https://stackoverflow.com/questions/3898572/what-is-the-standard-python-docstring-format
+
+## Testing
