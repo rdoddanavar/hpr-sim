@@ -31,9 +31,10 @@ Dependencies:
 '''
 
 # System modules
-import sys  # System utilities
-import pdb  # Python debugger
-import yaml # YAML parser
+import sys     # System utilities
+import pdb     # Python debugger
+import logging # Logging tools
+import yaml    # YAML parser
 
 # Path modifications
 sys.path.insert(0, "../../bin/")
@@ -60,7 +61,7 @@ def preproc_input(inputPath):
     # Instantiate input object
     inp = input.Input()
 
-    # Param config
+    # Param config: min, max, quantity 
 
     for group in configDict.keys():
         for param in configDict[group].keys():
@@ -69,10 +70,9 @@ def preproc_input(inputPath):
                     value = configDict[group][param][field]
                     setattr(getattr(getattr(inp, group), param), field, value)
 
-    # Param assignment
+    # Param assignment: value, unit, dist
 
     for group in inputDict.keys():
-
         for param in inputDict[group].keys():
 
             # Multiple fields specified by user

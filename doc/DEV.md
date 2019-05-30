@@ -4,8 +4,8 @@
 
 ## Reading Backlog
 
- - Python error handling
-   - https://docs.python.org/3/tutorial/errors.html
+ - `eval` alternatives
+   - https://stackoverflow.com/questions/43836866/safely-evaluate-simple-string-equation
 
 ## Python
 
@@ -26,6 +26,9 @@
    - https://stackoverflow.com/questions/919680/can-a-variable-number-of-arguments-be-passed-to-a-function
  - `__pycache__` bullshit
    - https://stackoverflow.com/questions/16869024/what-is-pycache
+ - Errors & Logging
+   - https://docs.python.org/3/tutorial/errors.html
+   - https://realpython.com/python-logging/
 
 
 ## C++
