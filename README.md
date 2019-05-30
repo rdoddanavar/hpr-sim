@@ -4,6 +4,10 @@
 
 ![](https://img.shields.io/static/v1.svg?label=status&message=initial%20dev&color=red&style=for-the-badge)
 
+![](https://img.shields.io/badge/style-3.7+-blue.svg?label=python&logo=Python)
+![](https://img.shields.io/badge/style-11-blue.svg?label=C%2B%2B&logo=C%2B%2B)
+![](https://img.shields.io/static/v1.svg?label=pybind11&message=2.2.4&color=blue)
+
 ![](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-sim.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-sim.svg)
