@@ -2,8 +2,10 @@
 
 `High Power Rocketry - Flight Simulation`
 
+![](https://img.shields.io/static/v1.svg?label=status&message=initial%20dev&color=red&style=for-the-badge)
+
+![](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-sim.svg)
-![](https://img.shields.io/github/release/rdoddanavar/hpr-sim.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-sim.svg)
 
 ## Overview
