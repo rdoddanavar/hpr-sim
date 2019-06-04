@@ -67,10 +67,11 @@ See `./doc/MANUAL.md` for program installation \& execution.
 │   ├── solvers/
 │   └── util/
 ├── tools/
+│   ├── test/
 │   └── update_index.sh*
 ├── LICENSE
 ├── makefile
 └── README.md
 
-15 directories, 12 files
+16 directories, 12 files
 ```
