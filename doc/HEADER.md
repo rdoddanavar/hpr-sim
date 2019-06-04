@@ -4,7 +4,7 @@
 
 ## File Header Format
 
-Block comment(s)
+#### Block comment(s)
  - Python (`*.py`)
    - Docstring style
    - Block start: `"""`
@@ -15,12 +15,12 @@ Block comment(s)
  - Bash (`*.sh`), Makefile, & YAML (`*.yaml`)
    - All lines prefixed with `#`
 
-"Description"
+#### "Description"
  - Give brief outline of file's purpose w/ regards to overall program
  - Example:
    - df
 
-"Functions"
+#### "Functions"
  - List any declared functions, include argument & return types
  - Omitted for Bash/Makefile/YAML files 
  - Example:
@@ -31,7 +31,7 @@ Functions:
     foo3(str)        -> 
 ```
   
-"Classes"
+#### "Classes"
  - List any declared classes, include base class if applicable
  - Omitted for Bash/Makefile/YAML files 
  - Example:
@@ -41,7 +41,7 @@ Classes:
     FooBar(Base)
 ```
 
-"Dependencies"
+#### "Dependencies"
  - List any external dependencies, i.e. any files referenced or imported
  - Do not list files dependent on current file
  - Example:
