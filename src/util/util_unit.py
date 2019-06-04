@@ -25,7 +25,8 @@ Functions:
 Classes:
     None
 Dependencies:
-    hpr-sim/src/util/config_unit.yaml
+    hpr-sim/src/util/util_yaml
+                    /config_unit.yaml
 '''
 
 # System modules

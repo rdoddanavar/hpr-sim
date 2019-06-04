@@ -1,0 +1,10 @@
+# Input file unit test
+---
+group:
+    a:
+        value: ref(b)
+    b:
+        value: ref(c) + ref(max)
+        max: 5
+    c: (1 + 2)**3
+...
