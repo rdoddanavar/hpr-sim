@@ -2,9 +2,9 @@
 ---
 group:
     a:
-        value: ref(b)
+        value: one
     b:
-        value: ref(c) + ref(max)
-        max: 5
-    c: (1 + 2)**3
+        value: two
+        max: three
+    c: four
 ...

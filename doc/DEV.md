@@ -6,6 +6,8 @@
 
  - `eval` alternatives
    - https://stackoverflow.com/questions/43836866/safely-evaluate-simple-string-equation
+ - Recursion for `dict`'s
+   - https://stackoverflow.com/questions/22162321/search-for-a-value-in-a-nested-dictionary-python
 
 ## Python
 

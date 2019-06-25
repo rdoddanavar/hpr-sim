@@ -15,20 +15,45 @@
 The goal of this project is to build a robust, extensible flight simulation package for high power rocketry, with open-source dependencies. Key features considered to constitute a "robust" simulation include:
 
  - 6-DOF kinematic model
- - Built-in Monte Carlo functionality
- - Multithreading to support " " 
- - Standard atmospheric modeling
+ - Monte Carlo functionality
+ - Multiprocessing to support large test cases 
+ - Flexible atmospheric modeling
  - Stochastic wind turbulence model
  - Comptability w/ RASP (`*.eng`) engine files (http://www.thrustcurve.org/raspformat.shtml)
  - Flight data visualization & plain-text export
+ - Simple input API for additional scripting & extensions
 
-The intent is to lean on the respective strengths of python and C++ to build a modern, efficient simulation package. Python is to be used for pre-processing, post-processing, and data visualization, while C++ will constitue the bulk of the numerical routines. A python-C++ binding library will be used to interface between the two sets of source code. 
+The intent is to lean on the respective strengths of python and C++ to create a modern, efficient simulation package. Python is used for pre-processing, post-processing, and data visualization, while C++ will constitute the bulk of the numerical routines. Pybind11 is used as a binding library to interface between the two sets of source code. 
 
-Future work may include a user interface using PyQt5.
-
-Other (more professional) projects with a similar scope & application are OpenRocket and RASAero II. 
+Future work may include a user interface using PyQt5. Current efforts will be focused on a build for Ubuntu-based systems (x64). 
 
 See `./doc/MANUAL.md` for program installation \& execution.
+
+## Application
+
+Other (more professional) projects with a similar scope & application are RockSim, OpenRocket, and RASAero II. 
+
+### RockSim
+
+| Cost     | Open Source? | Strengths | Weaknesses |
+|----------|--------------|-----------|------------|
+| $123.60  | No           |           |            |
+
+### OpenRocket 
+
+| Cost | Open Source? | Strengths | Weaknesses |
+|------|--------------|-----------|------------|
+| Free | Yes          |           |            |
+
+### RASAero II 
+
+| Cost | Open Source? | Strengths | Weaknesses |
+|------|--------------|-----------|------------|
+| Free | Yes          |           |            |
+
+## Project Structure
+
+See `./doc/MANUAL.md` for further information.
 
 ![](./doc/figs/diagram.png)
 
