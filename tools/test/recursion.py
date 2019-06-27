@@ -2,52 +2,35 @@ import sys
 import pdb
 import yaml
 
-################
-# EXAMPLE
-def getpath(nested_dict, value, prepath=()):
-    for k, v in nested_dict.items():
-        path = prepath + (k,)
-        if v == value: # found value
-            return path
-        elif hasattr(v, 'items'): # v is a dict
-            p = getpath(v, value, path) # recursive call
-            if p is not None:
-                return p
-################
+def getValue(nested, path):
 
-def getValue(value, path):
+    value = nested
 
     for key in path:
         value = value[key]
 
     return value
 
-def setValue(original, path):
+def setValue(nested, value, path):
 
-    if len(path) == 2:
-        original[path[0]][path[1]] = "test"
+    '''
+    Set value in arbitrarily nested dict given list of keys.
+    '''
 
-    elif len(path) == 3:
-        original[path[0]][path[1]][path[2]] = "test"
+    sub = nested[path[0]]
 
-    return original
+    if isinstance(sub, dict):
 
-'''
-def iterate(fileDict, path):
+        sub = setValue(sub, value, path[1:])
+        nested[path[0]] = sub
 
-    for key, value in fileDict.items():
+        return nested
 
-        path = path + [key]
+    else:
 
-        if isinstance(value, dict):
-            
-            p = iterate(value, path)
+        nested[path[0]] = value
 
-            print(p)
-
-        else: 
-            return path
-'''
+        return nested
 
 def iterate(original, fileDict, path, test):
 
@@ -64,28 +47,27 @@ def iterate(original, fileDict, path, test):
 
         else: 
             
-            test = setValue(original, path)
-            print(test)
+            original = setValue(original, path)
             print(path)
-            print("")
 
-filePath = "./test.yaml"
+    return original
+
+filePath = "./test.yml"
 stream   = open(filePath, 'r')
 fileDict = yaml.safe_load(stream)
 
-iterate(fileDict, fileDict, [], False)
+print(getValue(fileDict, ['group', 'b', 'max']))
 
+print("")
 print(fileDict)
 
-#print(getpath(fileDict, "three"))
+fileDict = setValue(fileDict, 'five', ['group', 'b', 'max'])
 
-# SEPARATE CONDITIONING FOR INPUT FILE
-# Convert every single level key:value pair to include "value" field
-# Generalize preprocessing and find-target functions
+print("")
+print(fileDict)
 
-# clarify input file features
-# plan structure
-# get dict features
+pdb.set_trace()
+
 
 
 

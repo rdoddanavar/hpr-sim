@@ -7,11 +7,9 @@ sys.path.insert(0, "../../src/util")
 
 import util_yaml
 
-name     = "./test.yaml"
+name     = "./test.yml"
 yamlDict = util_yaml.load(name)
 
-yamlDict = util_yaml.processInput(yamlDict)
-
-print(yamlDict)
+yamlDict = util_yaml.process(yamlDict, yamlDict)
 
 pdb.set_trace()

@@ -46,118 +46,91 @@ def load(filePath):
 
     return fileDict
 
-def processInput(fileDict):
+def process(fileDict, subDict, path=[], first=True):
 
     """
     Processes pyYAML output; resolves references and evaluates arithmetic expressions. 
     """
 
-    # Do initial pass to populate every "value"?
+    for key, value in subDict.items():
 
-    for group in fileDict.keys():
-        for param in fileDict[group].keys():
+        if (first):
+            first = False
+            path  = path + [key]
+        else: 
+            path[-1] = key
 
-            # Fix condition when not a dict 
+        if (isinstance(value, dict)):
+            fileDict = process(fileDict, value, path)
 
-            for field in fileDict[group][param].keys():
+        elif (isinstance(value, str)):
 
-                value = fileDict[group][param][field]
+            while ("ref" in value):
 
-                print('\n')
-                print('.'.join([group, param, field]) + ':')
-                print("original: ", value)
+                # Parse value for target
+                idxA   = value.find("ref") + 4
+                idxB   = value[idxA:].find(')') + idxA
+                target = value[idxA:idxB]
 
-                if (isinstance(value, str)):
+                # Get keys to target
+                target = target.split('.')
+                nRel   = len(path) - len(target)
+                newTarget = path[:nRel] + target
 
-                    while ("ref" in value):
+                if (newTarget == path):
+                    raise Exception("CIRCULAR REFERENCE")
 
-                        # Parse value for target
-                        idxA   = value.find("ref") + 4
-                        idxB   = value[idxA:].find(')') + idxA
-                        target = value[idxA:idxB]
+                try:
+                    targetValue = get_value(fileDict, newTarget)
+                except:
+                    pdb.set_trace()
 
-                        # Get keys to target
-                        current = [group, param, field]
-                        target  = target.split('.')
-                        target  = getTarget(fileDict, current, target)
+                refStr      = "ref(" + value[idxA:idxB] + ')'
 
-                        if (target == current):
+                # Value may be float, must cast to string
+                value = value.replace(refStr, str(targetValue))
 
-                            # Circular reference
-                            print("CIRCULAR REFERENCE")
-                            return fileDict
-
-                        targetValue = fileDict[target[0]][target[1]][target[2]]
-                        refStr      = "ref(" + value[idxA:idxB] + ')'
-
-                        # Value may be float, must cast to string
-                        value = value.replace(refStr, str(targetValue))
-
-                        print("mod: ", value)
-
-                    # Evaluate any arithmetic expressions
-                    value = mathEval(value)
-                    print("calc: ", value)
-
-                    # Reassign field 
-                    fileDict[group][param][field] = value
-
-                    print("assigned: ", value)
-
+            # Evaluate any arithmetic expressions & reassign field
+            value    = math_eval(value)
+            fileDict = set_value(fileDict, value, path)
+    
     return fileDict
 
-def getTarget(fileDict, current, target):
+def get_value(nested, path):
 
-    """
-    Given current position in YAML dict, give absolute keys to relative target.
-    """
+    '''
+    Fetches value in arbitrarily nested dict given list of keys. 
+    '''
 
-    groupName = fileDict.keys()
-    paramName = fileDict[current[0]].keys()
+    value = nested
 
-    if (len(target) == 3):
+    for key in path:
+        value = value[key]
 
-        # Target defined; no action
-        group = target[0]
-        param = target[1]
-        field = target[2]
+    return value
 
-    elif (len(target) == 2):
+def set_value(nested, value, path):
 
-        if (target[0] in groupName):
+    '''
+    Sets value in arbitrarily nested dict given list of keys.
+    '''
 
-            # Assume field as "value"
-            group = target[0]
-            param = target[1]
-            field = "value"
+    sub = nested[path[0]]
 
-        else:
+    if isinstance(sub, dict):
 
-            # Assume current group
-            group = current[0]
-            param = target[0]
-            field = target[1]
+        sub = set_value(sub, value, path[1:])
+        nested[path[0]] = sub
 
-    elif (len(target) == 1):
+        return nested
 
-        if (target[0] in paramName):
+    else:
 
-            # Assume current group and field as "value"
-            group = current[0]
-            param = target[0]
-            field = "value"
+        nested[path[0]] = value
 
-        else:
-            # Assume current group and param
-            group = current[0]
-            param = current[1]
-            field = target[0]
-
-    target = [group, param, field]
-
-    return target
-
-def mathEval(value):
+        return nested
+    
+def math_eval(value):
 
     """
     Evaluates arithmetic string expressions for a limited set of operators. 

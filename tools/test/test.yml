@@ -1,0 +1,11 @@
+# Input file unit test
+---
+hello:
+    group:
+        a:
+            value: ref(b.value)
+        b:
+            value: ref(c)
+            max: ref(value)
+        c: 1+2
+...
