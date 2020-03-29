@@ -42,59 +42,64 @@ def load(filePath):
     """
 
     stream   = open(filePath, 'r')
-    fileDict = yaml.safe_load(stream)
+    yamlDict = yaml.safe_load(stream)
 
-    return fileDict
+    return yamlDict
 
-def process(fileDict, subDict, path=[], first=True):
+def process(yamlDict, subDict=None, path=[], first=True):
 
     """
     Processes pyYAML output; resolves references and evaluates arithmetic expressions. 
     """
 
+    if (subDict is None):
+        subDict = yamlDict.copy()
+
     for key, value in subDict.items():
 
         if (first):
+
             first = False
             path  = path + [key]
+
         else: 
             path[-1] = key
 
         if (isinstance(value, dict)):
-            fileDict = process(fileDict, value, path)
+            yamlDict = process(yamlDict, value, path)
 
         elif (isinstance(value, str)):
 
             while ("ref" in value):
 
                 # Parse value for target
-                idxA   = value.find("ref") + 4
+                idxA   = value.find("ref(") + 4
                 idxB   = value[idxA:].find(')') + idxA
                 target = value[idxA:idxB]
 
                 # Get keys to target
                 target = target.split('.')
                 nRel   = len(path) - len(target)
-                newTarget = path[:nRel] + target
+                target = path[:nRel] + target
 
-                if (newTarget == path):
+                if (target == path):
                     raise Exception("CIRCULAR REFERENCE")
 
                 try:
-                    targetValue = get_value(fileDict, newTarget)
+                    targetValue = get_value(yamlDict, target)
                 except:
                     pdb.set_trace()
 
-                refStr      = "ref(" + value[idxA:idxB] + ')'
+                refStr = "ref(" + value[idxA:idxB] + ')'
 
                 # Value may be float, must cast to string
                 value = value.replace(refStr, str(targetValue))
 
             # Evaluate any arithmetic expressions & reassign field
             value    = math_eval(value)
-            fileDict = set_value(fileDict, value, path)
+            yamlDict = set_value(yamlDict, value, path)
     
-    return fileDict
+    return yamlDict
 
 def get_value(nested, path):
 
@@ -151,7 +156,8 @@ def math_eval(value):
     else:
         return value
 
-if __name__ == "__main__":
-    
+if (__name__ == "__main__"):
+
+    # Standalone execution
     pass
 

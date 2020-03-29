@@ -1,4 +1,4 @@
-# hpr-sim ![](https://img.shields.io/static/v1.svg?label=status&message=initial%20dev&color=red&style=for-the-badge)
+# hpr-sim ![](https://img.shields.io/static/v1.svg?label=status&message=dev%20hiatus&color=lightgray&style=for-the-badge)
 
 `High Power Rocketry - Flight Simulation`
 

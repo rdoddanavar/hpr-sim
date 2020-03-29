@@ -28,10 +28,10 @@
 default:
     time: s
     length: m
-    area:
-    volume:
-    velocity:
-    acceleration:
+    area: m^2
+    volume: m^3
+    velocity: m/s
+    acceleration: m/s^2
 time: 
     ms: 1.0e-3
     s: 1.0

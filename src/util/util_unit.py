@@ -45,6 +45,7 @@ def config():
 
     configPath = "../util/config_unit.yaml"
     unitDict   = util_yaml.load(configPath)
+    unitDict   = util_yaml.process(unitDict, unitDict)
 
     return unitDict
 
@@ -83,7 +84,11 @@ def convert(*args):
     # If unit is not specified or nondimensional 
     return 1.0
 
-if __name__ == "__main__":
+def temp_shit():
+
+    # THINK about adding a temp function. or storing function handles for different conversions in the YML? who knows
+
+if (__name__ == "__main__"):
 
     pass
 
