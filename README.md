@@ -1,8 +1,5 @@
-# hpr-sim ![](https://img.shields.io/static/v1.svg?label=status&message=dev%20hiatus&color=lightgray&style=for-the-badge)
+# hpr-sim
 
-![](https://img.shields.io/badge/style-3.7+-blue.svg?label=python&logo=Python)
-![](https://img.shields.io/badge/style-11-blue.svg?label=C%2B%2B&logo=C%2B%2B)
-![](https://img.shields.io/static/v1.svg?label=pybind11&message=2.2.4&color=blue)
 ![](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-sim.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-sim.svg)
@@ -26,74 +23,34 @@ Future work may include a user interface using PyQt5. Current efforts will be fo
 
 See `./doc/MANUAL.md` for program installation \& execution.
 
-## Application
-
-Other (more professional) projects with a similar scope & application are RockSim, OpenRocket, and RASAero II. 
-
-### RockSim
-
-| Cost     | Open Source? | Strengths | Weaknesses |
-|----------|--------------|-----------|------------|
-| $123.60  | No           |           |            |
-
-### OpenRocket 
-
-| Cost | Open Source? | Strengths | Weaknesses |
-|------|--------------|-----------|------------|
-| Free | Yes          |           |            |
-
-### RASAero II 
-
-| Cost | Open Source? | Strengths | Weaknesses |
-|------|--------------|-----------|------------|
-| Free | Yes          |           |            |
-
-## Project Structure
-
-See `./doc/MANUAL.md` for further information.
-
-![](./doc/figs/diagram.png)
-
 ## Directory Index
-
-- `./bin/` - All binary objects
-- `./doc/` - Supporting documentation
-- `./input/` - Simulation input
-- `./output/` - Simulation output
-- `./src/` - Python & C++ source
-- `./tools/` - Project utilities
-
 
 ```
 .
-├── bin/
-│   └── input.cpython-37m-x86_64-linux-gnu.so*
-├── doc/
+├── doc/                   --> Supporting documentation
 │   ├── figs/
 │   ├── DEV.md
 │   ├── FEATURES.md
 │   ├── HEADER.md
 │   ├── INPUT.md
 │   └── MANUAL.md
-├── input/
+├── input/                 --> Simulation input & config 
 │   ├── aero/
 │   ├── prop/
 │   └── input.yaml
-├── output/
+├── output/                --> Simulation data output
 │   └── placeholder
-├── src/
+├── src/                   --> Python & C++ source
 │   ├── exec/
 │   ├── models/
 │   ├── postproc/
 │   ├── preproc/
 │   ├── solvers/
 │   └── util/
-├── tools/
+├── tools/                 --> Project utilities 
 │   ├── test/
 │   └── update_index.sh*
 ├── LICENSE
 ├── makefile
 └── README.md
-
-16 directories, 12 files
 ```
