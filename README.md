@@ -17,11 +17,22 @@ The goal of this project is to build a robust, extensible flight simulation pack
  - Flight data visualization & plain-text export
  - Simple input API for additional scripting & extensions
 
-The intent is to lean on the respective strengths of python and C++ to create a modern, efficient simulation package. Python is used for pre-processing, post-processing, and data visualization, while C++ will constitute the bulk of the numerical routines. Pybind11 is used as a binding library to interface between the two sets of source code. 
+The intent is to lean on the respective strengths of python and C++ to create a modern, efficient simulation package. Python is used for pre-processing, post-processing, and data visualization, while C++ constitutes the bulk of the numerical routines. Pybind11 is used as a binding library to interface between the two sets of source code. 
 
 Future work may include a user interface using PyQt5. Current efforts will be focused on a build for Ubuntu-based systems (x64). 
 
-See `./doc/MANUAL.md` for program installation \& execution.
+## Dependencies
+
+See `doc/MANUAL.md` for program installation \& execution.
+
+|        |          |                    |                                              |   |
+|--------|----------|--------------------|----------------------------------------------|---|
+| g++    | `x.x.x`  |                    |                                              |   |
+| eigen  | `x.x.x`  |                    | https://gitlab.com/libeigen/eigen/-/releases |   |
+| python | `x.x.x`  | via Anaconda `3.7` | https://www.anaconda.com/distribution/       |   |
+|        | pybind11 | `x.x.x`            | https://github.com/pybind/pybind11           |   |
+|        | pyyaml   | `x.x.x`            |                                              |   |
+| cmake  | `x.x.x`  |                    | https://cmake.org/install/                   |   |
 
 ## Directory Index
 
