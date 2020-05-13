@@ -6,7 +6,20 @@
 #include "model.h"
 
 // Model Class
-void Model::Reset()
+void Model::reset()
 {
     state = stateInit;
+}
+
+void Model::update_deps()
+{
+
+    /*
+    Iterates over model dependencies, updates internal states 
+    */
+
+    for (auto dep : depModels)
+    {
+        dep->update();
+    }
 }

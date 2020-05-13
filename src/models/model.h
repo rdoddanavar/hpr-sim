@@ -3,6 +3,7 @@
 
 // System libraries
 #include <vector>
+#include <map>
 
 class Model
 {
@@ -19,11 +20,12 @@ class Model
         */
 
         // Function(s)
-        void Initialize();
-        void Update();
-        void Reset();
+        void initialize();
+        void reset();
+        void update();
+        void update_deps();
 
         // Constructor(s)
-}
+};
 
 #endif
