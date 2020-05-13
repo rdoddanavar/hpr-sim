@@ -2,6 +2,7 @@
 #define MODEL_H
 
 // System libraries
+#include <string>
 #include <vector>
 #include <map>
 
@@ -11,13 +12,8 @@ class Model
 
         // Data
         std::vector<Model*> depModels; // don't forget to use "new" keyword for mem alloc
-        std::vector<float> state;
-        std::vector<float> stateInit;
-
-        /*
-        Use std::map instead for state container?
         std::map<std::string, float> state;
-        */
+        std::map<std::string, float> stateInit;
 
         // Function(s)
         void initialize();

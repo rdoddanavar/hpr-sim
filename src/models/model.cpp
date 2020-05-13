@@ -6,9 +6,20 @@
 #include "model.h"
 
 // Model Class
+
+void Model::initialize()
+{
+    // Configure dep models?
+}
+
 void Model::reset()
 {
     state = stateInit;
+}
+
+void Model::update()
+{
+    ; // To be overridden in dervied classes
 }
 
 void Model::update_deps()
