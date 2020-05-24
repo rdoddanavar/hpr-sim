@@ -54,7 +54,7 @@ class Param
         std::string dist;
 
         // Function(s)
-        bool checkValue();
+        bool check_value();
 
         // Constructor(s)
         Param(); // Default 
@@ -69,7 +69,7 @@ class Name
         bool path;
 
         // Function(s)
-        bool checkPath(); 
+        bool check_path(); 
 
         // Constructor(s)
         Name();
@@ -84,9 +84,18 @@ struct Sim
     Param seedMaster;
 };
 
+/*
+struct Prop
+{
+    Param thrustEta;
+    Name engineModel;
+};
+*/
+
 struct Input
 {
     Sim sim;
+    //Prop prop;
 };
 
 // Binding code
@@ -97,7 +106,7 @@ PYBIND11_MODULE(input, m)
 
     py::class_<Param>(m, "Param")
         .def(py::init<>())
-        .def("checkValue", &Param::checkValue)
+        .def("check_value", &Param::check_value)
         .def_readwrite("value", &Param::value)
         .def_readwrite("min", &Param::min)
         .def_readwrite("max", &Param::max)
@@ -107,7 +116,7 @@ PYBIND11_MODULE(input, m)
 
     py::class_<Name>(m, "Name")
         .def(py::init<>())
-        .def("checkPath", &Name::checkPath)
+        .def("check_path", &Name::check_path)
         .def_readwrite("value", &Name::value)
         .def_readwrite("path", &Name::path);
 

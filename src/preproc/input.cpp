@@ -41,7 +41,7 @@ Dependencies:
 // "Param" class
 Param::Param() : value(0.0), min(0.0), max(0.0), unit(""), quantity(""), dist("") {}
 
-bool Param::checkValue()
+bool Param::check_value()
 {
     
     bool cond = (value >= min) && (value <= max);
@@ -52,7 +52,7 @@ bool Param::checkValue()
 // "Name" class
 Name::Name() : value(""), path(false) {}
 
-bool Name::checkPath()
+bool Name::check_path()
 {
 
     if (path)
