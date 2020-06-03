@@ -23,15 +23,15 @@ Current efforts are focused on a build for Ubuntu-based linux systems (x64).
 
 ## Dependencies
 
-See `doc/MANUAL.md` for program installation & execution. 
+See `doc/MANUAL.md` for project build, execution, & dependency handling. 
 
-| Package  | Version | Purpose                    | Link                                         |
-|----------|---------|----------------------------|----------------------------------------------|
-| g++      | `x.x.x` | C++ compiler               |                                              |
-| eigen    | `x.x.x` | Linear algebra library     | https://gitlab.com/libeigen/eigen/-/releases |
-| Anaconda | `3.7`   | Python distribution        | https://www.anaconda.com/distribution/       |
-| pybind11 | `x.x.x` | Python/C++ binding library | https://github.com/pybind/pybind11           |
-| CMake    | `x.x.x` | Build system manager       | https://cmake.org/install/                   |
+| Package  | Version  | Purpose                    | Link                                         |
+|----------|----------|----------------------------|----------------------------------------------|
+| g++      | `x.x.x`  | C++ compiler               |                                              |
+| eigen    | `3.3.7`  | Linear algebra library     | https://gitlab.com/libeigen/eigen/-/releases |
+| Anaconda | `3.7`    | Python distribution        | https://www.anaconda.com/distribution/       |
+| pybind11 | `2.5.0`  | Python/C++ binding library | https://github.com/pybind/pybind11           |
+| CMake    | `3.10.2` | Build system manager       | https://cmake.org/install/                   |
 
 ## Directory Index
 
