@@ -3,9 +3,10 @@
 hello:
     group:
         a:
-            value: ref(b.value)
+            value: ref(d.value)
         b:
-            value: ref(c)
+            value: ref(c.value)
             max: ref(value)
-        c: 1+2
+        c: 
+            value: 1+2
 ...
