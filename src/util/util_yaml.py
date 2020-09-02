@@ -82,18 +82,19 @@ def process(yamlDict, subDict=None, path=[], first=True):
                 nRel   = len(path) - len(target)
                 target = path[:nRel] + target
 
+                # Error handling: circular reference
                 if (target == path):
-                    raise Exception("CIRCULAR REFERENCE")
+                    raise ValueError("CIRCULAR REFERENCE",value)
 
+                # Error handling: invalid reference
                 try:
                     targetValue = get_value(yamlDict, target)
                 except:
-                    pdb.set_trace()
-
-                refStr = "ref(" + value[idxA:idxB] + ')'
+                    raise KeyError("INVALID REFERENCE",value)
 
                 # Value may be float, must cast to string
-                value = value.replace(refStr, str(targetValue))
+                refStr = "ref(" + value[idxA:idxB] + ')'
+                value  = value.replace(refStr, str(targetValue))
 
             # Evaluate any arithmetic expressions & reassign field
             value    = math_eval(value)
@@ -141,7 +142,7 @@ def math_eval(value):
     Evaluates arithmetic string expressions for a limited set of operators. 
     """
 
-    # Allowed arithmetic operators + whitespace + parentheses
+    # Allowed: arithmetic operators + whitespace + parentheses
     token = ['+', '-', '*', '/', "**", ' ', '(', ')']
     test  = value
 
@@ -160,4 +161,3 @@ if (__name__ == "__main__"):
 
     # Standalone execution
     pass
-
