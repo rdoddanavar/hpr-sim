@@ -36,10 +36,6 @@ import pdb     # Python debugger
 import logging # Logging tools
 import yaml    # YAML parser
 
-# Path modifications
-sys.path.insert(0, "../../bin/")
-sys.path.insert(0, "../util/")
-
 # Program modules
 import util_yaml
 import util_unit

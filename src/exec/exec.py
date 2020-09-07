@@ -5,22 +5,28 @@ import logging  # Logging tools
 import argparse # CLI parsing
 
 # Path modifications
-sys.path.insert(0, "../../build/src")
 
 # Program modules
-# < >
+sys.path.insert(0, "../preproc/")
+sys.path.insert(0, "../util/")
+
+import preproc_input
 
 # Pybind11 modules
-# < >
+sys.path.insert(0, "../../build/src")
 
-# Parse CLI
+def exec(inputPath):
 
-# Pre-processing
+    # Parse CLI
 
-# Sim execution 
+    # Pre-processing
+    preproc_input.preproc_input(inputPath)
 
-# Post-processing
+    # Sim execution 
+
+    # Post-processing
 
 if __name__ == "__main__":
 
-    # skrt skrt
+    inputPath = sys.argv[1]
+    exec(inputPath)

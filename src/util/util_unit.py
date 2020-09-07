@@ -89,8 +89,9 @@ def convert(*args):
 def temp_shit():
 
     # THINK about adding a temp function. or storing function handles for different conversions in the YML? who knows
+    pass
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
 
     # Standalone execution
     pass
