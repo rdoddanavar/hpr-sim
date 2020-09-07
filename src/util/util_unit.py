@@ -63,6 +63,7 @@ def convert(*args):
         
         if (quantity and unitA):
             
+            # Need error handling here for bad key
             factorA = unitDict[quantity][unitA]
 
             # Unit A relative to default unit
@@ -74,9 +75,10 @@ def convert(*args):
 
         if (quantity and unitA and unitB):
             
+            # Need error handling here for bad key
             factorA = unitDict[quantity][unitA]
             factorB = unitDict[quantity][unitB]
-            factorC = factorA/factorB
+            factorC = factorA / factorB
 
             # Unit A relative to unit B
             return factorC
@@ -90,5 +92,5 @@ def temp_shit():
 
 if (__name__ == "__main__"):
 
+    # Standalone execution
     pass
-
