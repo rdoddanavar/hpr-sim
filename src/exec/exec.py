@@ -1,19 +1,13 @@
-# System modules
-import sys      # System utilities
-import pdb      # Python debugger
-import logging  # Logging tools
-import argparse # CLI parsing
+# Builtin modules
+import sys # System utilities
 
 # Path modifications
-
-# Program modules
 sys.path.insert(0, "../preproc/")
 sys.path.insert(0, "../util/")
-
-import preproc_input
-
-# Pybind11 modules
 sys.path.insert(0, "../../build/src")
+
+# Program modules
+import preproc_input
 
 def exec(inputPath):
 
