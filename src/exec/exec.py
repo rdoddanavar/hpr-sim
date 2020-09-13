@@ -1,26 +1,21 @@
 # System modules
-import sys      # System utilities
-import pdb      # Python debugger
-import logging  # Logging tools
-import argparse # CLI parsing
+import sys # System utilities
+import pdb # Python debugger
 
 # Path modifications
-
-# Program modules
+sys.path.insert(0, "../../build/src")
 sys.path.insert(0, "../preproc/")
 sys.path.insert(0, "../util/")
 
+# Program modules
 import preproc_input
 
-# Pybind11 modules
-sys.path.insert(0, "../../build/src")
-
-def exec(inputPath):
+def exec(inputPath, configPath):
 
     # Parse CLI
 
     # Pre-processing
-    preproc_input.preproc_input(inputPath)
+    preproc_input.load(inputPath,configPath)
 
     # Sim execution 
 
@@ -28,5 +23,7 @@ def exec(inputPath):
 
 if __name__ == "__main__":
 
-    inputPath = sys.argv[1]
-    exec(inputPath)
+    inputPath  = sys.argv[1]
+    configPath = sys.argv[2]
+
+    exec(inputPath, configPath)

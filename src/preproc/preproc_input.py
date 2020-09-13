@@ -31,10 +31,8 @@ Dependencies:
 '''
 
 # System modules
-import sys     # System utilities
-import pdb     # Python debugger
-import logging # Logging tools
-import yaml    # YAML parser
+import sys # System utilities
+import pdb # Python debugger
 
 # Program modules
 import util_yaml
@@ -43,14 +41,13 @@ import util_unit
 # Pybind11 modules
 import input # Input classes 
 
-def preproc_input(inputPath):
+def load(inputPath,configPath):
 
     '''
     Populates input parameters via YAML input; converts and validates parameters.
     '''
 
     # YAML parse
-    configPath = "./config_param.yaml"
     configDict = util_yaml.load(configPath)
     inputDict  = util_yaml.load(inputPath)
 
@@ -86,7 +83,6 @@ def preproc_input(inputPath):
                 getattr(getattr(inp, group), param).value = value
 
     # Param conversion & validation 
-
     unitDict = util_unit.config()
 
     for group in inputDict.keys():
@@ -114,4 +110,4 @@ def preproc_input(inputPath):
 if __name__ == "__main__":
 
     # CLI argument
-    load_input(sys.argv[1])
+    pass
