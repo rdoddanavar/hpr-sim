@@ -2,13 +2,14 @@
 # Input file unit test
 ---
 sim:
-    session: test
-    modeRand: 
+    session:
+        value: test
+    modeRand:
         value: nominal
-        ass: hole
-    modeProc: 
+    modeProc:
         value: serial
-    numMC: 
-        value: ref(seedMaster)
-    seedMaster: 69
+    numMC:
+        value: 1
+    seedMaster:
+        value: 69
 ...

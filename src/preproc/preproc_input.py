@@ -51,6 +51,8 @@ def load(inputPath,configPath):
     configDict = util_yaml.load(configPath)
     inputDict  = util_yaml.load(inputPath)
 
+    # need to util_taml.process(inputDict)
+
     # Instantiate input object
     inp = input.Input()
 
@@ -97,15 +99,12 @@ def load(inputPath,configPath):
 
                 print("factor: ", factor)
 
-                cond = obj.checkValue()
+                cond = obj.check_value()
 
             elif (isinstance(obj, input.Name)):
-                cond = obj.checkPath()
-
+                cond = obj.check_path()
             
             print(param + ": ", cond)
-
-    pdb.set_trace()
 
 if __name__ == "__main__":
 

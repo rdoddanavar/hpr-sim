@@ -66,7 +66,7 @@ class Name
 
         // Data
         std::string value;
-        bool path;
+        bool isPath;
 
         // Function(s)
         bool check_path(); 
@@ -118,7 +118,7 @@ PYBIND11_MODULE(input, m)
         .def(py::init<>())
         .def("check_path", &Name::check_path)
         .def_readwrite("value", &Name::value)
-        .def_readwrite("path", &Name::path);
+        .def_readwrite("isPath", &Name::isPath);
 
     py::class_<Sim>(m, "Sim")
         .def(py::init<>())

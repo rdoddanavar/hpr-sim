@@ -43,7 +43,7 @@ def config():
     Parses YAML config file, returns dict of unit conversion factors. 
     '''
 
-    configPath = "../util/config_unit.yaml"
+    configPath = "../../config/config_unit.yaml"
     unitDict   = util_yaml.load(configPath)
     unitDict   = util_yaml.process(unitDict, unitDict)
 

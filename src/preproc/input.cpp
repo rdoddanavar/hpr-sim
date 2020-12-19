@@ -50,12 +50,12 @@ bool Param::check_value()
 }
 
 // "Name" class
-Name::Name() : value(""), path(false) {}
+Name::Name() : value(""), isPath(false) {}
 
 bool Name::check_path()
 {
 
-    if (path)
+    if (isPath)
     {
         std::ifstream file(value);
         return file.good();
