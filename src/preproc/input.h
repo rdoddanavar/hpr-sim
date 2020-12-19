@@ -33,8 +33,10 @@ Dependencies:
 #pragma once
 
 // System libraries
-#include <pybind11/pybind11.h>
 #include <string>
+
+// Project headers
+#include "pybind11/pybind11.h"
 
 namespace py = pybind11;
 

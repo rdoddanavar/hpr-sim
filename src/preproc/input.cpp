@@ -35,7 +35,7 @@ Dependencies:
 #include <fstream>
 #include <string>
 
-// Project libraries
+// Project headers
 #include "input.h"
 
 // "Param" class
