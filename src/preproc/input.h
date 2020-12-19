@@ -30,8 +30,7 @@ Dependencies:
     hpr-sim/src/preproc/input.cpp
 */
 
-#ifndef INPUT_H
-#define INPUT_H
+#pragma once
 
 // System libraries
 #include <pybind11/pybind11.h>
@@ -132,5 +131,3 @@ PYBIND11_MODULE(input, m)
         .def(py::init<>())
         .def_readwrite("sim", &Input::sim);
 }
-
-#endif 
