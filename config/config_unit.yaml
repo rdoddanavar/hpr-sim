@@ -32,17 +32,30 @@ default:
     volume: m^3
     velocity: m/s
     acceleration: m/s^2
+    mass: kg
+    density: kg/m^2
+    energy: J
+    force: N
+    moment: N*m
+    intertia: kg*m^2
+    pressure: Pa
+    angle: rad
+    angular-rate: rad/s
+    angular-aceleration: rad/s^2
 time: 
-    ms: 1.0e-3
+    ms: 1.0-3
     s: 1.0
     min: 60
-    h: 3600
+    h: 60*60
 length:
     mm: 1.0e-3
     cm: 1.0e-2
     m: 1.0
     km: 1.0e+3
-    in: 0.0254
+    in: 0.3048/12
     ft: 0.3048
-    mi: 1609.34
+    mi: 5280*0.3048
+temperature: # [factor, offset]
+    K: [1.0, 0.0]
+    C: [1.0, 273.15]
 ...

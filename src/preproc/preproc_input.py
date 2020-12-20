@@ -94,10 +94,9 @@ def load(inputPath,configPath):
 
             if (isinstance(obj, input.Param)):
 
-                factor     = util_unit.convert(obj.quantity, obj.unit)
-                obj.value *= factor
+                obj.value = util_unit.convert(obj.value, obj.quantity, obj.unit)
 
-                print("factor: ", factor)
+                print("value: ", obj.value)
 
                 cond = obj.check_value()
 

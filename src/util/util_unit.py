@@ -43,13 +43,13 @@ unitDict = None
 def config():
 
     '''
-    Parses YAML config file, returns dict of unit conversion factors.
+    Parses YAML config file, creates global dict of unit conversion factors.
 
     Input(s): <none>
     Outputs(s): <none>
     '''
 
-    global unitDict
+    global unitDict # Necessary for reassignment
 
     if (not unitDict):
 
@@ -60,15 +60,19 @@ def config():
 def convert(*args):
 
     '''
-    Provides conversion factor relative to default unit, or between two units.
+    Converts input relative to default unit, or between two units.
 
-    Input(s): unitDict, quantity, unitA, unitB (optional)
-    Output(s): factorC
+    Input(s): value, quantity, unitA, unitB (optional)
+    Output(s): value
     '''
 
-    value = args[0]
+    value    = args[0]
     quantity = args[1]
     unitA    = args[2]
+
+    # if (quantity == "temperature"):
+        # value = convert_temp(args)
+        # return value
 
     if (len(args) == 3):
         
@@ -76,9 +80,14 @@ def convert(*args):
             
             # Need error handling here for bad key
             factorA = unitDict[quantity][unitA]
+            
+            # Evaluate arithmetic operations, if necessary
+            factorA = eval(str(factorA))
 
-            # Unit A relative to default unit
-            return factorA 
+            value *= factorA
+
+            # Unit A converted to default unit
+            return value
 
     elif (len(args) == 4):
 
@@ -89,13 +98,21 @@ def convert(*args):
             # Need error handling here for bad key
             factorA = unitDict[quantity][unitA]
             factorB = unitDict[quantity][unitB]
+
+            # Evaluate arithmetic operations, if necessary
+            factorA = eval(str(factorA))
+            factorB = eval(str(factorB))
+
             factorC = factorA / factorB
+            value  *= factorC
 
-            # Unit A relative to unit B
-            return factorC
+            # Unit A converted to unit B
+            return value
 
-    # If unit is not specified or nondimensional 
-    return 1.0
+    else:
+        
+        # If unit is not specified or nondimensional 
+        return 1.0
 
 def temp_shit():
 
