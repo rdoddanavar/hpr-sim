@@ -48,7 +48,6 @@ def config():
 
         configPath = "../config/config_unit.yaml"
         unitDict   = util_yaml.load(configPath)
-        unitDict   = util_yaml.process(unitDict, unitDict)
 
 def convert(*args):
 

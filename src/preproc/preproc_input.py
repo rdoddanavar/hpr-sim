@@ -50,8 +50,7 @@ def load(inputPath,configPath):
     # YAML parse
     configDict = util_yaml.load(configPath)
     inputDict  = util_yaml.load(inputPath)
-
-    # need to util_taml.process(inputDict)
+    inputDict  = util_yaml.process(inputDict)
 
     # Instantiate input object
     inp = input.Input()
