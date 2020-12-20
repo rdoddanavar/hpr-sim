@@ -85,7 +85,7 @@ def load(inputPath,configPath):
                 getattr(getattr(inp, group), param).value = value
 
     # Param conversion & validation 
-    unitDict = util_unit.config()
+    util_unit.config()
 
     for group in inputDict.keys():
         for param in inputDict[group].keys():
@@ -94,7 +94,7 @@ def load(inputPath,configPath):
 
             if (isinstance(obj, input.Param)):
 
-                factor     = util_unit.convert(unitDict, obj.quantity, obj.unit)
+                factor     = util_unit.convert(obj.quantity, obj.unit)
                 obj.value *= factor
 
                 print("factor: ", factor)

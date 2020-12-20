@@ -34,28 +34,39 @@ import sys  # System utilities
 import pdb  # Python debugger
 import yaml # YAML parser
 
-# Program modules
+# Project modules
 import util_yaml
+
+# Module variables
+unitDict = None
 
 def config():
 
     '''
-    Parses YAML config file, returns dict of unit conversion factors. 
+    Parses YAML config file, returns dict of unit conversion factors.
+
+    Input(s): <none>
+    Outputs(s): <none>
     '''
 
-    configPath = "../../config/config_unit.yaml"
-    unitDict   = util_yaml.load(configPath)
-    unitDict   = util_yaml.process(unitDict, unitDict)
+    global unitDict
 
-    return unitDict
+    if (not unitDict):
+
+        configPath = "../config/config_unit.yaml"
+        unitDict   = util_yaml.load(configPath)
+        unitDict   = util_yaml.process(unitDict, unitDict)
 
 def convert(*args):
 
     '''
     Provides conversion factor relative to default unit, or between two units.
+
+    Input(s): unitDict, quantity, unitA, unitB (optional)
+    Output(s): factorC
     '''
 
-    unitDict = args[0]
+    value = args[0]
     quantity = args[1]
     unitA    = args[2]
 
