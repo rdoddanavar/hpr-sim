@@ -1,14 +1,7 @@
 # High Power Rocketry - Flight Simulation
-# GNU General Public License v3.0
+# MIT License
 # Copyright (C) 2019 Roshan Doddanavar
 # https://rdoddanavar.github.io
-# 
-# ██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
-# ██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
-# ███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
-# ██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
-# ██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
-# ╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
 # 
 # Path:
 #     hpr-sim/src/util/config_unit.yaml
@@ -43,7 +36,7 @@ default:
     angular-rate: rad/s
     angular-aceleration: rad/s^2
 time: 
-    ms: 1.0-3
+    ms: 1.0e-3
     s: 1.0
     min: 60
     h: 60*60
@@ -58,4 +51,6 @@ length:
 temperature: # [factor, offset]
     K: [1.0, 0.0]
     C: [1.0, 273.15]
+    R: [5/9, 0]
+    F: [5/9, -32*(5/9) + 273.15]
 ...

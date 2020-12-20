@@ -143,6 +143,7 @@ def math_eval(value):
     """
 
     # Allowed: arithmetic operators + whitespace + parentheses
+    # Could this be replaced with a try, catch?
     token = ['+', '-', '*', '/', "**", ' ', '(', ')']
     test  = value
 
