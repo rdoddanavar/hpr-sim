@@ -26,6 +26,7 @@ default:
     velocity: m/s
     acceleration: m/s^2
     mass: kg
+    mass-flow: kg/s
     density: kg/m^2
     inertia: kg*m^2
     force: N
@@ -124,16 +125,16 @@ energy:
     MJ: 1e6
     ft*lbf: 1.3558179483
 angle:
-    s: 1/60
-    m: 1/60
-    deg: 1.0
-    rad: 2*3.14159265359
+    s: 3.14159265359/180/(60*60)
+    m: 3.14159265359/180/60
+    deg: 3.14159265359/180
+    rad: 1.0
 angular-velocity:
-    deg/s: 1.0
-    rad/s: 2*3.14159265359
+    deg/s: 3.14159265359/180
+    rad/s: 1.0
 angular-acceleration:
-    deg/s^2: 1.0
-    rad/s^2: 2*3.14159265359
+    deg/s^2: 3.14159265359/180
+    rad/s^2: 1.0
 temperature: # [factor, offset]
     K: [1.0, 0.0]
     C: [1.0, 273.15]
