@@ -1,15 +1,8 @@
 '''
 High Power Rocketry - Flight Simulation
-GNU General Public License v3.0
-Copyright (C) 2019 Roshan Doddanavar
+MIT License
+Copyright (c) 2019 Roshan Doddanavar
 https://rdoddanavar.github.io
-
-██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
-██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
-███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
-██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
-██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
-╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
 
 Path:
     hpr-sim/src/util/util_unit.py
@@ -34,28 +27,38 @@ import sys  # System utilities
 import pdb  # Python debugger
 import yaml # YAML parser
 
-# Program modules
+# Project modules
 import util_yaml
+
+# Module variables
+unitDict = None
 
 def config():
 
     '''
-    Parses YAML config file, returns dict of unit conversion factors. 
+    Parses YAML config file, creates global dict of unit conversion factors.
+
+    Input(s): <none>
+    Outputs(s): <none>
     '''
 
-    configPath = "../../config/config_unit.yaml"
-    unitDict   = util_yaml.load(configPath)
-    unitDict   = util_yaml.process(unitDict, unitDict)
+    global unitDict # Necessary for reassignment
 
-    return unitDict
+    if (not unitDict):
+
+        configPath = "../config/config_unit.yaml"
+        unitDict   = util_yaml.load(configPath)
 
 def convert(*args):
 
     '''
-    Provides conversion factor relative to default unit, or between two units.
+    Converts input relative to default unit, or between two units.
+
+    Input(s): value, quantity, unitA, unitB (optional)
+    Output(s): value
     '''
 
-    unitDict = args[0]
+    value    = args[0]
     quantity = args[1]
     unitA    = args[2]
 
@@ -63,11 +66,18 @@ def convert(*args):
         
         if (quantity and unitA):
             
-            # Need error handling here for bad key
-            factorA = unitDict[quantity][unitA]
+            if (quantity == "temperature"):
+                value = convert_temp(value, unitA)
 
-            # Unit A relative to default unit
-            return factorA 
+            else:
+                
+                # Need error handling here for bad key
+                factorA = unitDict[quantity][unitA]
+                
+                # Evaluate arithmetic operations, if necessary
+                factorA = eval(str(factorA))
+
+                value *= factorA
 
     elif (len(args) == 4):
 
@@ -75,21 +85,58 @@ def convert(*args):
 
         if (quantity and unitA and unitB):
             
-            # Need error handling here for bad key
-            factorA = unitDict[quantity][unitA]
-            factorB = unitDict[quantity][unitB]
-            factorC = factorA / factorB
+            if (quantity == "temperature"):
+                value = convert_temp(value, unitA, unitB)
+            
+            else:
+                
+                # Need error handling here for bad key
+                factorA = unitDict[quantity][unitA]
+                factorB = unitDict[quantity][unitB]
 
-            # Unit A relative to unit B
-            return factorC
+                # Evaluate arithmetic operations, if necessary
+                factorA = eval(str(factorA))
+                factorB = eval(str(factorB))
 
-    # If unit is not specified or nondimensional 
-    return 1.0
+                factorC = factorA/factorB
+                value  *= factorC
+        
+    # Original value returned if unit is not specified or nondimensional 
+    return value
 
-def temp_shit():
+def convert_temp(*args):
 
-    # THINK about adding a temp function. or storing function handles for different conversions in the YML? who knows
-    pass
+    '''
+    Converts temperature relative to default unit (K), or between two units.
+
+    Input(s): value, unitA, unitB (optional)
+    Output(s): value
+    '''
+
+    value = args[0]
+    unitA = args[1]
+
+    factorA = unitDict["temperature"][unitA][0]
+    offsetA = unitDict["temperature"][unitA][1]
+
+    factorA = eval(str(factorA))
+    offsetA = eval(str(offsetA))
+    
+    value = value*factorA + offsetA
+
+    if (len(args) == 3):
+
+        unitB = args[2]
+
+        factorB = unitDict["temperature"][unitB][0]
+        offsetB = unitDict["temperature"][unitB][1]
+
+        factorB = eval(str(factorB))
+        offsetB = eval(str(offsetB))
+
+        value = (value - offsetB)/factorB
+    
+    return value
 
 if __name__ == "__main__":
 

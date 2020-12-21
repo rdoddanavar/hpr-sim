@@ -141,8 +141,9 @@ def math_eval(value):
     """
     Evaluates arithmetic string expressions for a limited set of operators. 
     """
-
+    
     # Allowed: arithmetic operators + whitespace + parentheses
+    # Could this be replaced with a try, catch?
     token = ['+', '-', '*', '/', "**", ' ', '(', ')']
     test  = value
 
@@ -150,7 +151,7 @@ def math_eval(value):
         test = test.replace(char, "")
 
     if (test.isnumeric()):
-
+        
         # Evaluate original expression if valid
         return eval(value)
 

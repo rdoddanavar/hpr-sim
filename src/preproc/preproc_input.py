@@ -50,8 +50,7 @@ def load(inputPath,configPath):
     # YAML parse
     configDict = util_yaml.load(configPath)
     inputDict  = util_yaml.load(inputPath)
-
-    # need to util_taml.process(inputDict)
+    inputDict  = util_yaml.process(inputDict)
 
     # Instantiate input object
     inp = input.Input()
@@ -85,7 +84,7 @@ def load(inputPath,configPath):
                 getattr(getattr(inp, group), param).value = value
 
     # Param conversion & validation 
-    unitDict = util_unit.config()
+    util_unit.config()
 
     for group in inputDict.keys():
         for param in inputDict[group].keys():
@@ -94,10 +93,9 @@ def load(inputPath,configPath):
 
             if (isinstance(obj, input.Param)):
 
-                factor     = util_unit.convert(unitDict, obj.quantity, obj.unit)
-                obj.value *= factor
+                obj.value = util_unit.convert(obj.value, obj.quantity, obj.unit)
 
-                print("factor: ", factor)
+                print("value: ", obj.value)
 
                 cond = obj.check_value()
 

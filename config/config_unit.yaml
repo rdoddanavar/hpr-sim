@@ -1,14 +1,7 @@
 # High Power Rocketry - Flight Simulation
-# GNU General Public License v3.0
+# MIT License
 # Copyright (C) 2019 Roshan Doddanavar
 # https://rdoddanavar.github.io
-# 
-# ██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
-# ██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
-# ███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
-# ██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
-# ██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
-# ╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
 # 
 # Path:
 #     hpr-sim/src/util/config_unit.yaml
@@ -32,17 +25,118 @@ default:
     volume: m^3
     velocity: m/s
     acceleration: m/s^2
+    mass: kg
+    density: kg/m^2
+    inertia: kg*m^2
+    force: N
+    moment: N*m
+    pressure: Pa
+    energy: J
+    angle: rad
+    angular-veclocity: rad/s
+    angular-aceleration: rad/s^2
+    temperature: K
 time: 
     ms: 1.0e-3
     s: 1.0
     min: 60
-    h: 3600
+    h: 60*60
 length:
     mm: 1.0e-3
     cm: 1.0e-2
     m: 1.0
     km: 1.0e+3
-    in: 0.0254
+    in: 0.3048/12
     ft: 0.3048
-    mi: 1609.34
+    kft: 1e3*0.3048
+    mi: 5280*0.3048
+    nmi: 1852
+area:
+    mm^2: (1.0e-3)**2
+    cm^2: (1.0e-2)**2
+    m^2: 1.0
+    km^2: (1e3)**2
+    in^2: (0.3048/12)**2
+    ft^2: 0.3048**2
+    mi^2: (5280*0.3048)**2
+volume:
+    mm^3: (1.0e-3)**3
+    cm^3: (1.0e-2)**3
+    m^3: 1.0
+    in^3: (0.3048/12)**3
+    ft^3: 0.3048**3
+velocity:
+    m/s: 1.0
+    km/s: 1e3
+    km/h: 1e3/(60*60)
+    kn: 1.852*1e3/(60*60)
+    ft/s: 0.3048
+    mi/h: 5280*0.3048/(60*60)
+acceleration:
+    m/s^2: 1.0
+    G: 9.80665
+    ft/sec^2: 0.3048
+mass:
+    g: 1e-3
+    kg: 1.0
+    lbm: 0.45359237
+    slug: 32.1740486*0.45359237
+mass-flow:
+    g/s: 1e-3
+    kg/s: 1.0
+    lbm/s: 0.45359237
+    slug/s: 32.1740486*0.45359237
+density:
+    kg/m^3: 1.0
+    g/cm^3: 1e3
+    lbm/in^3: 0.45359237/(0.3048/12)**3
+    lbm/ft^3: 0.45359237/0.3048**3
+    slug/ft^3: 32.1740486*0.45359237/0.3048**3
+inertia:
+    kg*m^2: 1.0
+    lbm*in^2: 0.45359237*(0.3048/12)**2
+    lbm*ft^2: 0.45359237*0.3048**2
+    slug*ft^2: 32.1740486*0.45359237*0.3048**2
+force:
+    N: 1.0
+    kN: 1e3
+    lbf: 4.4482216
+    kip: 1e3*4.4482216
+moment:
+    N*m: 1.0
+    lbf*in: 4.4482216*0.3048/12
+    lbf*ft: 4.4482216*0.3048
+pressure:
+    Pa: 1.0
+    kPa: 1e3
+    MPa: 1e6
+    mbar: 1e2
+    bar: 1e5
+    atm: 101325
+    mmHg: 133.322387415
+    inHg: 3386.389 
+    psi: 6894.757293178
+    psf: 6894.757293178/12**2
+    kpsi: 1e3*6894.757293178
+energy:
+    J: 1.0
+    kJ: 1e3
+    MJ: 1e6
+    ft*lbf: 1.3558179483
+angle:
+    s: 1/60
+    m: 1/60
+    deg: 1.0
+    rad: 2*3.14159265359
+angular-velocity:
+    deg/s: 1.0
+    rad/s: 2*3.14159265359
+angular-acceleration:
+    deg/s^2: 1.0
+    rad/s^2: 2*3.14159265359
+temperature: # [factor, offset]
+    K: [1.0, 0.0]
+    C: [1.0, 273.15]
+    R: [5/9, 0]
+    F: [5/9, -32*(5/9) + 273.15]
 ...
