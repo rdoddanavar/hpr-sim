@@ -106,6 +106,13 @@ def convert(*args):
 
 def convert_temp(*args):
 
+    '''
+    Converts temperature relative to default unit (K), or between two units.
+
+    Input(s): value, unitA, unitB (optional)
+    Output(s): value
+    '''
+
     value = args[0]
     unitA = args[1]
 

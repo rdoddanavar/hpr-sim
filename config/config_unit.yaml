@@ -27,14 +27,15 @@ default:
     acceleration: m/s^2
     mass: kg
     density: kg/m^2
-    energy: J
+    inertia: kg*m^2
     force: N
     moment: N*m
-    intertia: kg*m^2
     pressure: Pa
+    energy: J
     angle: rad
-    angular-rate: rad/s
+    angular-veclocity: rad/s
     angular-aceleration: rad/s^2
+    temperature: K
 time: 
     ms: 1.0e-3
     s: 1.0
@@ -47,7 +48,56 @@ length:
     km: 1.0e+3
     in: 0.3048/12
     ft: 0.3048
+    kft: 1e3*0.3048
     mi: 5280*0.3048
+    nmi: 1852
+area:
+    mm^2: (1.0e-3)**2
+    cm^2: (1.0e-2)**2
+    m^2: 1.0
+    in^2: (0.3048/12)**2
+    ft^2: 0.3048**2
+    mi^2: (5280*0.3048)**2
+volume:
+    mm^3: (1.0e-3)**3
+    cm^3: (1.0e-2)**3
+    m^3: 1.0
+    in^3: (0.3048/12)**3
+    ft^3: 0.3048**3
+velocity:
+    m/s: 1.0
+    km/s: 1e3
+    km/h: 1e3/(60*60)
+    kn: 1.852 * 1e3/(60*60)
+    ft/s: 0.3048
+    mi/h: 5280*0.3048/(60*60)
+acceleration:
+    m/s^2: 1.0
+    G: 9.80665
+    ft/sec^2: 0.3048
+mass:
+    g: 1e3
+    kg: 1.0
+    lbm:
+    slug:
+density:
+inertia:
+    kg*m^2:
+    lbm*in^2:
+    slug*ft^2:
+force:
+    N: 1.0
+    kN: 1e3
+    lbf: 4.4482216
+    kip: 1e3*4.4482216
+moment:
+pressure:
+energy:
+    J:
+    ft*lbf:
+angle:
+angular-velocity:
+angular-acceleration:
 temperature: # [factor, offset]
     K: [1.0, 0.0]
     C: [1.0, 273.15]
