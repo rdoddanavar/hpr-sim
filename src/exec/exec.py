@@ -1,13 +1,16 @@
 # System modules
 import sys # System utilities
 import pdb # Python debugger
+from pathlib import Path
 
 # Path modifications
-sys.path.insert(0, "../../build/src")
-sys.path.insert(0, "../preproc/")
-sys.path.insert(0, "../util/")
+paths = ["../../build/src", "../preproc", "../util"]
 
-# Program modules
+for item in paths:
+    addPath = Path(__file__).parent / item
+    sys.path.append(str(addPath.resolve()))
+
+# Project modules
 import preproc_input
 
 def exec(inputPath, configPath):
@@ -24,6 +27,7 @@ def exec(inputPath, configPath):
 if __name__ == "__main__":
 
     inputPath  = sys.argv[1]
-    configPath = sys.argv[2]
+    configPath = Path(__file__).parent / "../../config/config_param.yaml"
+    configPath = str(configPath.resolve())
 
     exec(inputPath, configPath)

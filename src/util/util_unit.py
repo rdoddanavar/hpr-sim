@@ -23,9 +23,7 @@ Dependencies:
 '''
 
 # System modules
-import sys  # System utilities
-import pdb  # Python debugger
-import yaml # YAML parser
+from pathlib import Path
 
 # Project modules
 import util_yaml
@@ -46,7 +44,8 @@ def config():
 
     if (not unitDict):
 
-        configPath = "../config/config_unit.yaml"
+        configPath = Path(__file__).parent / "../../config/config_unit.yaml"
+        configPath = str(configPath.resolve())
         unitDict   = util_yaml.load(configPath)
 
 def convert(*args):
@@ -113,11 +112,12 @@ def convert_temp(*args):
     Output(s): value
     '''
 
-    value = args[0]
-    unitA = args[1]
+    value    = args[0]
+    quantity = "temperature"
+    unitA    = args[1]
 
-    factorA = unitDict["temperature"][unitA][0]
-    offsetA = unitDict["temperature"][unitA][1]
+    factorA = unitDict[quantity][unitA][0]
+    offsetA = unitDict[quantity][unitA][1]
 
     factorA = eval(str(factorA))
     offsetA = eval(str(offsetA))
@@ -128,8 +128,8 @@ def convert_temp(*args):
 
         unitB = args[2]
 
-        factorB = unitDict["temperature"][unitB][0]
-        offsetB = unitDict["temperature"][unitB][1]
+        factorB = unitDict[quantity][unitB][0]
+        offsetB = unitDict[quantity][unitB][1]
 
         factorB = eval(str(factorB))
         offsetB = eval(str(offsetB))
