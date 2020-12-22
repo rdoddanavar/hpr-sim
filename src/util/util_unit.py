@@ -23,9 +23,7 @@ Dependencies:
 '''
 
 # System modules
-import sys  # System utilities
-import pdb  # Python debugger
-import yaml # YAML parser
+from pathlib import Path
 
 # Project modules
 import util_yaml
@@ -46,7 +44,8 @@ def config():
 
     if (not unitDict):
 
-        configPath = "../config/config_unit.yaml"
+        configPath = Path(__file__).parent / "../../config/config_unit.yaml"
+        configPath = str(configPath.resolve())
         unitDict   = util_yaml.load(configPath)
 
 def convert(*args):
