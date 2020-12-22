@@ -112,11 +112,12 @@ def convert_temp(*args):
     Output(s): value
     '''
 
-    value = args[0]
-    unitA = args[1]
+    value    = args[0]
+    quantity = "temperature"
+    unitA    = args[1]
 
-    factorA = unitDict["temperature"][unitA][0]
-    offsetA = unitDict["temperature"][unitA][1]
+    factorA = unitDict[quantity][unitA][0]
+    offsetA = unitDict[quantity][unitA][1]
 
     factorA = eval(str(factorA))
     offsetA = eval(str(offsetA))
@@ -127,8 +128,8 @@ def convert_temp(*args):
 
         unitB = args[2]
 
-        factorB = unitDict["temperature"][unitB][0]
-        offsetB = unitDict["temperature"][unitB][1]
+        factorB = unitDict[quantity][unitB][0]
+        offsetB = unitDict[quantity][unitB][1]
 
         factorB = eval(str(factorB))
         offsetB = eval(str(offsetB))

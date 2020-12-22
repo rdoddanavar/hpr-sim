@@ -1,15 +1,8 @@
 '''
 High Power Rocketry - Flight Simulation
-GNU General Public License v3.0
+MIT License
 Copyright (C) 2019 Roshan Doddanavar
 https://rdoddanavar.github.io
-
-██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
-██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
-███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
-██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
-██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
-╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
 
 Path:
     hpr-sim/src/preproc/preproc_input.py
@@ -34,7 +27,7 @@ Dependencies:
 import sys # System utilities
 import pdb # Python debugger
 
-# Program modules
+# Project modules
 import util_yaml
 import util_unit
 

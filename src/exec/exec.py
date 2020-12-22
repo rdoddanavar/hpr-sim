@@ -10,7 +10,7 @@ for item in paths:
     addPath = Path(__file__).parent / item
     sys.path.append(str(addPath.resolve()))
 
-# Program modules
+# Project modules
 import preproc_input
 
 def exec(inputPath, configPath):
