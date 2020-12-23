@@ -42,7 +42,7 @@ def config():
 
     global unitDict # Necessary for reassignment
 
-    if (not unitDict):
+    if not unitDict:
 
         configPath = Path(__file__).parent / "../../config/config_unit.yaml"
         configPath = str(configPath.resolve())
@@ -61,11 +61,11 @@ def convert(*args):
     quantity = args[1]
     unitA    = args[2]
 
-    if (len(args) == 3):
+    if len(args) == 3:
         
-        if (quantity and unitA):
+        if quantity and unitA:
             
-            if (quantity == "temperature"):
+            if quantity == "temperature":
                 value = convert_temp(value, unitA)
 
             else:
@@ -74,17 +74,17 @@ def convert(*args):
                 factorA = unitDict[quantity][unitA]
                 
                 # Evaluate arithmetic operations, if necessary
-                factorA = eval(str(factorA))
+                factorA = util_yaml.math_eval(str(factorA))
 
                 value *= factorA
 
-    elif (len(args) == 4):
+    elif len(args) == 4:
 
         unitB = args[3]
 
         if (quantity and unitA and unitB):
             
-            if (quantity == "temperature"):
+            if quantity == "temperature":
                 value = convert_temp(value, unitA, unitB)
             
             else:
@@ -94,8 +94,8 @@ def convert(*args):
                 factorB = unitDict[quantity][unitB]
 
                 # Evaluate arithmetic operations, if necessary
-                factorA = eval(str(factorA))
-                factorB = eval(str(factorB))
+                factorA = util_yaml.math_eval(str(factorA))
+                factorB = util_yaml.math_eval(str(factorB))
 
                 factorC = factorA/factorB
                 value  *= factorC
@@ -119,20 +119,20 @@ def convert_temp(*args):
     factorA = unitDict[quantity][unitA][0]
     offsetA = unitDict[quantity][unitA][1]
 
-    factorA = eval(str(factorA))
-    offsetA = eval(str(offsetA))
+    factorA = util_yaml.math_eval(str(factorA))
+    offsetA = util_yaml.math_eval(str(offsetA))
     
     value = value*factorA + offsetA
 
-    if (len(args) == 3):
+    if len(args) == 3:
 
         unitB = args[2]
 
         factorB = unitDict[quantity][unitB][0]
         offsetB = unitDict[quantity][unitB][1]
 
-        factorB = eval(str(factorB))
-        offsetB = eval(str(offsetB))
+        factorB = util_yaml.math_eval(str(factorB))
+        offsetB = util_yaml.math_eval(str(offsetB))
 
         value = (value - offsetB)/factorB
     

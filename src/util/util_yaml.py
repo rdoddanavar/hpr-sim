@@ -52,12 +52,12 @@ def process(yamlDict, subDict=None, path=[], first=True):
     Processes pyYAML output; resolves references and evaluates arithmetic expressions. 
     """
 
-    if (subDict is None):
+    if subDict is None:
         subDict = yamlDict.copy()
 
     for key, value in subDict.items():
 
-        if (first):
+        if first:
 
             first = False
             path  = path + [key]
@@ -65,12 +65,12 @@ def process(yamlDict, subDict=None, path=[], first=True):
         else: 
             path[-1] = key
 
-        if (isinstance(value, dict)):
+        if isinstance(value, dict):
             yamlDict = process(yamlDict, value, path)
 
-        elif (isinstance(value, str)):
+        elif isinstance(value, str):
 
-            while ("ref" in value):
+            while "ref" in value:
 
                 # Parse value for target
                 idxA   = value.find("ref(") + 4
@@ -83,7 +83,7 @@ def process(yamlDict, subDict=None, path=[], first=True):
                 target = path[:nRel] + target
 
                 # Error handling: circular reference
-                if (target == path):
+                if target == path:
                     raise ValueError("CIRCULAR REFERENCE",value)
 
                 # Error handling: invalid reference
@@ -145,23 +145,20 @@ def math_eval(value):
     Output(s): value
     """
     
-    # Allowed: decimals + arithmetic operators + whitespace + parentheses
+    # Allowed: decimals, arithmetic operators, scientific notation, whitespace, parentheses
     # Prevents expressions from polluting workspaces
-    token = ['.', '+', '-', '*', '/', "**", '%', '//', ' ', '(', ')']
+    token = ['.', '+', '-', '*', '/', "**", '%', '//', 'e', 'E', ' ', '(', ')']
     test  = value
 
     for char in token:
         test = test.replace(char, "")
 
-    if (test.isnumeric()):
-        
-        # Evaluate original expression if valid
-        return eval(value)
-
+    if test.isnumeric():
+        return eval(value) # Evaluate original expression if valid
     else:
         return value
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
 
     # Standalone execution
     pass

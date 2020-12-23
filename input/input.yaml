@@ -9,7 +9,7 @@ sim:
     modeProc:
         value: serial
     numMC:
-        value: 5*(2**2)
+        value: 1e3
     seedMaster:
         value: ref(sim.numMC.value)*.2
 ...
