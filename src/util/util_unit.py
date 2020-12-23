@@ -36,7 +36,7 @@ def config():
     '''
     Parses YAML config file, creates global dict of unit conversion factors.
 
-    Input(s): <none>
+    Input(s): <none> \n
     Outputs(s): <none>
     '''
 
@@ -53,8 +53,8 @@ def convert(*args):
     '''
     Converts input relative to default unit, or between two units.
 
-    Input(s): value, quantity, unitA, unitB (optional)
-    Output(s): value
+    Input(s): value (float), quantity (str), unitA (str), unitB (str) [opt.] \n
+    Output(s): value (float)
     '''
 
     value    = args[0]
@@ -108,8 +108,8 @@ def convert_temp(*args):
     '''
     Converts temperature relative to default unit (K), or between two units.
 
-    Input(s): value, unitA, unitB (optional)
-    Output(s): value
+    Input(s): value (float), unitA (str), unitB (str) [opt.] \n
+    Output(s): value (float)
     '''
 
     value    = args[0]

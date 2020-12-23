@@ -39,6 +39,9 @@ def load(filePath):
 
     """
     Parses YAML document using filepath, returns dict.
+
+    Input(s): filePath (str) \n
+    Output(s): yamlDict (dict)
     """
 
     stream   = open(filePath, 'r')
@@ -49,7 +52,10 @@ def load(filePath):
 def process(yamlDict, subDict=None, path=[], first=True):
 
     """
-    Processes pyYAML output; resolves references and evaluates arithmetic expressions. 
+    Processes pyYAML output; resolves references and evaluates arithmetic expressions.
+
+    Input(s): yamlDict (dict), subDict=None (dict), path=[] (str), first=True (bool) \n
+    Output(s): yamlDict (dict)
     """
 
     if subDict is None:
@@ -105,7 +111,10 @@ def process(yamlDict, subDict=None, path=[], first=True):
 def get_value(nested, path):
 
     '''
-    Fetches value in arbitrarily nested dict given list of keys. 
+    Fetches value in arbitrarily nested dict given list of keys.
+
+    Input(s): nested (dict), path (str) \n
+    Output(s): value (str)
     '''
 
     value = nested
@@ -119,6 +128,9 @@ def set_value(nested, value, path):
 
     '''
     Sets value in arbitrarily nested dict given list of keys.
+
+    Input(s): nested (dict), value (str), path (str) \n
+    Outputs(s): nested (dict)
     '''
 
     sub = nested[path[0]]
@@ -141,12 +153,12 @@ def math_eval(value):
     """
     Evaluates arithmetic string expressions for a limited set of operators, returns float.
 
-    Inputs(s): value
-    Output(s): value
+    Inputs(s): value (str) \n
+    Output(s): value (float)
     """
     
     # Allowed: decimals, arithmetic operators, scientific notation, whitespace, parentheses
-    # Prevents expressions from polluting workspaces
+    # Prevents expressions from polluting workspace
     token = ['.', '+', '-', '*', '/', "**", '%', '//', 'e', 'E', ' ', '(', ')']
     test  = value
 

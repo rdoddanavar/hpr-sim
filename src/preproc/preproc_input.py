@@ -34,10 +34,13 @@ import util_unit
 # Pybind11 modules
 import input # Input classes 
 
-def load(inputPath,configPath):
+def load(inputPath, configPath):
 
     '''
     Populates input parameters via YAML input; converts and validates parameters.
+
+    Input(s): inputPath (str), configPath (str) \n
+    Output(s): <none>
     '''
 
     # YAML parse
