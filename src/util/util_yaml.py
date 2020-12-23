@@ -139,12 +139,15 @@ def set_value(nested, value, path):
 def math_eval(value):
 
     """
-    Evaluates arithmetic string expressions for a limited set of operators. 
+    Evaluates arithmetic string expressions for a limited set of operators, returns float.
+
+    Inputs(s): value
+    Output(s): value
     """
     
-    # Allowed: arithmetic operators + whitespace + parentheses
-    # Could this be replaced with a try, catch?
-    token = ['+', '-', '*', '/', "**", ' ', '(', ')']
+    # Allowed: decimals + arithmetic operators + whitespace + parentheses
+    # Prevents expressions from polluting workspaces
+    token = ['.', '+', '-', '*', '/', "**", '%', '//', ' ', '(', ')']
     test  = value
 
     for char in token:
