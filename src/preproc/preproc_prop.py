@@ -25,7 +25,15 @@ import sys
 import pdb
 from pathlib import Path
 import numpy as np
+from scipy import integrate
 import matplotlib.pyplot as plt
+
+addPath = Path(__file__).parent / "../util"
+sys.path.append(str(addPath.resolve()))
+
+# Project modules
+import util_unit
+util_unit.config()
 
 def load(propPath):
     
@@ -55,11 +63,11 @@ def load_eng(propPath):
             if len(words) > 2:
                 
                 # Process info line:
-                # motor name, diameter [mm], length [mm], delays, prop. weight [kg], tot. weight [kg], manufacturer
-                diameter    = float(words[1]) 
-                length      = float(words[2])
-                propWeight  = float(words[4])
-                totalWeight = float(words[5])
+                # motor name, diameter [mm], length [mm], delays, prop. mass [kg], tot. mass [kg], manufacturer
+                diameter  = float(words[1]) 
+                length    = float(words[2])
+                propMass  = float(words[4])
+                totalMass = float(words[5])
 
             elif len(words) == 2: 
                 
@@ -68,8 +76,25 @@ def load_eng(propPath):
                 time   = np.append(time,   float(words[0]))
                 thrust = np.append(thrust, float(words[1]))
 
-    plt.plot(time, thrust)
-    plt.show()
+    # Convert units
+    diameter = util_unit.convert(diameter, "length", "mm")
+    length   = util_unit.convert(length,   "length", "mm")
+
+    # Generate mass curve
+    thrustNorm = thrust / thrust.max()
+    alpha      = propMass / np.trapz(thrustNorm, time) # Scaling factor
+    massFlow   = alpha * thrustNorm
+    mass       = totalMass - integrate.cumtrapz(massFlow, time)
+    mass       = np.insert(mass, 0, totalMass) # t=0 mass @ totalMass
+
+    #-----------------------------------------------------#
+    fig, ax = plt.subplots()
+    ax.plot(time, thrust, label="Thrust [N]")
+    ax.plot(time, mass*1e3, label="Motor Mass [g]")
+    ax.set_xlabel("Time [sec]")
+    ax.legend()
+    fig.show()
+    pdb.set_trace()
 
 def load_rse(propPath):
     pass
