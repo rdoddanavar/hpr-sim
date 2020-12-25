@@ -26,6 +26,7 @@ import pdb
 from pathlib import Path
 import numpy as np
 from scipy import integrate
+import xml.etree.ElementTree as ET
 import matplotlib.pyplot as plt
 
 addPath = Path(__file__).parent / "../util"
@@ -33,7 +34,7 @@ sys.path.append(str(addPath.resolve()))
 
 # Project modules
 import util_unit
-util_unit.config()
+util_unit.config() # remove later when 
 
 def load(propPath):
     
@@ -48,7 +49,7 @@ def load(propPath):
 
 def load_eng(propPath):
     
-    # Initialize assumed (0,0) point
+    # Initialize arrays; implicit (0,0) point must be created
     time   = np.array([0])
     thrust = np.array([0])
 
@@ -73,12 +74,12 @@ def load_eng(propPath):
                 
                 # Process thrust data lines:
                 # time [sec], thrust [N]
-                time   = np.append(time,   float(words[0]))
-                thrust = np.append(thrust, float(words[1]))
+                time   = np.append(   time, float(words[0]) )
+                thrust = np.append( thrust, float(words[1]) )
 
     # Convert units
-    diameter = util_unit.convert(diameter, "length", "mm")
-    length   = util_unit.convert(length,   "length", "mm")
+    diameter = util_unit.convert( diameter, "length", "mm" )
+    length   = util_unit.convert(   length, "length", "mm" )
 
     # Generate mass curve
     thrustNorm = thrust / thrust.max()
@@ -87,17 +88,39 @@ def load_eng(propPath):
     mass       = totalMass - integrate.cumtrapz(massFlow, time)
     mass       = np.insert(mass, 0, totalMass) # t=0 mass @ totalMass
 
-    #-----------------------------------------------------#
-    fig, ax = plt.subplots()
-    ax.plot(time, thrust, label="Thrust [N]")
-    ax.plot(time, mass*1e3, label="Motor Mass [g]")
-    ax.set_xlabel("Time [sec]")
-    ax.legend()
-    fig.show()
-    pdb.set_trace()
-
 def load_rse(propPath):
-    pass
+    
+    tree = ET.parse(propPath)
+    root = tree.getroot()
+
+    engine    = root[0][0]
+    diameter  = float(engine.attrib["dia"])
+    length    = float(engine.attrib["len"])
+    propMass  = float(engine.attrib["propWt"])
+    totalMass = float(engine.attrib["initWt"])
+
+    # Initialize arrays; (0,0) point included in *.rse file
+    time   = np.array([])
+    thrust = np.array([])
+    mass   = np.array([])
+
+    engineData = engine[1]
+
+    for point in engineData:
+
+        time   = np.append(time,   float(point.attrib['t']))
+        thrust = np.append(thrust, float(point.attrib['f']))
+        mass   = np.append(mass,   float(point.attrib['m']))
+
+    # Convert units
+    diameter  = util_unit.convert(  diameter, "length", "mm" )
+    length    = util_unit.convert(    length, "length", "mm" )
+    propMass  = util_unit.convert(  propMass,   "mass",  "g" ) # *.rse file gives grams
+    totalMass = util_unit.convert( totalMass,   "mass",  "g" ) # " "
+    mass      = util_unit.convert(      mass,   "mass",  "g" ) # " "
+
+    # Mass curve should reflect overall engine mass; *.rse file gives propellant mass only
+    mass = totalMass - (propMass - mass)
 
 if __name__ == "__main__":
 
