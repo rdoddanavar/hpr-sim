@@ -1,15 +1,8 @@
 /*
 High Power Rocketry - Flight Simulation
-GNU General Public License v3.0
-Copyright (C) 2019 Roshan Doddanavar
+MIT License
+Copyright (c) 2019 Roshan Doddanavar
 https://rdoddanavar.github.io
-
-██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
-██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
-███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
-██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
-██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
-╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
 
 Path:
     hpr-sim/src/preproc/input.h

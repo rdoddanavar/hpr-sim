@@ -2,14 +2,19 @@
 
 // System libraries
 
-// Project libraries
+// Project headers
 #include "model.h"
 
 // Model Class
 
+Model::Model()
+{
+    ;
+}
+
 void Model::initialize()
 {
-    // Configure dep models?
+    ; // set stateInit; set depModels in contructor
 }
 
 void Model::reset()
@@ -19,15 +24,13 @@ void Model::reset()
 
 void Model::update()
 {
-    ; // To be overridden in dervied classes
+    ; // To be overridden in derived classes
 }
 
 void Model::update_deps()
 {
 
-    /*
-    Iterates over model dependencies, updates internal states 
-    */
+    // Iterates over model dependencies, updates internal states 
 
     for (auto dep : depModels)
     {

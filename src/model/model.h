@@ -1,5 +1,4 @@
-#ifndef MODEL_H
-#define MODEL_H
+#pragma once
 
 // System libraries
 #include <string>
@@ -16,12 +15,25 @@ class Model
         std::map<std::string, float> stateInit;
 
         // Function(s)
-        void initialize();
+        virtual void initialize();
         void reset();
-        void update();
+        virtual void update();
         void update_deps();
 
         // Constructor(s)
+        Model();
 };
 
-#endif
+class Engine : public Model
+{
+    public:
+
+        // Data
+
+        // Function(s)
+        void initialize() override;
+        void update() override;
+
+        // Constructor(s)
+        Engine();
+};
