@@ -12,5 +12,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON) # for shared libs; delete in future if u
 # Source subdirectories
 
 add_subdirectory(lib/pybind11)
-#add_subdirectory(lib/eigen)
+add_subdirectory(lib/gsl)
 add_subdirectory(src)
+
+# lib/eigen is header-only, does not need to be a compilation target
