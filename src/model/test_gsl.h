@@ -8,9 +8,11 @@
 
 namespace py = pybind11;
 
+float interp1();
+
 // Binding code
 
-PYBIND11_MODULE(input, m)
+PYBIND11_MODULE(test_gsl, m)
 {
     m.doc() = "GNU GSL test"; // Optional module docstring
 
