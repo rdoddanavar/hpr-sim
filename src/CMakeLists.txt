@@ -12,4 +12,5 @@ set(HDR model/test_gsl.h)
 
 pybind11_add_module(test_gsl MODULE ${SRC} ${HDR})
 
-target_include_directories(test_gsl PUBLIC "${CMAKE_SOURCE_DIR}/build/lib/gsl")
+# Expose all modules to library headers
+include_directories("${CMAKE_SOURCE_DIR}/lib")

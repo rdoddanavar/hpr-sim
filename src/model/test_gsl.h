@@ -4,7 +4,7 @@
 
 // Project headers
 #include "pybind11/pybind11.h"
-#include "gsl/gsl_interp.h"
+#include "gsl/interpolation/gsl_interp.h"
 
 namespace py = pybind11;
 
