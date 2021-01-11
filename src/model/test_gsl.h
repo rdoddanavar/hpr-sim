@@ -8,7 +8,7 @@
 
 namespace py = pybind11;
 
-float interp1();
+float interp1(double xq);
 
 // Binding code
 
