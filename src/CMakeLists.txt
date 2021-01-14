@@ -1,11 +1,11 @@
-# pybind 11 modules
+## PYBIND11 MODULES
 
 set(SRC preproc/input.cpp)
 set(HDR preproc/input.h)
 
 pybind11_add_module(input MODULE ${SRC} ${HDR})
 
-# GNU GSL test
+## GNU GSL TEST
 
 set(SRC model/test_gsl.cpp)
 set(HDR model/test_gsl.h)
@@ -16,3 +16,9 @@ target_link_libraries(test_gsl PUBLIC gsl)
 
 # Expose all modules to library headers
 include_directories("${CMAKE_SOURCE_DIR}/lib")
+
+# Group modules for convenience
+add_custom_target(sim)
+add_dependencies(sim input
+                     test_gsl
+                     )
