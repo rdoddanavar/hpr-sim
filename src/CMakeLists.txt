@@ -1,11 +1,11 @@
-## PYBIND11 MODULES
+# PYBIND11 MODULES
 
 set(SRC preproc/input.cpp)
 set(HDR preproc/input.h)
 
 pybind11_add_module(input MODULE ${SRC} ${HDR})
 
-## GNU GSL TEST
+# GNU GSL TEST
 
 set(SRC model/test_gsl.cpp)
 set(HDR model/test_gsl.h)
