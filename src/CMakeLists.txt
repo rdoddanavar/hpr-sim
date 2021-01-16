@@ -16,9 +16,3 @@ target_link_libraries(test_gsl PUBLIC gsl)
 
 # Expose all modules to library headers
 include_directories("${CMAKE_SOURCE_DIR}/lib")
-
-# Group modules for convenience
-add_custom_target(sim)
-add_dependencies(sim input
-                     test_gsl
-                     )
