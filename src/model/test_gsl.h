@@ -4,10 +4,10 @@
 
 // Project headers
 #include "pybind11/pybind11.h"
-#include "gsl/interpolation/gsl_interp.h"
 
 namespace py = pybind11;
 
+// Prototypes
 float interp1(double xq);
 
 // Binding code

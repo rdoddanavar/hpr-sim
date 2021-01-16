@@ -49,6 +49,8 @@
    - https://en.cppreference.com/w/cpp/keyword
  - Check for file existence
    - https://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
+ - Convert `std::vector` to array
+   - https://stackoverflow.com/questions/2923272/how-to-convert-vector-to-array
 
 ### Template Classes
  - http://www.cplusplus.com/doc/oldtutorial/templates/
