@@ -16,10 +16,8 @@ gsl_interp_init(linear, xArr, yArr, n);
 double yq = gsl_interp_eval(linear, xArr, yArr, xq, acc);
 */
 
-gsl_spline* spline;
-gsl_interp_accel* acc;
 
-void interp1d_init(const double x[], const double y[], size_t n, gsl_spline* spline, gsl_interp_accel* acc)
+void interp1d_init(const double x[], const double y[], size_t n, gsl_spline* &spline, gsl_interp_accel* &acc)
 {
     
     acc    = gsl_interp_accel_alloc();
@@ -29,22 +27,7 @@ void interp1d_init(const double x[], const double y[], size_t n, gsl_spline* spl
 
 }
 
-void test_init()
-{
-
-    std::vector<double> x = {1.0, 2.0, 3.0, 4.0};
-    std::vector<double> y = {1.0, 4.0, 9.0, 25.0};
-        
-    double* xArr = x.data();
-    double* yArr = y.data();
-
-    size_t n = x.size();
-
-    interp1d_init(xArr, yArr, n, spline, acc);
-
-}
-
-float interp1d_eval(double xq)
+double interp1d_eval(gsl_spline* spline, double xq, gsl_interp_accel* acc)
 {
     printf("test1\n");
     double yq;
@@ -65,9 +48,30 @@ float interp1d_eval(double xq)
     {
         yq = gsl_spline_eval(spline, xq, acc);
     }
-    
-    //gsl_spline_free(spline);
-    //gsl_interp_accel_free(acc);
 
     return yq;
 }
+
+void Model::initialize()
+{
+
+    x = {1.0, 2.0, 3.0, 4.0};
+    y = {1.0, 4.0, 9.0, 25.0};
+        
+    double* xArr = x.data();
+    double* yArr = y.data();
+
+    size_t n = x.size();
+
+    interp1d_init(xArr, yArr, n, spline, acc);
+
+}
+
+double Model::update(double xq)
+{
+    return interp1d_eval(spline, xq, acc);
+}
+
+// Deconstructor
+//gsl_spline_free(spline);
+//gsl_interp_accel_free(acc);
