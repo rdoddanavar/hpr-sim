@@ -29,11 +29,11 @@ void interp1d_init(const double x[], const double y[], size_t n, gsl_spline* &sp
 
 double interp1d_eval(gsl_spline* spline, double xq, gsl_interp_accel* acc)
 {
-    printf("test1\n");
+
     double yq;
     double xMin = spline->interp->xmin;
     double xMax = spline->interp->xmax;
-    printf("test2\n");
+
     size_t n = spline->size;
 
     if (xq < xMin)
@@ -56,7 +56,7 @@ void Model::initialize()
 {
 
     x = {1.0, 2.0, 3.0, 4.0};
-    y = {1.0, 4.0, 9.0, 25.0};
+    y = {1.0, 4.0, 9.0, 16.0};
         
     double* xArr = x.data();
     double* yArr = y.data();
@@ -73,5 +73,8 @@ double Model::update(double xq)
 }
 
 // Deconstructor
-//gsl_spline_free(spline);
-//gsl_interp_accel_free(acc);
+Model::~Model()
+{
+    gsl_spline_free(spline);
+    gsl_interp_accel_free(acc);
+}

@@ -30,8 +30,7 @@ class Model
         void initialize();
         double update(double xq);
 
-        // Constructor(s)
-        //Model();
+        ~Model();
 
 };
 
