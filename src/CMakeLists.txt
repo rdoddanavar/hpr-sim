@@ -20,11 +20,12 @@ pybind11_add_module(input MODULE ${SRC} ${HDR})
 
 # model/
 
-set(SRC "./model/model.cpp"
-        "./model/engine.cpp"
+set(SRC "./model/engine.cpp"
         )
 
-set(HDR "model/model.h")
+set(HDR "./model/model.h"
+        "./model/engine.h"
+        )
 
 set(DEP "util"
         "gsl"

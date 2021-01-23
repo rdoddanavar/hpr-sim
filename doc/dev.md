@@ -57,7 +57,6 @@
 
  - `virtual` keyword: https://stackoverflow.com/questions/2391679/why-do-we-need-virtual-functions-in-c?rq=1
  - `override` keyword: https://stackoverflow.com/questions/18198314/what-is-the-override-keyword-in-c-used-for
-  - `abstract` vs. `virtual`: https://stackoverflow.com/questions/391483/what-is-the-difference-between-an-abstract-function-and-a-virtual-function?rq=1
 
 ### Template Classes
  - http://www.cplusplus.com/doc/oldtutorial/templates/

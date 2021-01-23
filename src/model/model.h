@@ -8,8 +8,6 @@
 
 // Project headers
 #include "pybind11/pybind11.h"
-#include "gsl/interpolation/gsl_interp.h"
-#include "gsl/interpolation/gsl_spline.h"
 
 namespace py = pybind11;
 
@@ -25,7 +23,17 @@ class Model
         //std::map<std::string, float> stateInit;
 
         // Function(s)
-        virtual void initialize(); // ONLY COMPILES IF DEFINED IN CLASS!!!
+        virtual void initialize();
+        void test()
+        {
+            printf("test\n");
+        };
+        
+        
+        // ONLY COMPILES IF DEFINED IN CLASS!!! --> that doesn't make sense; unit test is fine with this
+        // Error only exists for separate file!
+        // Consider abstract class? methods?
+        
         //{
         //    printf("hello\n");
         //};
@@ -37,44 +45,60 @@ class Model
         //Model();
 };
 
-class Engine : public Model
+/*
+Model::Model()
 {
-    public:
+    ;
+}
+*/
 
-        // Data
-        gsl_spline* spline;
-        gsl_interp_accel* acc;
+void Model::initialize()
+{
+    printf("hello\n"); // set stateInit; set depModels in contructor
+}
 
-        std::vector<double> x;
-        std::vector<double> y;
+/*
+void Model::reset()
+{
+    state = stateInit;
+}
+*/
 
-        // Function(s)
-        void initialize() override;
-        //void update(double xq) override; --> override fails, not same fun sig as parent?
+/*
+void Model::update()
+{
+    ; // To be overridden in derived classes
+}
+*/
 
-        void update_test(double xq);
+/*
+void Model::update_deps()
+{
 
-        //Engine();  // Constructor
-        ~Engine(); // Destructor
-};
+    // Iterates over model dependencies, updates internal states 
+
+    for (auto dep : depModels)
+    {
+        dep->update();
+    }
+}
+*/
 
 // Binding code
+
+void init_Engine(py::module_ &);
 
 PYBIND11_MODULE(model, m)
 {
     
-    m.doc() = "Engine model"; // Optional module docstring
+    m.doc() = "Simulation Model Classes"; // Optional module docstring
 
-    py::class_<Model>(m, "Model"); // Exposing base class necessary
-        //.def(py::init<>())
-        //.def("initialize", &Model::initialize);
-        //.def("initialize", &Model::reset)
-        //.def("initialize", &Model::update)
-        //.def("update_test", &Model::update_deps);
-
-    py::class_<Engine, Model>(m, "Engine")
+    // Exposing base class necessary for dervied construction
+    // Base methods exposed once, automatically available to dervied in python
+    py::class_<Model>(m, "Model")
         .def(py::init<>())
-        .def("initialize", &Engine::initialize)
-        .def("update_test", &Engine::update_test);
+        .def("test", &Model::test);
+
+    init_Engine(m);
 
 }
