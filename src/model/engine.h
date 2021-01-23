@@ -28,23 +28,24 @@ class Engine : public Model
         void initialize() override;
         //void update(double xq) override; --> override fails, not same fun sig as parent?
 
-        void update_test(double xq);
+        void update(double xq);
 
         //Engine();  // Constructor
         ~Engine(); // Destructor
 };
 
-// Binding code
+//---------------------------------------------------------------------------//
+
+// BINDING CODE
 
 // See model.h for module delcaration
 
-//PYBIND11_MODULE(model, m)
-void init_Engine(py::module_ &m)
+void init_Engine(py::module &m)
 {
 
     py::class_<Engine, Model>(m, "Engine")
         .def(py::init<>())
         .def("initialize", &Engine::initialize)
-        .def("update_test", &Engine::update_test);
+        .def("update", &Engine::update);
 
 }

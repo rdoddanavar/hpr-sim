@@ -73,11 +73,24 @@ PYBIND11_MODULE(module, m)
 {
     m.doc() = "docstring"; // Optional module docstring
 
+    // Function declaration
+    m.def("add", &add, "A function which adds two numbers");
+
+    // Class declaration
     py::class_<Class>(m, "Class")
         .def(py::init<>()) // Specify type as template parameter
         .def("method", &Class::method)
         .def_readwrite("attribute", &Class::attribute)
 }
+```
+
+ - Split binding over multiple files: https://stackoverflow.com/questions/53762552/with-pybind11-how-to-split-my-code-into-multiple-modules-files
+
+```
+Release Notes (pybind11 v2.6.0)
+
+py::module was renamed py::module_ to avoid issues with C++20 when used unqualified, but an alias
+py::module is provided for backward compatibility. #2489
 ```
 
  - Template class binding (unresolved)

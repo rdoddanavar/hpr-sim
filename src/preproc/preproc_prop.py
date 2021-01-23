@@ -34,7 +34,8 @@ sys.path.append(str(addPath.resolve()))
 
 # Project modules
 import util_unit
-util_unit.config() # remove later when 
+
+util_unit.config() # remove later when setup process updated
 
 def load(propPath):
     
@@ -81,7 +82,7 @@ def load_eng(propPath):
     diameter = util_unit.convert( diameter, "length", "mm" )
     length   = util_unit.convert(   length, "length", "mm" )
 
-    # Generate mass curve
+    # Generate mass curve; assume mass flow rate proportional to thrust
     thrustNorm = thrust / thrust.max()
     alpha      = propMass / np.trapz(thrustNorm, time) # Scaling factor
     massFlow   = alpha * thrustNorm
