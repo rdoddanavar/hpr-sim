@@ -32,12 +32,13 @@
    - https://docs.python.org/3/tutorial/errors.html
    - https://realpython.com/python-logging/
  - Pathlib example
-   - < >
+   - https://stackoverflow.com/questions/40416072/reading-file-using-relative-path-in-python-project/40416154
  - XML
-   - < >
+   - https://stackabuse.com/reading-and-writing-xml-files-in-python/
 
 ### Pyinstaller 
 
+`LOL`
 
 ## C++
 
@@ -51,6 +52,11 @@
    - https://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
  - Convert `std::vector` to array
    - https://stackoverflow.com/questions/2923272/how-to-convert-vector-to-array
+
+### Polymorphism
+
+ - `virtual` keyword: https://stackoverflow.com/questions/2391679/why-do-we-need-virtual-functions-in-c?rq=1
+ - `override` keyword: https://stackoverflow.com/questions/18198314/what-is-the-override-keyword-in-c-used-for
 
 ### Template Classes
  - http://www.cplusplus.com/doc/oldtutorial/templates/

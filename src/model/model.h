@@ -5,6 +5,15 @@
 #include <vector>
 #include <map>
 
+// Project headers
+#include "pybind11/pybind11.h"
+#include "gsl/interpolation/gsl_interp.h"
+#include "gsl/interpolation/gsl_spline.h"
+
+namespace py = pybind11;
+
+// Class definitions
+
 class Model
 {
     public: 
@@ -29,11 +38,30 @@ class Engine : public Model
     public:
 
         // Data
+        gsl_spline* spline;
+        gsl_interp_accel* acc;
+
+        std::vector<double> x;
+        std::vector<double> y;
 
         // Function(s)
         void initialize() override;
-        void update() override;
+        void update(double xq) override;
 
-        // Constructor(s)
-        Engine();
+        Engine();  // Constructor
+        ~Engine(); // Destructor
 };
+
+// Binding code
+
+PYBIND11_MODULE(model, m)
+{
+    
+    m.doc() = "GNU GSL test"; // Optional module docstring
+
+    py::class_<Engine>(m, "Engine")
+        .def(py::init<>())
+        .def("initialize", &Engine::initialize)
+        .def("update", &Engine::update);
+
+}
