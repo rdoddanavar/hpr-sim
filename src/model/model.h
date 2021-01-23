@@ -19,55 +19,22 @@ class Model
 
         // Data
         //std::vector<Model*> depModels; // don't forget to use "new" keyword for mem alloc
-        //std::map<std::string, float> state;
-        //std::map<std::string, float> stateInit;
+        //std::map<std::string, double> state;
+        //std::map<std::string, double> stateInit;
 
         // Function(s)
-        virtual void initialize();
-        void test()
-        {
-            printf("test\n");
-        };
-        
-        
-        // ONLY COMPILES IF DEFINED IN CLASS!!! --> that doesn't make sense; unit test is fine with this
-        // Error only exists for separate file!
-        // Consider abstract class? methods?
-        
-        //{
-        //    printf("hello\n");
-        //};
+        virtual void update(double) = 0; // Pure virtual
         //void reset();
-        //virtual void update();
         //void update_deps();
 
         // Constructor(s)
-        //Model();
+        //Model(){;};
 };
-
-/*
-Model::Model()
-{
-    ;
-}
-*/
-
-void Model::initialize()
-{
-    printf("hello\n"); // set stateInit; set depModels in contructor
-}
 
 /*
 void Model::reset()
 {
     state = stateInit;
-}
-*/
-
-/*
-void Model::update()
-{
-    ; // To be overridden in derived classes
 }
 */
 
@@ -83,6 +50,13 @@ void Model::update_deps()
     }
 }
 */
+
+/*
+void Model::add_dep(Model dep)
+{
+    // add pointer from model to depModels?
+    depModels.push_back(&dep)
+}
 
 //---------------------------------------------------------------------------//
 
@@ -104,9 +78,9 @@ PYBIND11_MODULE(model, m)
 
     // Exposing base class necessary for dervied construction
     // Base methods exposed once, automatically available to dervied in python
-    py::class_<Model>(m, "Model")
-        .def(py::init<>())
-        .def("test", &Model::test);
+    py::class_<Model>(m, "Model");
+    //    .def(py::init<>());
+        //.def("update", &Model::update);
 
     // Exposed derived classes
     init_Engine(m);

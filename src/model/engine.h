@@ -1,10 +1,10 @@
 #pragma once
 
 // System libraries
-#include <vector>
 
 // Project headers
 #include "pybind11/pybind11.h"
+#include "pybind11/numpy.h"
 #include "model.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
@@ -21,14 +21,9 @@ class Engine : public Model
         gsl_spline* spline;
         gsl_interp_accel* acc;
 
-        std::vector<double> x;
-        std::vector<double> y;
-
         // Function(s)
-        void initialize() override;
-        //void update(double xq) override; --> override fails, not same fun sig as parent?
-
-        void update(double xq);
+        void initialize(py::array_t<double>, py::array_t<double>, py::array_t<double>);
+        void update(double) override;
 
         //Engine();  // Constructor
         ~Engine(); // Destructor

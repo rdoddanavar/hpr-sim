@@ -5,7 +5,7 @@ Copyright (C) 2019 Roshan Doddanavar
 https://rdoddanavar.github.io
 
 Path:
-    hpr-sim/src/preproc/preproc_prop.py
+    hpr-sim/src/preproc/preproc_engine.py
 Created:
     2020-12-22
 Type:
@@ -37,24 +37,24 @@ import util_unit
 
 util_unit.config() # remove later when setup process updated
 
-def load(propPath):
+def load(inputPath):
     
-    ext = Path(propPath).suffix
+    ext = Path(inputPath).suffix
 
     if ext == ".eng":
-        load_eng(propPath)
+        load_eng(inputPath)
     elif ext == ".rse":
-        load_rse(propPath)
+        load_rse(inputPath)
     else:
         raise ValueError('Unknown engine file extension', ext)
 
-def load_eng(propPath):
+def load_eng(inputPath):
     
     # Initialize arrays; implicit (0,0) point must be created
     time   = np.array([0])
     thrust = np.array([0])
 
-    with open(propPath, 'r') as engFile:
+    with open(inputPath, 'r') as engFile:
         for line in engFile.read().splitlines():
             
             if ';' in line:
@@ -89,9 +89,9 @@ def load_eng(propPath):
     mass       = totalMass - integrate.cumtrapz(massFlow, time)
     mass       = np.insert(mass, 0, totalMass) # t=0 mass @ totalMass
 
-def load_rse(propPath):
+def load_rse(inputPath):
     
-    tree = ET.parse(propPath)
+    tree = ET.parse(inputPath)
     root = tree.getroot()
 
     engine    = root[0][0]
@@ -125,5 +125,5 @@ def load_rse(propPath):
 
 if __name__ == "__main__":
 
-    propPath = sys.argv[1]
-    load(propPath)
+    inputPath = sys.argv[1]
+    load(inputPath)
