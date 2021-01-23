@@ -25,7 +25,7 @@ void Engine::initialize()
 
 }
 
-void Engine::update(double xq)
+void Engine::update_test(double xq)
 {
     
     double yq = interp1d_eval(spline, xq, acc);

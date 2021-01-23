@@ -20,8 +20,8 @@ pybind11_add_module(input MODULE ${SRC} ${HDR})
 
 # model/
 
-set(SRC "model/model.cpp"
-        "model/engine.cpp"
+set(SRC "./model/model.cpp"
+        "./model/engine.cpp"
         )
 
 set(HDR "model/model.h")
@@ -37,8 +37,8 @@ target_link_libraries(model PUBLIC ${DEP})
 
 # util/
 
-set(SRC "util/util_interp.cpp")
-set(HDR "util/util_interp.h")
+set(SRC "./util/util_interp.cpp")
+set(HDR "./util/util_interp.h")
 set(DEP "gsl")
 
 add_library(util SHARED ${SRC} ${HDR})
@@ -47,4 +47,6 @@ target_link_libraries(util PUBLIC ${DEP})
 #-----------------------------------------------------------------------------#
 
 # Expose all modules to library headers
-include_directories("${CMAKE_SOURCE_DIR}/lib")
+include_directories("${CMAKE_SOURCE_DIR}/lib"
+                    "./model/"
+                    "./util/")

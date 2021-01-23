@@ -1,21 +1,9 @@
 // System libraries
-#include <vector>
-#include <cstdio>
 
 // Project headers
-#include "test_gsl.h"
+#include "util_interp.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
-
-/*
-LINEAR INTERP
-
-gsl_interp *linear = gsl_interp_alloc(gsl_interp_linear, n);
-gsl_interp_init(linear, xArr, yArr, n);
-
-double yq = gsl_interp_eval(linear, xArr, yArr, xq, acc);
-*/
-
 
 void interp1d_init(const double x[], const double y[], size_t n, gsl_spline* &spline, gsl_interp_accel* &acc)
 {
@@ -36,11 +24,11 @@ double interp1d_eval(gsl_spline* spline, double xq, gsl_interp_accel* acc)
 
     size_t n = spline->size;
 
-    if (xq < xMin)
+    if (xq < xMin) // No extrapolation, use min y value
     {
         yq = spline->y[0];
     }
-    else if (xq > xMax)
+    else if (xq > xMax) // No extrapolation, use max y value
     {
         yq = spline->y[n-1];
     }
@@ -50,4 +38,14 @@ double interp1d_eval(gsl_spline* spline, double xq, gsl_interp_accel* acc)
     }
 
     return yq;
+
 }
+
+/*
+LINEAR INTERP
+
+gsl_interp *linear = gsl_interp_alloc(gsl_interp_linear, n);
+gsl_interp_init(linear, xArr, yArr, n);
+
+double yq = gsl_interp_eval(linear, xArr, yArr, xq, acc);
+*/

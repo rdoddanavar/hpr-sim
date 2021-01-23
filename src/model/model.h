@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <cstdio>
 
 // Project headers
 #include "pybind11/pybind11.h"
@@ -19,18 +20,21 @@ class Model
     public: 
 
         // Data
-        std::vector<Model*> depModels; // don't forget to use "new" keyword for mem alloc
-        std::map<std::string, float> state;
-        std::map<std::string, float> stateInit;
+        //std::vector<Model*> depModels; // don't forget to use "new" keyword for mem alloc
+        //std::map<std::string, float> state;
+        //std::map<std::string, float> stateInit;
 
         // Function(s)
-        virtual void initialize();
-        void reset();
-        virtual void update();
-        void update_deps();
+        virtual void initialize(); // ONLY COMPILES IF DEFINED IN CLASS!!!
+        //{
+        //    printf("hello\n");
+        //};
+        //void reset();
+        //virtual void update();
+        //void update_deps();
 
         // Constructor(s)
-        Model();
+        //Model();
 };
 
 class Engine : public Model
@@ -46,9 +50,11 @@ class Engine : public Model
 
         // Function(s)
         void initialize() override;
-        void update(double xq) override;
+        //void update(double xq) override; --> override fails, not same fun sig as parent?
 
-        Engine();  // Constructor
+        void update_test(double xq);
+
+        //Engine();  // Constructor
         ~Engine(); // Destructor
 };
 
@@ -57,11 +63,18 @@ class Engine : public Model
 PYBIND11_MODULE(model, m)
 {
     
-    m.doc() = "GNU GSL test"; // Optional module docstring
+    m.doc() = "Engine model"; // Optional module docstring
 
-    py::class_<Engine>(m, "Engine")
+    py::class_<Model>(m, "Model"); // Exposing base class necessary
+        //.def(py::init<>())
+        //.def("initialize", &Model::initialize);
+        //.def("initialize", &Model::reset)
+        //.def("initialize", &Model::update)
+        //.def("update_test", &Model::update_deps);
+
+    py::class_<Engine, Model>(m, "Engine")
         .def(py::init<>())
         .def("initialize", &Engine::initialize)
-        .def("update", &Engine::update);
+        .def("update_test", &Engine::update_test);
 
 }

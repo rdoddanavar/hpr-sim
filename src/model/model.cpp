@@ -1,32 +1,40 @@
 // header
 
 // System libraries
+#include <cstdio>
 
 // Project headers
 #include "model.h"
 
 // Model Class
 
+/*
 Model::Model()
 {
     ;
 }
+*/
 
 void Model::initialize()
 {
-    ; // set stateInit; set depModels in contructor
+    printf("hello\n"); // set stateInit; set depModels in contructor
 }
 
+/*
 void Model::reset()
 {
     state = stateInit;
 }
+*/
 
+/*
 void Model::update()
 {
     ; // To be overridden in derived classes
 }
+*/
 
+/*
 void Model::update_deps()
 {
 
@@ -37,3 +45,4 @@ void Model::update_deps()
         dep->update();
     }
 }
+*/
