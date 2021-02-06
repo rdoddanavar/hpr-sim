@@ -3,12 +3,13 @@
 // System libraries
 #include <cstdio>
 
-// Project headers
-#include "util_interp.h"
+// External libraries
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
 #include "pybind11/numpy.h"
 
+// Project headers
+#include "util_interp.h"
 #include "engine.h"
 
 void Engine::initialize(py::array_t<double> time  , 
@@ -16,35 +17,46 @@ void Engine::initialize(py::array_t<double> time  ,
                         py::array_t<double> mass  ) 
 {
 
-    //x = {1.0, 2.0, 3.0, 4.0};
-    //y = {1.0, 4.0, 9.0, 16.0};
-        
-    //double* xArr = x.data();
-    //double* yArr = y.data();
-
     auto timeBuff   = time.request();
     auto thrustBuff = thrust.request();
+    auto massBuff   = mass.request();
 
-    double* xArr = (double*) timeBuff.ptr;
-    double* yArr = (double*) thrustBuff.ptr;
+    double* timeData   = (double*) timeBuff.ptr;
+    double* thrustData = (double*) thrustBuff.ptr;
+    double* massData   = (double*) massBuff.ptr;
 
     size_t n = timeBuff.size;
 
-    interp1d_init(xArr, yArr, n, spline, acc);
+    interp1d_init(timeData, thrustData, n, thrustSpline, thrustAcc);
+    interp1d_init(timeData, massData  , n, massSpline  , massAcc  );
+
+    stateInit["time"]   = timeData[0];
+    stateInit["thrust"] = thrustData[0];
+    stateInit["mass"]   = massData[0];
+
+    reset(); // Set state to IC's
 
 }
 
-void Engine::update(double xq)
+void Engine::update(double timeEval)
 {
     
-    double yq = interp1d_eval(spline, xq, acc);
-    printf("%f\n", yq);
+    //double yq = interp1d_eval(spline, xq, acc);
+
+    state["thrust"] = interp1d_eval(thrustSpline, timeEval, thrustAcc);
+    state["mass"]   = interp1d_eval(massSpline  , timeEval, massAcc  );
+
+    //return state["thrust"]
 
 }
 
-// Deconstructor
 Engine::~Engine()
 {
-    gsl_spline_free(spline);
-    gsl_interp_accel_free(acc);
+    
+    gsl_spline_free(thrustSpline);
+    gsl_spline_free(massSpline);
+
+    gsl_interp_accel_free(thrustAcc);
+    gsl_interp_accel_free(massAcc);
+
 }

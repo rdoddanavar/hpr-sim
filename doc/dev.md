@@ -97,6 +97,8 @@ py::module is provided for backward compatibility. #2489
    - https://github.com/pybind/pybind11/issues/199
    - https://stackoverflow.com/questions/47487888/pybind11-template-class-of-many-types
 
+ - pybind11 working with numpy arrays: https://stackoverflow.com/questions/58756764/return-an-stdvector-to-python-as-a-numpy-array
+
 ## YAML
 
 ### References

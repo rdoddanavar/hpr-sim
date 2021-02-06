@@ -2,12 +2,14 @@
 
 // System libraries
 
-// Project headers
+// External libraries
 #include "pybind11/pybind11.h"
 #include "pybind11/numpy.h"
-#include "model.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
+
+// Project headers
+#include "model.h"
 
 namespace py = pybind11;
 
@@ -18,8 +20,8 @@ class Engine : public Model
     public:
 
         // Data
-        gsl_spline* spline;
-        gsl_interp_accel* acc;
+        gsl_spline *thrustSpline, *massSpline;
+        gsl_interp_accel *thrustAcc, *massAcc;
 
         // Function(s)
         void initialize(py::array_t<double>, py::array_t<double>, py::array_t<double>);
@@ -33,7 +35,7 @@ class Engine : public Model
 
 // BINDING CODE
 
-// See model.h for module delcaration
+// See src/model/model.h for module delcaration
 
 void init_Engine(py::module &m)
 {

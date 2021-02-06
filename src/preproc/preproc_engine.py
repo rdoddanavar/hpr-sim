@@ -37,16 +37,21 @@ import util_unit
 
 util_unit.config() # remove later when setup process updated
 
+# Add error for bad engine file reading! Maybe data vectors are mismatched?
+# Feed in bad files to test
+
 def load(inputPath):
     
     ext = Path(inputPath).suffix
 
     if ext == ".eng":
-        load_eng(inputPath)
+        time, thrust, mass = load_eng(inputPath)
     elif ext == ".rse":
-        load_rse(inputPath)
+        time, thrust, mass = load_rse(inputPath)
     else:
         raise ValueError('Unknown engine file extension', ext)
+
+    return time, thrust, mass
 
 def load_eng(inputPath):
     
@@ -89,6 +94,8 @@ def load_eng(inputPath):
     mass       = totalMass - integrate.cumtrapz(massFlow, time)
     mass       = np.insert(mass, 0, totalMass) # t=0 mass @ totalMass
 
+    return time, thrust, mass
+
 def load_rse(inputPath):
     
     tree = ET.parse(inputPath)
@@ -122,6 +129,8 @@ def load_rse(inputPath):
 
     # Mass curve should reflect overall engine mass; *.rse file gives propellant mass only
     mass = totalMass - (propMass - mass)
+
+    return time, thrust, mass
 
 if __name__ == "__main__":
 

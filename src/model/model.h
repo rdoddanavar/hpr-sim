@@ -6,8 +6,11 @@
 #include <map>
 #include <cstdio>
 
-// Project headers
+// External libraries
 #include "pybind11/pybind11.h"
+
+// Project headers
+// <none>
 
 namespace py = pybind11;
 
@@ -19,24 +22,24 @@ class Model
 
         // Data
         //std::vector<Model*> depModels; // don't forget to use "new" keyword for mem alloc
-        //std::map<std::string, double> state;
-        //std::map<std::string, double> stateInit;
+        std::map<std::string, double> state;
+        std::map<std::string, double> stateInit;
 
         // Function(s)
         virtual void update(double) = 0; // Pure virtual
-        //void reset();
+        void reset();
         //void update_deps();
 
         // Constructor(s)
         //Model(){;};
 };
 
-/*
+
 void Model::reset()
 {
     state = stateInit;
 }
-*/
+
 
 /*
 void Model::update_deps()
@@ -78,10 +81,10 @@ PYBIND11_MODULE(model, m)
 
     // Exposing base class necessary for dervied construction
     // Base methods exposed once, automatically available to dervied in python
-    py::class_<Model>(m, "Model");
+    py::class_<Model>(m, "Model")
     //    .def(py::init<>());
-        //.def("update", &Model::update);
-
+        .def("update", &Model::reset)
+        .def_readwrite("state", &Model::state);
     // Exposed derived classes
     init_Engine(m);
 
