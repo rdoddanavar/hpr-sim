@@ -8,13 +8,14 @@
 
 // External libraries
 #include "pybind11/pybind11.h"
+#include "pybind11/stl.h" // For std::map; induces overhead, remove if possible
 
 // Project headers
 // <none>
 
 namespace py = pybind11;
 
-// Class definitions
+//---------------------------------------------------------------------------//
 
 class Model
 {
@@ -72,6 +73,7 @@ py::module was renamed py::module_ to avoid issues with C++20 when used unqualif
 py::module is provided for backward compatibility. #2489
 */
 
+// Exposed derived classes
 void init_Engine(py::module &);
 
 PYBIND11_MODULE(model, m)
@@ -82,9 +84,9 @@ PYBIND11_MODULE(model, m)
     // Exposing base class necessary for dervied construction
     // Base methods exposed once, automatically available to dervied in python
     py::class_<Model>(m, "Model")
-    //    .def(py::init<>());
         .def("update", &Model::reset)
-        .def_readwrite("state", &Model::state);
+        .def_readonly("state", &Model::state);
+
     // Exposed derived classes
     init_Engine(m);
 

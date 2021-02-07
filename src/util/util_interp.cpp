@@ -1,11 +1,19 @@
 // System libraries
 
-// Project headers
-#include "util_interp.h"
+// External libraries
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
 
-void interp1d_init(const double x[], const double y[], size_t n, gsl_spline* &spline, gsl_interp_accel* &acc)
+// Project headers
+#include "util_interp.h"
+
+//---------------------------------------------------------------------------//
+
+void interp1d_init(const double      x[]    ,
+                   const double      y[]    ,
+                   const size_t      n      ,
+                   gsl_spline*       &spline,
+                   gsl_interp_accel* &acc   )
 {
     
     acc    = gsl_interp_accel_alloc();
@@ -15,12 +23,14 @@ void interp1d_init(const double x[], const double y[], size_t n, gsl_spline* &sp
 
 }
 
-double interp1d_eval(gsl_spline* spline, double xq, gsl_interp_accel* acc)
+double interp1d_eval(gsl_spline*       spline,
+                     const double      xq    ,
+                     gsl_interp_accel* acc   )
 {
 
-    double yq;
-    double xMin = spline->interp->xmin;
-    double xMax = spline->interp->xmax;
+    double       yq;
+    const double xMin = spline->interp->xmin;
+    const double xMax = spline->interp->xmax;
 
     size_t n = spline->size;
 

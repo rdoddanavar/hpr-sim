@@ -27,7 +27,6 @@ from pathlib import Path
 import numpy as np
 from scipy import integrate
 import xml.etree.ElementTree as ET
-import matplotlib.pyplot as plt
 
 addPath = Path(__file__).parent / "../util"
 sys.path.append(str(addPath.resolve()))

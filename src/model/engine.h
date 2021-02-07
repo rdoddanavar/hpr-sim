@@ -13,19 +13,22 @@
 
 namespace py = pybind11;
 
-// Class definitions
+//---------------------------------------------------------------------------//
 
 class Engine : public Model
 {
     public:
 
         // Data
-        gsl_spline *thrustSpline, *massSpline;
-        gsl_interp_accel *thrustAcc, *massAcc;
+        gsl_spline       *thrustSpline, *massSpline;
+        gsl_interp_accel *thrustAcc   , *massAcc   ;
 
         // Function(s)
-        void initialize(py::array_t<double>, py::array_t<double>, py::array_t<double>);
-        void update(double) override;
+        void initialize(py::array_t<double> time  , 
+                        py::array_t<double> thrust, 
+                        py::array_t<double> mass  );
+
+        void update(double timeEval) override;
 
         //Engine();  // Constructor
         ~Engine(); // Destructor
@@ -43,6 +46,6 @@ void init_Engine(py::module &m)
     py::class_<Engine, Model>(m, "Engine")
         .def(py::init<>())
         .def("initialize", &Engine::initialize)
-        .def("update", &Engine::update);
+        .def("update"    , &Engine::update    );
 
 }

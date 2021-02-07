@@ -1,5 +1,3 @@
-// header
-
 // System libraries
 #include <cstdio>
 
@@ -11,6 +9,8 @@
 // Project headers
 #include "util_interp.h"
 #include "engine.h"
+
+//---------------------------------------------------------------------------//
 
 void Engine::initialize(py::array_t<double> time  , 
                         py::array_t<double> thrust, 
@@ -25,7 +25,7 @@ void Engine::initialize(py::array_t<double> time  ,
     double* thrustData = (double*) thrustBuff.ptr;
     double* massData   = (double*) massBuff.ptr;
 
-    size_t n = timeBuff.size;
+    const size_t n = timeBuff.size;
 
     interp1d_init(timeData, thrustData, n, thrustSpline, thrustAcc);
     interp1d_init(timeData, massData  , n, massSpline  , massAcc  );
@@ -40,13 +40,9 @@ void Engine::initialize(py::array_t<double> time  ,
 
 void Engine::update(double timeEval)
 {
-    
-    //double yq = interp1d_eval(spline, xq, acc);
 
     state["thrust"] = interp1d_eval(thrustSpline, timeEval, thrustAcc);
     state["mass"]   = interp1d_eval(massSpline  , timeEval, massAcc  );
-
-    //return state["thrust"]
 
 }
 
