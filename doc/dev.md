@@ -32,12 +32,13 @@
    - https://docs.python.org/3/tutorial/errors.html
    - https://realpython.com/python-logging/
  - Pathlib example
-   - < >
+   - https://stackoverflow.com/questions/40416072/reading-file-using-relative-path-in-python-project/40416154
  - XML
-   - < >
+   - https://stackabuse.com/reading-and-writing-xml-files-in-python/
 
 ### Pyinstaller 
 
+`LOL`
 
 ## C++
 
@@ -49,6 +50,13 @@
    - https://en.cppreference.com/w/cpp/keyword
  - Check for file existence
    - https://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
+ - Convert `std::vector` to array
+   - https://stackoverflow.com/questions/2923272/how-to-convert-vector-to-array
+
+### Object-Oriented
+
+ - `virtual` keyword: https://stackoverflow.com/questions/2391679/why-do-we-need-virtual-functions-in-c?rq=1
+ - `override` keyword: https://stackoverflow.com/questions/18198314/what-is-the-override-keyword-in-c-used-for
 
 ### Template Classes
  - http://www.cplusplus.com/doc/oldtutorial/templates/
@@ -65,6 +73,10 @@ PYBIND11_MODULE(module, m)
 {
     m.doc() = "docstring"; // Optional module docstring
 
+    // Function declaration
+    m.def("add", &add, "A function which adds two numbers");
+
+    // Class declaration
     py::class_<Class>(m, "Class")
         .def(py::init<>()) // Specify type as template parameter
         .def("method", &Class::method)
@@ -72,9 +84,20 @@ PYBIND11_MODULE(module, m)
 }
 ```
 
+ - Split binding over multiple files: https://stackoverflow.com/questions/53762552/with-pybind11-how-to-split-my-code-into-multiple-modules-files
+
+```
+Release Notes (pybind11 v2.6.0)
+
+py::module was renamed py::module_ to avoid issues with C++20 when used unqualified, but an alias
+py::module is provided for backward compatibility. #2489
+```
+
  - Template class binding (unresolved)
    - https://github.com/pybind/pybind11/issues/199
    - https://stackoverflow.com/questions/47487888/pybind11-template-class-of-many-types
+
+ - pybind11 working with numpy arrays: https://stackoverflow.com/questions/58756764/return-an-stdvector-to-python-as-a-numpy-array
 
 ## YAML
 

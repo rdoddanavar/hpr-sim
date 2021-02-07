@@ -90,13 +90,13 @@ def process(yamlDict, subDict=None, path=[], first=True):
 
                 # Error handling: circular reference
                 if target == path:
-                    raise ValueError("CIRCULAR REFERENCE",value)
+                    raise ValueError("Circular reference in input file", value)
 
                 # Error handling: invalid reference
                 try:
                     targetValue = get_value(yamlDict, target)
                 except:
-                    raise KeyError("INVALID REFERENCE",value)
+                    raise KeyError("Invalid reference in input file", value)
 
                 # Value may be float, must cast to string
                 refStr = "ref(" + value[idxA:idxB] + ')'
