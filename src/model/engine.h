@@ -38,7 +38,7 @@ class Engine : public Model
 
 // BINDING CODE
 
-// See src/model/model.h for module delcaration
+// See src/model/model.h for module declaration
 
 void init_Engine(py::module &m)
 {

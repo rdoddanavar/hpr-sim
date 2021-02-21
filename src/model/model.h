@@ -75,19 +75,21 @@ py::module is provided for backward compatibility. #2489
 
 // Exposed derived classes
 void init_Engine(py::module &);
+void init_Geodetic(py::module &);
 
 PYBIND11_MODULE(model, m)
 {
     
     m.doc() = "Simulation Model Classes"; // Optional module docstring
 
-    // Exposing base class necessary for dervied construction
+    // Exposing base class necessary for derived construction
     // Base methods exposed once, automatically available to dervied in python
     py::class_<Model>(m, "Model")
-        .def("update", &Model::reset)
+        .def("reset", &Model::reset)
         .def_readonly("state", &Model::state);
 
     // Exposed derived classes
     init_Engine(m);
+    init_Geodetic(m);
 
 }

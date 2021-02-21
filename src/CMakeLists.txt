@@ -10,10 +10,12 @@ pybind11_add_module(input MODULE ${SRC} ${HDR})
 # MODEL
 
 set(SRC "./model/engine.cpp"
+        "./model/geodetic.cpp"
         )
 
 set(HDR "./model/model.h"
         "./model/engine.h"
+        "./model/geodetic.h"
         )
 
 set(DEP "util"
