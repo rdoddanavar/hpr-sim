@@ -8,7 +8,7 @@
 
 // Project headers
 #include "util_interp.h"
-#include "engine.h"
+#include "model.h"
 
 //---------------------------------------------------------------------------//
 

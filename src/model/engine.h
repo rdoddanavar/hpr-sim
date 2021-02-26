@@ -40,12 +40,3 @@ class Engine : public Model
 
 // See src/model/model.h for module declaration
 
-void init_Engine(py::module &m)
-{
-
-    py::class_<Engine, Model>(m, "Engine")
-        .def(py::init<>())
-        .def("initialize", &Engine::initialize)
-        .def("update"    , &Engine::update    );
-
-}

@@ -37,19 +37,3 @@ class Geodetic : public Model
         double wgs84(double h);
 
 };
-
-//---------------------------------------------------------------------------//
-
-// BINDING CODE
-
-// See src/model/model.h for module declaration
-
-void init_Geodetic(py::module &m)
-{
-
-    py::class_<Geodetic, Model>(m, "Geodetic")
-        .def(py::init<>())
-        .def("initialize", &Geodetic::initialize)
-        .def("update"    , &Geodetic::update    );
-
-}

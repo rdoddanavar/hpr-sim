@@ -5,7 +5,7 @@
 // <none>
 
 // Project headers
-#include "geodetic.h"
+#include "model.h"
 
 //---------------------------------------------------------------------------//
 
