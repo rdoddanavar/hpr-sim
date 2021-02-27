@@ -26,12 +26,16 @@ void Geodetic::initialize(double phi)
 
 }
 
+//---------------------------------------------------------------------------//
+
 void Geodetic::update(double altEval)
 {
 
     state["gravity"] = wgs84(altEval);
 
 }
+
+//---------------------------------------------------------------------------//
 
 double Geodetic::wgs84(double h)
 {
@@ -43,7 +47,7 @@ double Geodetic::wgs84(double h)
     Normal Gravity on the Ellipsoidal Surface (4-1)
 
     gam  = gamma; normal gravity at surface of ellipsoid
-    gamE = normal gravity at the equator (on the ellispod)
+    gamE = normal gravity at the equator (on the ellispoid)
     k    = Somigliana’s Formula - normal gravity formula constant
     e    = first eccentricity of the ellispoid
     phi  = geodetic latitude

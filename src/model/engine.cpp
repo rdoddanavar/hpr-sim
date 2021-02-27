@@ -38,6 +38,8 @@ void Engine::initialize(py::array_t<double> time  ,
 
 }
 
+//---------------------------------------------------------------------------//
+
 void Engine::update(double timeEval)
 {
 
@@ -45,6 +47,8 @@ void Engine::update(double timeEval)
     state["mass"]   = interp1d_eval(massSpline  , timeEval, massAcc  );
 
 }
+
+//---------------------------------------------------------------------------//
 
 Engine::~Engine()
 {
