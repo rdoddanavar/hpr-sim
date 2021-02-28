@@ -1,5 +1,5 @@
 // System libraries
-#include <cstdio>
+// <none>
 
 // External libraries
 #include "gsl/interpolation/gsl_interp.h"

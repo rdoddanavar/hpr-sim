@@ -9,7 +9,7 @@
 
 //---------------------------------------------------------------------------//
 
-void Geodetic::initialize(double phi) 
+void Geodetic::initialize(double phiInit) 
 {
 
     // WGS 84 Constants
@@ -20,7 +20,9 @@ void Geodetic::initialize(double phi)
     f    = 3.3528106647475e-03; // [-]
     m    = 3.449786506841e-03;  // [-]
 
-    stateInit["grav"] = wgs84(0.0);
+    phi = phiInit; // [rad]
+
+    stateInit["gravity"] = wgs84(0.0);
 
     reset(); // Set state to IC's
 
@@ -59,7 +61,7 @@ double Geodetic::wgs84(double h)
     double gam = gamE * (1 + k*sin2phi) / sqrt(1 - e2*sin2phi);
 
     /*
-    Normal Gravity Above the Ellipsoid - Taylor series expansion
+    Normal Gravity Above the Ellipsoid - Taylor series expansion (4-3)
 
     gamH = gamma_h; normal gravity at height above ellipsoid
     a    = semi-major axis of the ellipsoid
@@ -74,4 +76,5 @@ double Geodetic::wgs84(double h)
     double gamH = gam * (1 - (2/a)*(1 + f + m - 2*f*sin2phi)*h + (3/a2)*h2);
 
     return gamH;
+
 }

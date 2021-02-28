@@ -11,10 +11,11 @@
 // BINDING CODE
 
 /*
-Release Notes (pybind11 v2.6.0)
+Current version - pybind11 v2.5.0
 
-py::module was renamed py::module_ to avoid issues with C++20 when used unqualified, but an alias
-py::module is provided for backward compatibility. #2489
+Release Notes (pybind11 v2.6.0):
+    py::module was renamed py::module_ to avoid issues with C++20 when used unqualified,
+    but an alias py::module is provided for backward compatibility. #2489
 */
 
 // Exposed derived classes

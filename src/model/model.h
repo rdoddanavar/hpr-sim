@@ -40,12 +40,7 @@ class Model
         //Model(){;};
 };
 
-
-// void Model::reset()
-// {
-//     state = stateInit;
-// }
-
+//---------------------------------------------------------------------------//
 
 /*
 void Model::update_deps()
@@ -72,6 +67,7 @@ void Model::add_dep(Model dep)
 
 class Engine : public Model
 {
+    
     public:
 
         // Data
@@ -85,8 +81,8 @@ class Engine : public Model
 
         void update(double timeEval) override;
 
-        //Engine();  // Constructor
         ~Engine(); // Destructor
+
 };
 
 //---------------------------------------------------------------------------//
