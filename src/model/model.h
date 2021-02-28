@@ -9,9 +9,11 @@
 // External libraries
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h" // For std::map; induces overhead, remove if possible
+#include "pybind11/numpy.h"
 
 // Project headers
-// <none>
+#include "gsl/interpolation/gsl_interp.h"
+#include "gsl/interpolation/gsl_spline.h"
 
 namespace py = pybind11;
 
@@ -28,19 +30,17 @@ class Model
 
         // Function(s)
         virtual void update(double) = 0; // Pure virtual
-        void reset();
+        void reset()
+        {
+            state = stateInit;
+        };
         //void update_deps();
 
         // Constructor(s)
         //Model(){;};
 };
 
-
-void Model::reset()
-{
-    state = stateInit;
-}
-
+//---------------------------------------------------------------------------//
 
 /*
 void Model::update_deps()
@@ -61,33 +61,54 @@ void Model::add_dep(Model dep)
     // add pointer from model to depModels?
     depModels.push_back(&dep)
 }
+*/
 
 //---------------------------------------------------------------------------//
 
-// BINDING CODE
-
-/*
-Release Notes (pybind11 v2.6.0)
-
-py::module was renamed py::module_ to avoid issues with C++20 when used unqualified, but an alias
-py::module is provided for backward compatibility. #2489
-*/
-
-// Exposed derived classes
-void init_Engine(py::module &);
-
-PYBIND11_MODULE(model, m)
+class Engine : public Model
 {
     
-    m.doc() = "Simulation Model Classes"; // Optional module docstring
+    public:
 
-    // Exposing base class necessary for dervied construction
-    // Base methods exposed once, automatically available to dervied in python
-    py::class_<Model>(m, "Model")
-        .def("update", &Model::reset)
-        .def_readonly("state", &Model::state);
+        // Data
+        gsl_spline       *thrustSpline, *massSpline;
+        gsl_interp_accel *thrustAcc   , *massAcc   ;
 
-    // Exposed derived classes
-    init_Engine(m);
+        // Function(s)
+        void initialize(py::array_t<double> time  , 
+                        py::array_t<double> thrust, 
+                        py::array_t<double> mass  );
 
-}
+        void update(double timeEval) override;
+
+        ~Engine(); // Destructor
+
+};
+
+//---------------------------------------------------------------------------//
+
+class Geodetic : public Model
+{
+    public:
+
+        // Data
+
+        // Function(s)
+        void initialize(double phi);
+        void update(double altEval) override;
+
+    private:
+
+        // Data
+        double phi;
+        double gamE;
+        double k;
+        double e;
+        double a;
+        double f;
+        double m;
+
+        // Function(s)
+        double wgs84(double h);
+
+};

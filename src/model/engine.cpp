@@ -1,5 +1,5 @@
 // System libraries
-#include <cstdio>
+// <none>
 
 // External libraries
 #include "gsl/interpolation/gsl_interp.h"
@@ -8,7 +8,7 @@
 
 // Project headers
 #include "util_interp.h"
-#include "engine.h"
+#include "model.h"
 
 //---------------------------------------------------------------------------//
 
@@ -38,6 +38,8 @@ void Engine::initialize(py::array_t<double> time  ,
 
 }
 
+//---------------------------------------------------------------------------//
+
 void Engine::update(double timeEval)
 {
 
@@ -45,6 +47,8 @@ void Engine::update(double timeEval)
     state["mass"]   = interp1d_eval(massSpline  , timeEval, massAcc  );
 
 }
+
+//---------------------------------------------------------------------------//
 
 Engine::~Engine()
 {
