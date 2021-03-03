@@ -6,9 +6,13 @@ project(hpr-sim DESCRIPTION "High Power Rocktry - Flight Simulation"
                 LANGUAGES CXX
                 )
 
+#-----------------------------------------------------------------------------#
+
 # BUILD SETTINGS
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) # For shared libs; delete in future if unnecessary
+
+#-----------------------------------------------------------------------------#
 
 # SOURCE SUBDIRECTORIES
 

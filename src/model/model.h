@@ -21,6 +21,7 @@ namespace py = pybind11;
 
 class Model
 {
+    
     public: 
 
         // Data
@@ -38,6 +39,7 @@ class Model
 
         // Constructor(s)
         //Model(){;};
+
 };
 
 //---------------------------------------------------------------------------//
@@ -110,5 +112,16 @@ class Geodetic : public Model
 
         // Function(s)
         double wgs84(double h);
+
+};
+
+//---------------------------------------------------------------------------//
+
+class EOM : public Model
+{
+
+    public:
+
+        void update(double val) override;
 
 };

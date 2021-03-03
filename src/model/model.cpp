@@ -21,6 +21,7 @@ Release Notes (pybind11 v2.6.0):
 // Exposed derived classes
 void init_Engine(py::module &);
 void init_Geodetic(py::module &);
+void init_EOM(py::module &);
 
 PYBIND11_MODULE(model, m)
 {
@@ -36,6 +37,7 @@ PYBIND11_MODULE(model, m)
     // Exposed derived classes
     init_Engine(m);
     init_Geodetic(m);
+    init_EOM(m);
 
 }
 
@@ -60,5 +62,16 @@ void init_Geodetic(py::module &m)
         .def(py::init<>())
         .def("initialize", &Geodetic::initialize)
         .def("update"    , &Geodetic::update    );
+
+}
+
+//---------------------------------------------------------------------------//
+
+void init_EOM(py::module &m)
+{
+
+    py::class_<EOM, Model>(m, "EOM")
+        .def(py::init<>())
+        .def("update"    , &EOM::update  );
 
 }
