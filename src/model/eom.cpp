@@ -11,11 +11,22 @@
 
 //---------------------------------------------------------------------------//
 
+void EOM::initialize()
+{
+
+    force  = Eigen::Vector3d::Zero();
+    moment = Eigen::Vector3d::Zero();
+    
+    linAcc = Eigen::Vector3d::Zero();
+    angAcc = Eigen::Vector3d::Zero();
+
+}
+
+//---------------------------------------------------------------------------//
+
 void EOM::update(double val)
 {
-    
-    Eigen::Vector3d v = Eigen::Vector3d::Zero();
 
-    printf("value: %f\n", v[0]);
+    printf("value: %f\n", force[0]);
 
 }

@@ -10,10 +10,12 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h" // For std::map; induces overhead, remove if possible
 #include "pybind11/numpy.h"
-
-// Project headers
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
+#include "eigen/Eigen/Core"
+
+// Project headers
+// <none>
 
 namespace py = pybind11;
 
@@ -25,24 +27,24 @@ class Model
     public: 
 
         // Data
-        //std::vector<Model*> depModels; // don't forget to use "new" keyword for mem alloc
+        std::vector<Model*> depModels;
         std::map<std::string, double> state;
         std::map<std::string, double> stateInit;
 
         // Function(s)
         virtual void update(double) = 0; // Pure virtual
+
         void reset()
         {
             state = stateInit;
         };
-        //void update_deps();
 
-        // Constructor(s)
-        //Model(){;};
+        void add_dep(Model* dep)
+        {
+            depModels.push_back(dep);
+        }
 
 };
-
-//---------------------------------------------------------------------------//
 
 /*
 void Model::update_deps()
@@ -58,11 +60,7 @@ void Model::update_deps()
 */
 
 /*
-void Model::add_dep(Model dep)
-{
-    // add pointer from model to depModels?
-    depModels.push_back(&dep)
-}
+
 */
 
 //---------------------------------------------------------------------------//
@@ -122,6 +120,16 @@ class EOM : public Model
 
     public:
 
+        void initialize();
         void update(double val) override;
+
+    private:
+
+        // Data
+        Eigen::Vector3d force;  // Force                [N]
+        Eigen::Vector3d moment; // Moment               [N*m]
+        Eigen::Vector3d linAcc; // Linear acceleration  [m/s^2]
+        Eigen::Vector3d angAcc; // Angular acceleration [rad/s^2]
+        double          mass;   // Mass                 [kg]
 
 };

@@ -32,6 +32,7 @@ PYBIND11_MODULE(model, m)
     // Base methods exposed once, automatically available to dervied in python
     py::class_<Model>(m, "Model")
         .def("reset", &Model::reset)
+        .def("add_dep", &Model::add_dep)
         .def_readonly("state", &Model::state);
 
     // Exposed derived classes
@@ -72,6 +73,7 @@ void init_EOM(py::module &m)
 
     py::class_<EOM, Model>(m, "EOM")
         .def(py::init<>())
-        .def("update"    , &EOM::update  );
+        .def("initialize", &EOM::initialize)
+        .def("update"    , &EOM::update    );
 
 }
