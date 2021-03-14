@@ -32,7 +32,7 @@ class Model
         std::map<std::string, double> stateInit;
 
         // Function(s)
-        virtual void update(double) = 0; // Pure virtual
+        virtual void update(double timeEval) = 0; // Pure virtual
 
         void reset()
         {
@@ -44,24 +44,15 @@ class Model
             depModels.push_back(dep);
         }
 
+        void update_deps()
+        {
+            for (auto dep : depModels)
+            {
+                dep->update(state["time"]);
+            }
+        }
+
 };
-
-/*
-void Model::update_deps()
-{
-
-    // Iterates over model dependencies, updates internal states 
-
-    for (auto dep : depModels)
-    {
-        dep->update();
-    }
-}
-*/
-
-/*
-
-*/
 
 //---------------------------------------------------------------------------//
 
@@ -95,7 +86,7 @@ class Geodetic : public Model
 
         // Function(s)
         void initialize(double phi);
-        void update(double altEval) override;
+        void update(double timeEval) override;
 
     private:
 
@@ -121,15 +112,20 @@ class EOM : public Model
     public:
 
         void initialize();
-        void update(double val) override;
+        void update(double timeEval) override;
 
     private:
 
         // Data
-        Eigen::Vector3d force;  // Force                [N]
-        Eigen::Vector3d moment; // Moment               [N*m]
-        Eigen::Vector3d linAcc; // Linear acceleration  [m/s^2]
+        Eigen::Vector3d force;  // Force  [N]
+        Eigen::Vector3d moment; // Moment [N*m]
+
+        Eigen::Vector3d linAcc; // Linear acceleration [m/s^2]
+        Eigen::Vector3d linVel; // Linear velocity     [m/s]
+        Eigen::Vector3d linPos; // Linear position     [m]
+
         Eigen::Vector3d angAcc; // Angular acceleration [rad/s^2]
-        double          mass;   // Mass                 [kg]
+        Eigen::Vector3d angVel; // Angular velocity     [rad/s]
+        Eigen::Vector3d angPos; // Angular position     [rad]
 
 };

@@ -43,6 +43,7 @@ void Engine::initialize(py::array_t<double> time  ,
 void Engine::update(double timeEval)
 {
 
+    state["time"]   = timeEval;
     state["thrust"] = interp1d_eval(thrustSpline, timeEval, thrustAcc);
     state["mass"]   = interp1d_eval(massSpline  , timeEval, massAcc  );
 
