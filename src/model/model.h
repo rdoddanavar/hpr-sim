@@ -3,6 +3,7 @@
 // System libraries
 #include <string>
 #include <vector>
+#include <set>
 #include <map>
 #include <cstdio>
 
@@ -27,7 +28,7 @@ class Model
     public: 
 
         // Data
-        std::vector<Model*> depModels;
+        std::set<Model*> depModels;
         std::map<std::string, double> state;
         std::map<std::string, double> stateInit;
 
@@ -41,7 +42,9 @@ class Model
 
         void add_dep(Model* dep)
         {
-            depModels.push_back(dep);
+            // std::set will quietly ignore duplicate elements
+            // Should an exception be raised when insertion is skipped?
+            depModels.insert(dep);
         }
 
         void update_deps()
