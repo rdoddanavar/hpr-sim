@@ -47,6 +47,16 @@ void Engine::update(double timeEval)
     state["thrust"] = interp1d_eval(thrustSpline, timeEval, thrustAcc);
     state["mass"]   = interp1d_eval(massSpline  , timeEval, massAcc  );
 
+    update_gState();
+
+}
+
+//---------------------------------------------------------------------------//
+
+void Engine::update_gState()
+{
+    gState->at("mass")   = state["mass"];
+    gState->at("thrust") = state["thrust"];
 }
 
 //---------------------------------------------------------------------------//

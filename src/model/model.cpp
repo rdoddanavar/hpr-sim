@@ -74,6 +74,8 @@ void init_EOM(py::module &m)
     py::class_<EOM, Model>(m, "EOM")
         .def(py::init<>())
         .def("initialize", &EOM::initialize)
-        .def("update"    , &EOM::update    );
+        .def("update"    , &EOM::update    )
+        .def("test"      , &EOM::test      )
+        .def_readonly("tState", &EOM::tState);
 
 }

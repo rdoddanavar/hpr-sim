@@ -24,8 +24,6 @@ void Geodetic::initialize(double phiInit)
 
     stateInit["gravity"] = wgs84(0.0);
 
-    stateInit["linPosZ"] = 0.0; // remove later
-
     reset(); // Set state to IC's
 
 }
@@ -35,8 +33,18 @@ void Geodetic::initialize(double phiInit)
 void Geodetic::update(double timeEval)
 {
 
-    state["gravity"] = wgs84(state["linPosZ"]);
+    double altEval = gState->at("linPosZ");
+    state["gravity"] = wgs84(altEval);
 
+    update_gState();
+
+}
+
+//---------------------------------------------------------------------------//
+
+void Geodetic::update_gState()
+{
+    gState->at("gravity") = state["gravity"];
 }
 
 //---------------------------------------------------------------------------//

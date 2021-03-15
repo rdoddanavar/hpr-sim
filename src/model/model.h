@@ -31,9 +31,11 @@ class Model
         std::set<Model*> depModels;
         std::map<std::string, double> state;
         std::map<std::string, double> stateInit;
+        std::map<std::string, double>* gState;
 
         // Function(s)
         virtual void update(double timeEval) = 0; // Pure virtual
+        virtual void update_gState() = 0;
 
         void reset()
         {
@@ -49,10 +51,22 @@ class Model
 
         void update_deps()
         {
-            for (auto dep : depModels)
+            for (const auto& dep : depModels)
             {
                 dep->update(state["time"]);
             }
+        }
+
+        void set_gState(std::map<std::string, double>* statePtr)
+        {
+            
+            gState = statePtr;
+
+            for (const auto& dep : depModels)
+            {
+                dep->set_gState(gState);
+            }
+
         }
 
 };
@@ -74,6 +88,7 @@ class Engine : public Model
                         py::array_t<double> mass  );
 
         void update(double timeEval) override;
+        void update_gState() override;
 
         ~Engine(); // Destructor
 
@@ -90,6 +105,7 @@ class Geodetic : public Model
         // Function(s)
         void initialize(double phi);
         void update(double timeEval) override;
+        void update_gState() override;
 
     private:
 
@@ -116,6 +132,9 @@ class EOM : public Model
 
         void initialize();
         void update(double timeEval) override;
+        void update_gState() override;
+        void test();
+        std::map<std::string, double> tState;
 
     private:
 
