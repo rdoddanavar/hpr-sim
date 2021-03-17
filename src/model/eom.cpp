@@ -44,34 +44,34 @@ void EOM::initialize()
 
 //---------------------------------------------------------------------------//
 
-void EOM::test()
+void EOM::test(double timeEval)
 {
 
     tState["linPosZ"] = state["linPosZ"];
-    tState["mass"] = 0.0;
-    tState["gravity"] = 0.0;
-    tState["thrust"] = 0.0;
+    //tState["mass"] = 0.0;
+    //tState["gravity"] = 0.0;
+    //tState["thrust"] = 0.0;
 
-    gState = &tState;
+    //gState = &tState;
 
-    set_gState(gState);
+    tState["time"] = timeEval;
+
+    update(tState);
 
 }
 
 //---------------------------------------------------------------------------//
 
-void EOM::update(double timeEval)
+void EOM::update(stateMap& gState)
 {
 
-    state["time"] = timeEval;
-
-    update_deps();
+    update_deps(gState);
 
 }
 
 //---------------------------------------------------------------------------//
 
-void EOM::update_gState()
+void EOM::update_gState(stateMap& gState)
 {
     ;
 }

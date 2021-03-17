@@ -40,25 +40,27 @@ void Engine::initialize(py::array_t<double> time  ,
 
 //---------------------------------------------------------------------------//
 
-void Engine::update(double timeEval)
+void Engine::update(stateMap& gState)
 {
 
-    update_deps();
+    update_deps(gState);
+
+    double timeEval = gState["time"];
 
     state["time"]   = timeEval;
     state["thrust"] = interp1d_eval(thrustSpline, timeEval, thrustAcc);
     state["mass"]   = interp1d_eval(massSpline  , timeEval, massAcc  );
 
-    update_gState();
+    update_gState(gState);
 
 }
 
 //---------------------------------------------------------------------------//
 
-void Engine::update_gState()
+void Engine::update_gState(stateMap& gState)
 {
-    gState->at("mass")   = state["mass"];
-    gState->at("thrust") = state["thrust"];
+    gState["mass"]   = state["mass"];
+    gState["thrust"] = state["thrust"];
 }
 
 //---------------------------------------------------------------------------//

@@ -39,8 +39,6 @@ eom.initialize()
 eom.add_dep(eng)
 eom.add_dep(geo)
 
-print("setting gState\n")
-
-eom.test()
+#eom.test(0.0)
 
 pdb.set_trace()

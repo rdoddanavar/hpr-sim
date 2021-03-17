@@ -30,17 +30,13 @@ class Model
     public: 
 
         // Data
-        std::set<Model*> depModels;
-        std::map<std::string, double> state;
-        std::map<std::string, double> stateInit;
-        //std::map<std::string, double>* gState;
+        stateMap state;
+        stateMap stateInit;
+        std::set<Model*> depModels; // std::set enforces unique elements
 
         // Function(s)
-        //virtual void update(double timeEval) = 0; // Pure virtual
-        //virtual void update_gState() = 0;
-
-        virtual void update(std::map<std::string, double>& gState) = 0;
-        virtual void update_gState(std::map<std::string, double>& gState) = 0;
+        virtual void update(stateMap& gState) = 0; // Pure virtual
+        virtual void update_gState(stateMap& gState) = 0; // Pure virtual
 
         void reset()
         {
@@ -54,29 +50,15 @@ class Model
             depModels.insert(dep);
         }
 
-    private:
+    protected:
 
-        void update_deps()
+        void update_deps(stateMap& gState)
         {
             for (const auto& dep : depModels)
             {
-                dep->update(state["time"]);
+                dep->update(gState);
             }
         }
-
-        /*
-        void set_gState(std::map<std::string, double>* statePtr)
-        {
-            
-            gState = statePtr;
-
-            for (const auto& dep : depModels)
-            {
-                dep->set_gState(gState);
-            }
-
-        }
-        */
 
 };
 
@@ -87,19 +69,21 @@ class Engine : public Model
     
     public:
 
-        // Data
-        gsl_spline       *thrustSpline, *massSpline;
-        gsl_interp_accel *thrustAcc   , *massAcc   ;
-
         // Function(s)
         void initialize(py::array_t<double> time  , 
                         py::array_t<double> thrust, 
                         py::array_t<double> mass  );
 
-        void update(double timeEval) override;
-        void update_gState() override;
+        void update(stateMap& gState) override;
+        void update_gState(stateMap& gState) override;
 
         ~Engine(); // Destructor
+
+    private:
+
+        // Data
+        gsl_spline       *thrustSpline, *massSpline;
+        gsl_interp_accel *thrustAcc   , *massAcc   ;
 
 };
 
@@ -113,8 +97,8 @@ class Geodetic : public Model
 
         // Function(s)
         void initialize(double phi);
-        void update(double timeEval) override;
-        void update_gState() override;
+        void update(stateMap& gState) override;
+        void update_gState(stateMap& gState) override;
 
     private:
 
@@ -140,9 +124,11 @@ class EOM : public Model
     public:
 
         void initialize();
-        void update(double timeEval) override;
-        void update_gState() override;
-        void test();
+        void update(stateMap& gState) override;
+        void update_gState(stateMap& gState) override;
+
+        //----------------------------------------------//
+        void test(double timeEval);
         std::map<std::string, double> tState;
 
     private:

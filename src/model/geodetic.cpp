@@ -30,23 +30,23 @@ void Geodetic::initialize(double phiInit)
 
 //---------------------------------------------------------------------------//
 
-void Geodetic::update(double timeEval)
+void Geodetic::update(stateMap& gState)
 {
 
-    update_deps();
+    update_deps(gState);
 
-    double altEval = gState->at("linPosZ");
+    double altEval = gState["linPosZ"];
     state["gravity"] = wgs84(altEval);
 
-    update_gState();
+    update_gState(gState);
 
 }
 
 //---------------------------------------------------------------------------//
 
-void Geodetic::update_gState()
+void Geodetic::update_gState(stateMap& gState)
 {
-    gState->at("gravity") = state["gravity"];
+    gState["gravity"] = state["gravity"];
 }
 
 //---------------------------------------------------------------------------//
