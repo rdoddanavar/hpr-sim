@@ -20,6 +20,8 @@
 
 namespace py = pybind11;
 
+using stateMap = std::map<std::string, double>;
+
 //---------------------------------------------------------------------------//
 
 class Model
@@ -31,11 +33,14 @@ class Model
         std::set<Model*> depModels;
         std::map<std::string, double> state;
         std::map<std::string, double> stateInit;
-        std::map<std::string, double>* gState;
+        //std::map<std::string, double>* gState;
 
         // Function(s)
-        virtual void update(double timeEval) = 0; // Pure virtual
-        virtual void update_gState() = 0;
+        //virtual void update(double timeEval) = 0; // Pure virtual
+        //virtual void update_gState() = 0;
+
+        virtual void update(std::map<std::string, double>& gState) = 0;
+        virtual void update_gState(std::map<std::string, double>& gState) = 0;
 
         void reset()
         {
@@ -49,6 +54,8 @@ class Model
             depModels.insert(dep);
         }
 
+    private:
+
         void update_deps()
         {
             for (const auto& dep : depModels)
@@ -57,6 +64,7 @@ class Model
             }
         }
 
+        /*
         void set_gState(std::map<std::string, double>* statePtr)
         {
             
@@ -68,6 +76,7 @@ class Model
             }
 
         }
+        */
 
 };
 

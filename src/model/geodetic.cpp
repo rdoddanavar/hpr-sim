@@ -33,6 +33,8 @@ void Geodetic::initialize(double phiInit)
 void Geodetic::update(double timeEval)
 {
 
+    update_deps();
+
     double altEval = gState->at("linPosZ");
     state["gravity"] = wgs84(altEval);
 
