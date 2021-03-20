@@ -22,7 +22,7 @@ import model
 time, thrust, mass = preproc_engine.load("../input/engine/AeroTech_J450DM.eng")
 
 eng = model.Engine()
-eng.initialize(time, thrust, mass)
+eng.init(time, thrust, mass)
 
 # Initialize geodetic model
 # SARA launch site: (32.269798483027344, -111.27475082401067)
@@ -30,11 +30,11 @@ lat  = 32.2698
 lat *= math.pi/180
 
 geo = model.Geodetic()
-geo.initialize(lat)
+geo.init(lat)
 
 # Initialize EOM model
 eom = model.EOM()
-eom.initialize()
+eom.init()
 
 eom.add_dep(eng)
 eom.add_dep(geo)

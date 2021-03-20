@@ -9,7 +9,7 @@
 
 //---------------------------------------------------------------------------//
 
-void Geodetic::initialize(double phiInit) 
+void Geodetic::init(double phiInit) 
 {
 
     // WGS 84 Constants
@@ -25,6 +25,8 @@ void Geodetic::initialize(double phiInit)
     stateInit["gravity"] = wgs84(0.0);
 
     reset(); // Set state to IC's
+
+    isInit = true;
 
 }
 

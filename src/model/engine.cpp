@@ -12,14 +12,14 @@
 
 //---------------------------------------------------------------------------//
 
-void Engine::initialize(py::array_t<double> time  , 
-                        py::array_t<double> thrust, 
-                        py::array_t<double> mass  ) 
+void Engine::init(py::array_t<double> timeInit  , 
+                  py::array_t<double> thrustInit, 
+                  py::array_t<double> massInit  ) 
 {
 
-    auto timeBuff   = time.request();
-    auto thrustBuff = thrust.request();
-    auto massBuff   = mass.request();
+    auto timeBuff   = timeInit.request();
+    auto thrustBuff = thrustInit.request();
+    auto massBuff   = massInit.request();
 
     double* timeData   = (double*) timeBuff.ptr;
     double* thrustData = (double*) thrustBuff.ptr;
@@ -30,11 +30,13 @@ void Engine::initialize(py::array_t<double> time  ,
     interp1d_init(timeData, thrustData, n, thrustSpline, thrustAcc);
     interp1d_init(timeData, massData  , n, massSpline  , massAcc  );
 
-    stateInit["time"]   = timeData[0];
-    stateInit["thrust"] = thrustData[0];
-    stateInit["mass"]   = massData[0];
+    stateInit["time"]    = timeData[0];
+    stateInit["thrust"]  = thrustData[0];
+    stateInit["engMass"] = massData[0];
 
     reset(); // Set state to IC's
+
+    isInit = true;
 
 }
 
@@ -47,9 +49,9 @@ void Engine::update(stateMap& gState)
 
     double timeEval = gState["time"];
 
-    state["time"]   = timeEval;
-    state["thrust"] = interp1d_eval(thrustSpline, timeEval, thrustAcc);
-    state["mass"]   = interp1d_eval(massSpline  , timeEval, massAcc  );
+    state["time"]    = timeEval;
+    state["thrust"]  = interp1d_eval(thrustSpline, timeEval, thrustAcc);
+    state["engMass"] = interp1d_eval(massSpline  , timeEval, massAcc  );
 
     update_gState(gState);
 
@@ -59,8 +61,8 @@ void Engine::update(stateMap& gState)
 
 void Engine::update_gState(stateMap& gState)
 {
-    gState["mass"]   = state["mass"];
-    gState["thrust"] = state["thrust"];
+    gState["engMass"] = state["mass"];
+    gState["thrust"]  = state["thrust"];
 }
 
 //---------------------------------------------------------------------------//

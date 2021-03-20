@@ -30,6 +30,7 @@ class Model
     public: 
 
         // Data
+        bool isInit = false;
         stateMap state;
         stateMap stateInit;
         std::set<Model*> depModels; // std::set enforces unique elements
@@ -60,6 +61,18 @@ class Model
             }
         }
 
+        void init_gState(stateMap& gState)
+        {
+            
+            update_gState(gState);
+            
+            for (const auto& dep : depModels)
+            {
+                dep->init_gState(gState);
+            }
+
+        }
+
 };
 
 //---------------------------------------------------------------------------//
@@ -70,9 +83,9 @@ class Engine : public Model
     public:
 
         // Function(s)
-        void initialize(py::array_t<double> time  , 
-                        py::array_t<double> thrust, 
-                        py::array_t<double> mass  );
+        void init(py::array_t<double> timeInit  , 
+                  py::array_t<double> thrustInit, 
+                  py::array_t<double> massInit  );
 
         void update(stateMap& gState) override;
         void update_gState(stateMap& gState) override;
@@ -96,7 +109,7 @@ class Geodetic : public Model
         // Data
 
         // Function(s)
-        void initialize(double phi);
+        void init(double phi);
         void update(stateMap& gState) override;
         void update_gState(stateMap& gState) override;
 
@@ -123,7 +136,7 @@ class EOM : public Model
 
     public:
 
-        void initialize();
+        void init();
         void update(stateMap& gState) override;
         void update_gState(stateMap& gState) override;
 

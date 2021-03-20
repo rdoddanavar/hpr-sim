@@ -19,9 +19,9 @@ Release Notes (pybind11 v2.6.0):
 */
 
 // Exposed derived classes
-void init_Engine(py::module &);
-void init_Geodetic(py::module &);
-void init_EOM(py::module &);
+void bind_Engine(py::module &);
+void bind_Geodetic(py::module &);
+void bind_EOM(py::module &);
 
 PYBIND11_MODULE(model, m)
 {
@@ -36,46 +36,46 @@ PYBIND11_MODULE(model, m)
         .def_readonly("state", &Model::state);
 
     // Exposed derived classes
-    init_Engine(m);
-    init_Geodetic(m);
-    init_EOM(m);
+    bind_Engine(m);
+    bind_Geodetic(m);
+    bind_EOM(m);
 
 }
 
 //---------------------------------------------------------------------------//
 
-void init_Engine(py::module &m)
+void bind_Engine(py::module &m)
 {
 
     py::class_<Engine, Model>(m, "Engine")
         .def(py::init<>())
-        .def("initialize", &Engine::initialize)
-        .def("update"    , &Engine::update    );
+        .def("init"  , &Engine::init  )
+        .def("update", &Engine::update);
 
 }
 
 //---------------------------------------------------------------------------//
 
-void init_Geodetic(py::module &m)
+void bind_Geodetic(py::module &m)
 {
 
     py::class_<Geodetic, Model>(m, "Geodetic")
         .def(py::init<>())
-        .def("initialize", &Geodetic::initialize)
-        .def("update"    , &Geodetic::update    );
+        .def("init"  , &Geodetic::init  )
+        .def("update", &Geodetic::update);
 
 }
 
 //---------------------------------------------------------------------------//
 
-void init_EOM(py::module &m)
+void bind_EOM(py::module &m)
 {
 
     py::class_<EOM, Model>(m, "EOM")
         .def(py::init<>())
-        .def("initialize", &EOM::initialize)
-        .def("update"    , &EOM::update    )
-        .def("test"      , &EOM::test      )
+        .def("init"  , &EOM::init  )
+        .def("update", &EOM::update)
+        .def("test"  , &EOM::test  )
         .def_readonly("tState", &EOM::tState);
 
 }
