@@ -9,7 +9,7 @@
 
 //---------------------------------------------------------------------------//
 
-void Geodetic::initialize(double phiInit) 
+void Geodetic::init(double phiInit) 
 {
 
     // WGS 84 Constants
@@ -20,20 +20,29 @@ void Geodetic::initialize(double phiInit)
     f    = 3.3528106647475e-03; // [-]
     m    = 3.449786506841e-03;  // [-]
 
-    phi = phiInit; // [rad]
+    phi     = phiInit; // [rad]
+    gravity = wgs84(0.0);
 
-    stateInit["gravity"] = wgs84(0.0);
-
-    reset(); // Set state to IC's
+    isInit = true;
 
 }
 
 //---------------------------------------------------------------------------//
 
-void Geodetic::update(double altEval)
+void Geodetic::set_state()
+{
+    state->emplace("gravity", &gravity);
+}
+
+//---------------------------------------------------------------------------//
+
+void Geodetic::update()
 {
 
-    state["gravity"] = wgs84(altEval);
+    update_deps();
+
+    double alt = *state->at("linPosZ");
+    gravity    = wgs84(alt);
 
 }
 

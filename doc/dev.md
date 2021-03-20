@@ -57,6 +57,7 @@
 
  - `virtual` keyword: https://stackoverflow.com/questions/2391679/why-do-we-need-virtual-functions-in-c?rq=1
  - `override` keyword: https://stackoverflow.com/questions/18198314/what-is-the-override-keyword-in-c-used-for
+ - pointers to `std::map`: https://stackoverflow.com/questions/7482888/pointer-to-a-map
 
 ### Template Classes
  - http://www.cplusplus.com/doc/oldtutorial/templates/

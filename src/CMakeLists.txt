@@ -1,7 +1,7 @@
 # INPUT
 
-set(SRC preproc/input.cpp)
-set(HDR preproc/input.h)
+set(SRC "./preproc/input.cpp")
+set(HDR "./preproc/input.h")
 
 pybind11_add_module(input MODULE ${SRC} ${HDR})
 
@@ -12,12 +12,13 @@ pybind11_add_module(input MODULE ${SRC} ${HDR})
 set(SRC "./model/model.cpp"
         "./model/engine.cpp"
         "./model/geodetic.cpp"
+        "./model/eom.cpp"
         )
 
 set(HDR "./model/model.h")
 
-set(DEP "util"
-        "gsl"
+set(DEP util
+        gsl
         )
 
 pybind11_add_module(model MODULE ${SRC} ${HDR})
@@ -29,7 +30,7 @@ target_link_libraries(model PUBLIC ${DEP})
 
 set(SRC "./util/util_interp.cpp")
 set(HDR "./util/util_interp.h")
-set(DEP "gsl")
+set(DEP gsl)
 
 add_library(util SHARED ${SRC} ${HDR})
 target_link_libraries(util PUBLIC ${DEP})

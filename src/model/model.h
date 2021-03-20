@@ -3,6 +3,7 @@
 // System libraries
 #include <string>
 #include <vector>
+#include <set>
 #include <map>
 #include <cstdio>
 
@@ -10,58 +11,63 @@
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h" // For std::map; induces overhead, remove if possible
 #include "pybind11/numpy.h"
-
-// Project headers
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
+#include "eigen/Eigen/Core"
+
+// Project headers
+// <none>
 
 namespace py = pybind11;
+
+// Type aliases
+using stateMap = std::map<std::string, double*>;
 
 //---------------------------------------------------------------------------//
 
 class Model
 {
+    
     public: 
 
         // Data
-        //std::vector<Model*> depModels; // don't forget to use "new" keyword for mem alloc
-        std::map<std::string, double> state;
-        std::map<std::string, double> stateInit;
+        bool isInit = false;
+        stateMap* state;
+        std::set<Model*> depModels; // std::set enforces unique elements
 
         // Function(s)
-        virtual void update(double) = 0; // Pure virtual
-        void reset()
+        virtual void update()    = 0; // Pure virtual
+        virtual void set_state() = 0; // Pure virtual
+
+        void add_dep(Model* dep)
         {
-            state = stateInit;
-        };
-        //void update_deps();
+            // std::set will quietly ignore duplicate elements
+            // Should an exception be raised when insertion is skipped?
+            depModels.insert(dep);
+        }
 
-        // Constructor(s)
-        //Model(){;};
+        void update_deps()
+        {
+            for (const auto& dep : depModels)
+            {
+                dep->update();
+            }
+        }
+
+        void init_state(stateMap* stateIn)
+        {
+            
+            state = stateIn;
+            set_state();
+
+            for (const auto& dep : depModels)
+            {
+                dep->init_state(state);
+            }
+
+        }
+
 };
-
-//---------------------------------------------------------------------------//
-
-/*
-void Model::update_deps()
-{
-
-    // Iterates over model dependencies, updates internal states 
-
-    for (auto dep : depModels)
-    {
-        dep->update();
-    }
-}
-*/
-
-/*
-void Model::add_dep(Model dep)
-{
-    // add pointer from model to depModels?
-    depModels.push_back(&dep)
-}
-*/
 
 //---------------------------------------------------------------------------//
 
@@ -70,18 +76,24 @@ class Engine : public Model
     
     public:
 
-        // Data
-        gsl_spline       *thrustSpline, *massSpline;
-        gsl_interp_accel *thrustAcc   , *massAcc   ;
-
         // Function(s)
-        void initialize(py::array_t<double> time  , 
-                        py::array_t<double> thrust, 
-                        py::array_t<double> mass  );
+        void init(py::array_t<double> timeInit  , 
+                  py::array_t<double> thrustInit, 
+                  py::array_t<double> massInit  );
 
-        void update(double timeEval) override;
+        void update() override;
+        void set_state() override;
 
         ~Engine(); // Destructor
+
+    private:
+
+        // Data
+        double thrust;
+        double mass;
+
+        gsl_spline       *thrustSpline, *massSpline;
+        gsl_interp_accel *thrustAcc   , *massAcc   ;
 
 };
 
@@ -94,12 +106,15 @@ class Geodetic : public Model
         // Data
 
         // Function(s)
-        void initialize(double phi);
-        void update(double altEval) override;
+        void init(double phiInit);
+        void update() override;
+        void set_state() override;
 
     private:
 
         // Data
+        double gravity;
+
         double phi;
         double gamE;
         double k;
@@ -110,5 +125,40 @@ class Geodetic : public Model
 
         // Function(s)
         double wgs84(double h);
+
+};
+
+//---------------------------------------------------------------------------//
+
+class EOM : public Model
+{
+
+    public:
+
+        void init();
+        void update() override;
+        void set_state() override;
+
+        //----------------------------------------------//
+        void init_test();
+        void test(double timeEval);
+        stateMap tState;
+
+        double time;
+        double massBody;
+
+    private:
+
+        // Data
+        Eigen::Vector3d force;  // Force  [N]
+        Eigen::Vector3d moment; // Moment [N*m]
+
+        Eigen::Vector3d linAcc; // Linear acceleration [m/s^2]
+        Eigen::Vector3d linVel; // Linear velocity     [m/s]
+        Eigen::Vector3d linPos; // Linear position     [m]
+
+        Eigen::Vector3d angAcc; // Angular acceleration [rad/s^2]
+        Eigen::Vector3d angVel; // Angular velocity     [rad/s]
+        Eigen::Vector3d angPos; // Angular position     [rad]
 
 };
