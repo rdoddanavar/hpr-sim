@@ -39,6 +39,6 @@ eom.init()
 eom.add_dep(eng)
 eom.add_dep(geo)
 
-#eom.test(0.0)
+eom.init_test()
 
 pdb.set_trace()

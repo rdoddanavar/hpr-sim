@@ -30,11 +30,8 @@ void Engine::init(py::array_t<double> timeInit  ,
     interp1d_init(timeData, thrustData, n, thrustSpline, thrustAcc);
     interp1d_init(timeData, massData  , n, massSpline  , massAcc  );
 
-    stateInit["time"]    = timeData[0];
-    stateInit["thrust"]  = thrustData[0];
-    stateInit["engMass"] = massData[0];
-
-    reset(); // Set state to IC's
+    thrust = interp1d_eval(thrustSpline, 0.0, thrustAcc);
+    mass   = interp1d_eval(massSpline  , 0.0, massAcc  );
 
     isInit = true;
 
@@ -42,27 +39,26 @@ void Engine::init(py::array_t<double> timeInit  ,
 
 //---------------------------------------------------------------------------//
 
-void Engine::update(stateMap& gState)
+void Engine::set_state()
 {
 
-    update_deps(gState);
-
-    double timeEval = gState["time"];
-
-    state["time"]    = timeEval;
-    state["thrust"]  = interp1d_eval(thrustSpline, timeEval, thrustAcc);
-    state["engMass"] = interp1d_eval(massSpline  , timeEval, massAcc  );
-
-    update_gState(gState);
+    state->emplace("thrust" , &thrust);
+    state->emplace("massEng", &mass  );
 
 }
 
 //---------------------------------------------------------------------------//
 
-void Engine::update_gState(stateMap& gState)
+void Engine::update()
 {
-    gState["engMass"] = state["mass"];
-    gState["thrust"]  = state["thrust"];
+
+    update_deps();
+
+    double time = *state->at("time");
+
+    thrust = interp1d_eval(thrustSpline, time, thrustAcc);
+    mass   = interp1d_eval(massSpline  , time, massAcc  );
+
 }
 
 //---------------------------------------------------------------------------//

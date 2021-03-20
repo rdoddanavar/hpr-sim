@@ -26,20 +26,6 @@ void EOM::init()
     angAcc = Eigen::Vector3d::Zero();
     angVel = Eigen::Vector3d::Zero();
     angPos = Eigen::Vector3d::Zero();
-
-    // Set corresponding state values
-    stateInit["forceX"]  = 0.0; stateInit["forceY"]  = 0.0; stateInit["forceZ"]  = 0.0;
-    stateInit["momentX"] = 0.0; stateInit["momentY"] = 0.0; stateInit["momentZ"] = 0.0;
-
-    stateInit["linAccX"] = 0.0; stateInit["linAccY"] = 0.0; stateInit["linAccZ"] = 0.0;
-    stateInit["linVelX"] = 0.0; stateInit["linVelY"] = 0.0; stateInit["linVelZ"] = 0.0;
-    stateInit["linPosX"] = 0.0; stateInit["linPosY"] = 0.0; stateInit["linPosZ"] = 0.0;
-
-    stateInit["angAccX"] = 0.0; stateInit["angAccY"] = 0.0; stateInit["angAccZ"] = 0.0;
-    stateInit["angVelX"] = 0.0; stateInit["angVelY"] = 0.0; stateInit["angVelZ"] = 0.0;
-    stateInit["angPosX"] = 0.0; stateInit["angPosY"] = 0.0; stateInit["angPosZ"] = 0.0;
-
-    reset(); // Set state to IC's
     
     isInit = true;
 
@@ -47,51 +33,59 @@ void EOM::init()
 
 //---------------------------------------------------------------------------//
 
-void EOM::test(double timeEval)
-{
-
-    tState["time"]     = timeEval;
-    tState["bodyMass"] = 5.0;
-
-    init_gState(tState);
-    update(tState);
-
-}
-
-//---------------------------------------------------------------------------//
-
-void EOM::update(stateMap& gState)
-{
-
-    update_deps(gState);
-
-    // Populate vectors
-    linAcc[2] = gState["thrust"] - gState["gravity"];
-
-    // Linear EOM
-    linAcc = force / (gState["bodyMass"] - gState["engMass"]);
-
-    // Update local state
-    state["linAccX"] = linAcc[0];
-    state["linAccY"] = linAcc[1];
-    state["linAccZ"] = linAcc[2];
-
-    update_gState(gState);
-
-}
-
-//---------------------------------------------------------------------------//
-
-void EOM::update_gState(stateMap& gState)
+void EOM::set_state()
 {
     
-    std::vector<std::string> keys = {"linAccX", "linAccY", "linAccZ",
-                                     "linVelX", "linVelY", "linVelZ",
-                                     "linPosX", "linPosY", "linPosZ"};
+    state->emplace("forceX", &force[0]);
+    state->emplace("forceY", &force[1]);
+    state->emplace("forceZ", &force[2]);
 
-    for (const auto& key : keys)
-    {
-        gState[key] = state[key];
-    }
+    state->emplace("linAccX", &linAcc[0]);
+    state->emplace("linAccY", &linAcc[1]);
+    state->emplace("linAccZ", &linAcc[2]);
+
+    state->emplace("linPosX", &linPos[0]);
+    state->emplace("linPosY", &linPos[1]);
+    state->emplace("linPosZ", &linPos[2]);
+
+}
+
+//---------------------------------------------------------------------------//
+
+void EOM::init_test()
+{
+    init_state(&tState);
+
+    state->emplace("time", &time);
+    state->emplace("massBody", &massBody);
+
+}
+
+void EOM::test(double timeEval)
+{
+    
+    time = timeEval;
+    massBody = 2.0;
+    update();
+
+}
+
+//---------------------------------------------------------------------------//
+
+void EOM::update()
+{
+
+    update_deps();
+
+    // Populate vectors
+    double thrust   = *state->at("thrust");
+    double gravity  = *state->at("gravity");
+    double massEng  = *state->at("massEng");
+    double massBody = *state->at("massBody");
+
+    force[2] = thrust - gravity*(massBody + massEng);
+
+    // Linear EOM
+    linAcc = force / (massBody + massEng);
 
 }

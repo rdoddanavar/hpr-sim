@@ -31,9 +31,7 @@ PYBIND11_MODULE(model, m)
     // Exposing base class necessary for derived construction
     // Base methods exposed once, automatically available to dervied in python
     py::class_<Model>(m, "Model")
-        .def("reset", &Model::reset)
-        .def("add_dep", &Model::add_dep)
-        .def_readonly("state", &Model::state);
+        .def("add_dep", &Model::add_dep);
 
     // Exposed derived classes
     bind_Engine(m);
@@ -75,6 +73,7 @@ void bind_EOM(py::module &m)
         .def(py::init<>())
         .def("init"  , &EOM::init  )
         .def("update", &EOM::update)
+        .def("init_test"  , &EOM::init_test  )
         .def("test"  , &EOM::test  )
         .def_readonly("tState", &EOM::tState);
 
