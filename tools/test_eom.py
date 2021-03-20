@@ -41,4 +41,24 @@ eom.add_dep(geo)
 
 eom.init_test()
 
+#------------------------------------------------------#
+
+time  = np.linspace(0.0, 5.0, 50)
+accel = np.array([])
+
+#pdb.set_trace()
+
+for val in time:
+    
+    eom.test(val)
+    accel = np.append(accel, eom.tState["linAccZ"])
+
+plt.plot(time, accel, marker='o')
+
+plt.xlabel("Time [s]")
+plt.ylabel("Acceleration [m/s]")
+plt.title("EOM State: linAccZ")
+plt.grid()
+plt.show()
+
 pdb.set_trace()
