@@ -72,9 +72,6 @@ void bind_EOM(py::module &m)
     py::class_<EOM, Model>(m, "EOM")
         .def(py::init<>())
         .def("init"  , &EOM::init  )
-        .def("update", &EOM::update)
-        .def("init_test"  , &EOM::init_test  )
-        .def("test"  , &EOM::test  )
-        .def_readonly("tState", &EOM::tState);
+        .def("update", &EOM::update);
 
 }

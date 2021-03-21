@@ -13,6 +13,7 @@ set(SRC "./model/model.cpp"
         "./model/engine.cpp"
         "./model/geodetic.cpp"
         "./model/eom.cpp"
+        "./model/flight.cpp"
         )
 
 set(HDR "./model/model.h")

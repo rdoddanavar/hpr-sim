@@ -21,7 +21,8 @@
 namespace py = pybind11;
 
 // Type aliases
-using stateMap = std::map<std::string, double*>;
+using stateMap    = std::map<std::string, double*>;
+using stateMapVec = std::map<std::string, std::vector<double>>;
 
 //---------------------------------------------------------------------------//
 
@@ -139,14 +140,6 @@ class EOM : public Model
         void update() override;
         void set_state() override;
 
-        //----------------------------------------------//
-        void init_test();
-        void test(double timeEval);
-        stateMap tState;
-
-        double time;
-        double massBody;
-
     private:
 
         // Data
@@ -160,5 +153,30 @@ class EOM : public Model
         Eigen::Vector3d angAcc; // Angular acceleration [rad/s^2]
         Eigen::Vector3d angVel; // Angular velocity     [rad/s]
         Eigen::Vector3d angPos; // Angular position     [rad]
+
+};
+
+//---------------------------------------------------------------------------//
+
+class Flight : public Model
+{
+
+    public:
+
+        void init();
+        void update() override;
+        void set_state() override;
+
+        void update_ode();
+
+        stateMapVec stateTelem;
+
+        ~Flight(); // Destructor
+
+    private:
+
+        // Data
+        double time;
+        double massBody;
 
 };

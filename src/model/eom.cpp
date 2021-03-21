@@ -52,26 +52,6 @@ void EOM::set_state()
 
 //---------------------------------------------------------------------------//
 
-void EOM::init_test()
-{
-    init_state(&tState);
-
-    state->emplace("time", &time);
-    state->emplace("massBody", &massBody);
-
-}
-
-void EOM::test(double timeEval)
-{
-    
-    time = timeEval;
-    massBody = 2.0;
-    update();
-
-}
-
-//---------------------------------------------------------------------------//
-
 void EOM::update()
 {
 
