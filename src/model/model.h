@@ -14,6 +14,7 @@
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
 #include "eigen/Eigen/Core"
+#include "gsl/ode-initval2/gsl_odeiv2.h"
 
 // Project headers
 // <none>
@@ -167,7 +168,7 @@ class Flight : public Model
         void update() override;
         void set_state() override;
 
-        void update_ode();
+        int ode_update(double t, const double y[], double f[], void *params);
 
         stateMapVec stateTelem;
 
@@ -178,5 +179,16 @@ class Flight : public Model
         // Data
         double time;
         double massBody;
+
+        // ODE stuff - store all this stuff in a struct?
+        gsl_odeiv2_system odeSys;
+        gsl_odeiv2_driver* odeDriver;
+
+        size_t odeDim = 2;
+        const gsl_odeiv2_step_type* odeMethod = gsl_odeiv2_step_rkf45;
+
+        const double odeHStart = 1e-6;
+        const double odeEpsAbs = 1e-6;
+        const double odeEpsRel = 0.0;
 
 };

@@ -1,9 +1,9 @@
 // System libraries
-// <none>
+#include <map>
 
 // External libraries
-#include "gsl/interpolation/gsl_interp.h"
-#include "gsl/interpolation/gsl_spline.h"
+#include "gsl/ode-initval2/gsl_odeiv2.h"
+#include "gsl/err/gsl_errno.h"
 
 // Project headers
 #include "model.h"
@@ -17,6 +17,21 @@ void Flight::init()
     massBody = 2.0;
     
     state = new stateMap;
+
+    //-----------------------------------------------------------------------//
+    //odeSys    = new gsl_odeiv2_system(&ode_update, NULL, odeDim, NULL);
+
+    odeSys.function  = &ode_update;
+    odeSys.jacobian  = nullptr;
+    odeSys.dimension = odeDim;
+    odeSys.params    = nullptr;
+
+    odeDriver = gsl_odeiv2_driver_alloc_y_new(&odeSys  ,
+                                              odeMethod,
+                                              odeHStart,
+                                              odeEpsAbs,
+                                              odeEpsRel);
+    //-----------------------------------------------------------------------//
 
     isInit = true;
 
@@ -39,14 +54,23 @@ void Flight::update()
 
 //---------------------------------------------------------------------------//
 
-void Flight::update_ode()
+int Flight::ode_update(double t, const double y[], double f[], void *params)
 {
-    ;
+    return GSL_SUCCESS;
 }
+
+/*
+THINK!!!
+
+I can't pass a class member as a function pointer to odeSys.function
+
+Make ode_fun_1dof as a utility function outside of the class
+*/
 
 //---------------------------------------------------------------------------//
 
 Flight::~Flight()
 {
     delete state;
+    gsl_odeiv2_driver_free(odeDriver);
 }
