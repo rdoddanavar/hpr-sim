@@ -168,7 +168,9 @@ class Flight : public Model
         void update() override;
         void set_state() override;
 
-        int ode_update(double t, const double y[], double f[], void *params);
+        // Replace this with a wrapper function
+        //int ode_update(double t, const double y[], double f[], void *params);
+        void test();
 
         stateMapVec stateTelem;
 

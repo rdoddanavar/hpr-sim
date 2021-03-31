@@ -18,10 +18,11 @@ Release Notes (pybind11 v2.6.0):
     but an alias py::module is provided for backward compatibility. #2489
 */
 
-// Exposed derived classes
+// Expose derived classes
 void bind_Engine(py::module &);
 void bind_Geodetic(py::module &);
 void bind_EOM(py::module &);
+void bind_Flight(py::module &);
 
 PYBIND11_MODULE(model, m)
 {
@@ -33,10 +34,11 @@ PYBIND11_MODULE(model, m)
     py::class_<Model>(m, "Model")
         .def("add_dep", &Model::add_dep);
 
-    // Exposed derived classes
+    // Expose derived classes
     bind_Engine(m);
     bind_Geodetic(m);
     bind_EOM(m);
+    bind_Flight(m);
 
 }
 
@@ -73,5 +75,17 @@ void bind_EOM(py::module &m)
         .def(py::init<>())
         .def("init"  , &EOM::init  )
         .def("update", &EOM::update);
+
+}
+
+//---------------------------------------------------------------------------//
+
+void bind_Flight(py::module &m)
+{
+
+    py::class_<Flight, Model>(m, "Flight")
+        .def(py::init<>())
+        .def("init"  , &Flight::init)
+        .def("update", &Flight::update);
 
 }

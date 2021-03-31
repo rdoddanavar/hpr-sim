@@ -36,18 +36,12 @@ void EOM::init()
 void EOM::set_state()
 {
     
-    state->emplace("forceX", &force[0]);
-    state->emplace("forceY", &force[1]);
     state->emplace("forceZ", &force[2]);
 
-    state->emplace("linAccX", &linAcc[0]);
-    state->emplace("linAccY", &linAcc[1]);
     state->emplace("linAccZ", &linAcc[2]);
-
-    state->emplace("linPosX", &linPos[0]);
-    state->emplace("linPosY", &linPos[1]);
+    state->emplace("linVelZ", &linVel[2]);
     state->emplace("linPosZ", &linPos[2]);
-
+    printf("test eom\n");
 }
 
 //---------------------------------------------------------------------------//

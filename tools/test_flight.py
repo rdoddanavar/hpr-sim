@@ -1,6 +1,5 @@
 # System modules
 import sys # System utilities
-import pdb # Python debugger
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,14 +38,22 @@ eom.init()
 eom.add_dep(eng)
 eom.add_dep(geo)
 
-eom.init_test()
+# Initialize flight
+flt = model.Flight()
+flt.init()
+flt.add_dep(eom)
+flt.init_state()
+
+breakpoint()
+
+#flt.update()
+
+
 
 #------------------------------------------------------#
-
+'''
 time  = np.linspace(0.0, 5.0, 50)
 accel = np.array([])
-
-#pdb.set_trace()
 
 for val in time:
     
@@ -61,4 +68,5 @@ plt.title("EOM State: linAccZ")
 plt.grid()
 plt.show()
 
-pdb.set_trace()
+breakpoint()
+'''
