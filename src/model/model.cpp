@@ -86,6 +86,9 @@ void bind_Flight(py::module &m)
     py::class_<Flight, Model>(m, "Flight")
         .def(py::init<>())
         .def("init"  , &Flight::init)
+        .def_readonly("stateTelem", &Flight::stateTelem)
+        .def_readwrite("massBody", &Flight::massBody)
+        .def("write_telem", &Flight::write_telem)
         .def("update", &Flight::update);
 
 }

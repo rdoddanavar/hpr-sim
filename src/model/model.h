@@ -164,23 +164,25 @@ class Flight : public Model
 
     public:
 
-        void init();
+        void init(double tfInit, double dtInit, double t0Init);
         void update() override;
         void set_state() override;
-
-        // Replace this with a wrapper function
-        //int ode_update(double t, const double y[], double f[], void *params);
-        void test();
+        void write_telem(std::string fileOut);
 
         stateMapVec stateTelem;
 
         ~Flight(); // Destructor
 
+        double massBody;
+
     private:
 
         // Data
         double time;
-        double massBody;
+
+        double t0;
+        double dt;
+        double tf;
 
         // ODE stuff - store all this stuff in a struct?
         gsl_odeiv2_system odeSys;
@@ -192,5 +194,15 @@ class Flight : public Model
         const double odeHStart = 1e-6;
         const double odeEpsAbs = 1e-6;
         const double odeEpsRel = 0.0;
+
+        std::vector<std::string> keys = {"time"   ,
+                                        "linAccZ" ,
+                                        "linVelZ" ,
+                                        "linPosZ"};
+
+        std::vector<std::string> units = {"s"    ,
+                                          "m/s^2",
+                                          "m/s"  ,
+                                          "m"    };
 
 };

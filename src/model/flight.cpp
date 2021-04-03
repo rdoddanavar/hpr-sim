@@ -2,6 +2,12 @@
 #include <map>
 #include <cstdio>
 
+#include <sstream>
+#include <string>
+#include <vector>
+#include <iterator>
+#include <iostream>
+
 // External libraries
 #include "gsl/ode-initval2/gsl_odeiv2.h"
 #include "gsl/err/gsl_errno.h"
@@ -41,17 +47,19 @@ Make ode_fun_1dof as a utility function outside of the class
 
 //---------------------------------------------------------------------------//
 
-void Flight::init()
+void Flight::init(double t0Init, double dtInit, double tfInit)
 {
 
-    time     = 0.0;
-    massBody = 2.0;
+    time = t0Init;
+    dt   = dtInit;
+    tf   = tfInit;
+
+    massBody = 10.0;
     
     state = new stateMap;
     init_state(state);
 
     //-----------------------------------------------------------------------//
-
     odeSys.function  = &ode_update;
     odeSys.jacobian  = nullptr;
     odeSys.dimension = odeDim;
@@ -62,6 +70,18 @@ void Flight::init()
                                               odeHStart,
                                               odeEpsAbs,
                                               odeEpsRel);
+    //-----------------------------------------------------------------------//
+    std::vector<std::string> keys = {"time"   ,
+                                     "linAccZ",
+                                     "linVelZ",
+                                     "linPosZ"};
+
+    int nStep = static_cast<int>(tf/dt);
+
+    for (const auto& key : keys)
+    {
+        stateTelem[key] = std::vector<double>(nStep, 0.0);
+    }
     //-----------------------------------------------------------------------//
 
     isInit = true;
@@ -81,11 +101,8 @@ void Flight::set_state()
 void Flight::update()
 {
 
-    // time already initialized
-    const double tf = 20.0; // time final
-    const double dt = 0.1; // output time step
     int nStep = static_cast<int>(tf/dt);
-    //printf("test1\n");
+
     double y[2] = {*state->at("linVelZ"),
                    *state->at("linAccZ")};
 
@@ -94,10 +111,15 @@ void Flight::update()
     for (i = 1; i<=nStep; i++)
     {
         double ti = i*dt;
-        //printf("test2\n");
+
         int status = gsl_odeiv2_driver_apply(odeDriver, state->at("time"), ti, y);
 
-        printf("@t=%f: %f, %f, %f\n", ti, *state->at("linAccZ"), y[1], y[0]);
+        //-----------------------------------------------------------------------//
+        for (const auto& key : keys)
+        {
+            stateTelem[key][i] = *state->at(key);
+        }
+        //-----------------------------------------------------------------------//
 
         /*
         if (status != GSL_SUCCESS)
@@ -112,8 +134,67 @@ void Flight::update()
 
 //---------------------------------------------------------------------------//
 
+void Flight::write_telem(std::string fileOut) // maybe return bool for success/error status?
+{
+
+    // Write header
+    std::ostringstream oss;
+    const char* delim = ",";
+
+    std::copy(keys.begin(), keys.end() - 1, std::ostream_iterator<std::string>(oss, delim));
+    oss << keys.back();
+
+    std::cout << oss.str() << "\n";
+
+    // Write units
+    oss.str("");
+    oss.clear();
+
+    std::copy(units.begin(), units.end() - 1, std::ostream_iterator<std::string>(oss, delim));
+    oss << units.back();
+
+    std::cout << oss.str() << "\n";
+
+    // Write data
+    stateMapVec test;
+    int nStep = 5;
+
+    for (const auto& key : keys)
+    {
+        test[key] = std::vector<double>(nStep, 0.0);
+    }
+
+    //----------------------//
+
+    for (int i = 0; i < nStep; i++)
+    {
+        
+        oss.str("");
+        oss.clear();
+
+        for (const auto& key : keys)
+        {
+            oss << test[key][i] << delim;
+        }
+
+        std::string outStr = oss.str();
+        outStr.pop_back();
+
+        std::cout << outStr << "\n";
+
+    }
+
+}
+
+//---------------------------------------------------------------------------//
+
 Flight::~Flight()
 {
-    delete state;
-    gsl_odeiv2_driver_free(odeDriver);
+    
+    if (isInit)
+    {
+        delete state;
+        gsl_odeiv2_driver_free(odeDriver);
+    }
+
 }

@@ -52,6 +52,9 @@
    - https://stackoverflow.com/questions/12774207/fastest-way-to-check-if-a-file-exist-using-standard-c-c11-c
  - Convert `std::vector` to array
    - https://stackoverflow.com/questions/2923272/how-to-convert-vector-to-array
+ - Create deliminated string from vector
+   - https://stackoverflow.com/questions/20817322/convert-vectorint-to-delimited-string
+   - https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
 
 ### Object-Oriented
 
@@ -86,6 +89,7 @@ PYBIND11_MODULE(module, m)
 ```
 
  - Split binding over multiple files: https://stackoverflow.com/questions/53762552/with-pybind11-how-to-split-my-code-into-multiple-modules-files
+ - BE CAREFUL!!! When splitting bindings, keep code in `*.cpp`, not header `*.h`; if you include binding in multiple places it will violate "One Definition Rule"; see issue #2157
 
 ```
 Release Notes (pybind11 v2.6.0)

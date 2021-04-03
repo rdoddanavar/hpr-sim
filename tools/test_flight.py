@@ -40,33 +40,29 @@ eom.add_dep(geo)
 
 # Initialize flight
 flt = model.Flight()
-flt.init()
 flt.add_dep(eom)
-flt.init_state()
 
-breakpoint()
+t0 =  0.0
+dt =  0.1
+tf = 50.0
 
-#flt.update()
+flt.init(t0, dt, tf)
 
+flt.massBody = 5
 
+flt.update()
 
 #------------------------------------------------------#
-'''
-time  = np.linspace(0.0, 5.0, 50)
-accel = np.array([])
 
-for val in time:
-    
-    eom.test(val)
-    accel = np.append(accel, eom.tState["linAccZ"])
+time = np.array(flt.stateTelem["time"])
+data = np.array(flt.stateTelem["linPosZ"])
 
-plt.plot(time, accel, marker='o')
+plt.plot(time, data)
 
 plt.xlabel("Time [s]")
-plt.ylabel("Acceleration [m/s]")
-plt.title("EOM State: linAccZ")
+plt.ylabel("Altitude [m]")
+plt.title("linPosZ")
 plt.grid()
 plt.show()
 
 breakpoint()
-'''
