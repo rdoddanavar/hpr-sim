@@ -7,6 +7,8 @@
 #include <vector>
 #include <iterator>
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 
 // External libraries
 #include "gsl/ode-initval2/gsl_odeiv2.h"
@@ -71,12 +73,7 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
                                               odeEpsAbs,
                                               odeEpsRel);
     //-----------------------------------------------------------------------//
-    std::vector<std::string> keys = {"time"   ,
-                                     "linAccZ",
-                                     "linVelZ",
-                                     "linPosZ"};
-
-    int nStep = static_cast<int>(tf/dt);
+    nStep = static_cast<int>(tf/dt);
 
     for (const auto& key : keys)
     {
@@ -137,34 +134,29 @@ void Flight::update()
 void Flight::write_telem(std::string fileOut) // maybe return bool for success/error status?
 {
 
-    // Write header
+    std::ofstream ofs(fileOut);
+
+    /*
+    if (!ofs.is_open())
+    {
+        ; raise some error
+    }
+    */
+
+    // Write data fields & units
     std::ostringstream oss;
     const char* delim = ",";
 
     std::copy(keys.begin(), keys.end() - 1, std::ostream_iterator<std::string>(oss, delim));
-    oss << keys.back();
-
-    std::cout << oss.str() << "\n";
-
-    // Write units
-    oss.str("");
-    oss.clear();
+    oss << keys.back() << std::endl;
 
     std::copy(units.begin(), units.end() - 1, std::ostream_iterator<std::string>(oss, delim));
-    oss << units.back();
+    oss << units.back() << std::endl;
 
-    std::cout << oss.str() << "\n";
+    ofs << oss.str();
 
-    // Write data
-    stateMapVec test;
-    int nStep = 5;
-
-    for (const auto& key : keys)
-    {
-        test[key] = std::vector<double>(nStep, 0.0);
-    }
-
-    //----------------------//
+    // Write data values
+    std::string strOut;
 
     for (int i = 0; i < nStep; i++)
     {
@@ -174,13 +166,13 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
 
         for (const auto& key : keys)
         {
-            oss << test[key][i] << delim;
+            oss << std::fixed << std::setprecision(nPrec) << stateTelem[key][i] << delim;
         }
 
-        std::string outStr = oss.str();
-        outStr.pop_back();
+        strOut = oss.str();
+        strOut.pop_back();
 
-        std::cout << outStr << "\n";
+        ofs << strOut << std::endl;
 
     }
 

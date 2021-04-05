@@ -183,6 +183,8 @@ class Flight : public Model
         double t0;
         double dt;
         double tf;
+        int nStep;
+        int nPrec = 3;
 
         // ODE stuff - store all this stuff in a struct?
         gsl_odeiv2_system odeSys;

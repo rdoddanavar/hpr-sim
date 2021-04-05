@@ -52,6 +52,8 @@ flt.massBody = 5
 
 flt.update()
 
+breakpoint()
+
 #------------------------------------------------------#
 
 time = np.array(flt.stateTelem["time"])
