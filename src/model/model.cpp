@@ -6,6 +6,8 @@
 // Project headers
 #include "model.h"
 
+namespace py = pybind11;
+
 //---------------------------------------------------------------------------//
 
 // BINDING CODE

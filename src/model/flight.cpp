@@ -16,36 +16,29 @@
 
 // Project headers
 #include "model.h"
+#include "util_ode.h"
 
 //---------------------------------------------------------------------------//
 
 int ode_update(double t, const double y[], double f[], void *params)
 {
     
-    Model* obj = static_cast<Model*>(params);
+    Model*    flight = static_cast<Model*>(params);
+    stateMap* state  = flight->state;
 
-    stateMap* state = obj->state;
-    //printf("test3\n");
-    //---------------------------------//
+    // Set current state
     *state->at("linPosZ") = y[0];
     *state->at("linVelZ") = y[1];
-    //---------------------------------//
 
-    obj->update_deps();
+    flight->update_deps();
 
+    // Set state derivatives for solver
     f[0] = y[1];
     f[1] = *state->at("linAccZ");
     
     return GSL_SUCCESS;
+
 }
-
-/*
-THINK!!!
-
-I can't pass a class member as a function pointer to odeSys.function
-
-Make ode_fun_1dof as a utility function outside of the class
-*/
 
 //---------------------------------------------------------------------------//
 
@@ -61,25 +54,27 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
     state = new stateMap;
     init_state(state);
 
-    //-----------------------------------------------------------------------//
-    odeSys.function  = &ode_update;
-    odeSys.jacobian  = nullptr;
-    odeSys.dimension = odeDim;
-    odeSys.params    = this;
+    solver.sys.function  = &ode_update;
+    solver.sys.jacobian  = nullptr;
+    solver.sys.dimension = 2;
+    solver.sys.params    = this;
 
-    odeDriver = gsl_odeiv2_driver_alloc_y_new(&odeSys  ,
-                                              odeMethod,
-                                              odeHStart,
-                                              odeEpsAbs,
-                                              odeEpsRel);
-    //-----------------------------------------------------------------------//
+    solver.hStart = 1e-6;
+    solver.epsAbs = 1e-6;
+    solver.epsRel = 0.0;
+
+    solver.driver = gsl_odeiv2_driver_alloc_y_new(&solver.sys       ,
+                                                  method.at("rkf45"),
+                                                  solver.hStart     ,
+                                                  solver.epsAbs     ,
+                                                  solver.epsRel     );
+
     nStep = static_cast<int>(tf/dt);
 
     for (const auto& key : keys)
     {
         stateTelem[key] = std::vector<double>(nStep, 0.0);
     }
-    //-----------------------------------------------------------------------//
 
     isInit = true;
 
@@ -103,20 +98,17 @@ void Flight::update()
     double y[2] = {*state->at("linVelZ"),
                    *state->at("linAccZ")};
 
-    int i;
-
-    for (i = 1; i<=nStep; i++)
+    for (int iStep = 1; iStep <= nStep; iStep++)
     {
-        double ti = i*dt;
+        
+        double ti = iStep*dt;
 
-        int status = gsl_odeiv2_driver_apply(odeDriver, state->at("time"), ti, y);
+        int status = gsl_odeiv2_driver_apply(solver.driver, state->at("time"), ti, y);
 
-        //-----------------------------------------------------------------------//
         for (const auto& key : keys)
         {
-            stateTelem[key][i] = *state->at(key);
+            stateTelem[key][iStep] = *state->at(key);
         }
-        //-----------------------------------------------------------------------//
 
         /*
         if (status != GSL_SUCCESS)
@@ -126,7 +118,6 @@ void Flight::update()
         }
         */
     }
-
 }
 
 //---------------------------------------------------------------------------//
@@ -158,7 +149,7 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
     // Write data values
     std::string strOut;
 
-    for (int i = 0; i < nStep; i++)
+    for (int iStep = 0; iStep < nStep; iStep++)
     {
         
         oss.str("");
@@ -166,7 +157,7 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
 
         for (const auto& key : keys)
         {
-            oss << std::fixed << std::setprecision(nPrec) << stateTelem[key][i] << delim;
+            oss << std::fixed << std::setprecision(nPrec) << stateTelem[key][iStep] << delim;
         }
 
         strOut = oss.str();
@@ -186,7 +177,7 @@ Flight::~Flight()
     if (isInit)
     {
         delete state;
-        gsl_odeiv2_driver_free(odeDriver);
+        gsl_odeiv2_driver_free(solver.driver);
     }
 
 }

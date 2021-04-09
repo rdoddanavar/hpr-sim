@@ -55,6 +55,8 @@
  - Create deliminated string from vector
    - https://stackoverflow.com/questions/20817322/convert-vectorint-to-delimited-string
    - https://stackoverflow.com/questions/9277906/stdvector-to-string-with-custom-delimiter
+ - Writing formatted string to `iostream` or `fstream`
+   - https://stackoverflow.com/questions/11989374/floating-point-format-for-stdostream
 
 ### Object-Oriented
 

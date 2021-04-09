@@ -17,7 +17,7 @@
 #include "gsl/ode-initval2/gsl_odeiv2.h"
 
 // Project headers
-// <none>
+#include "util_ode.h"
 
 namespace py = pybind11;
 
@@ -186,16 +186,8 @@ class Flight : public Model
         int nStep;
         int nPrec = 3;
 
-        // ODE stuff - store all this stuff in a struct?
-        gsl_odeiv2_system odeSys;
-        gsl_odeiv2_driver* odeDriver;
-
-        size_t odeDim = 2;
-        const gsl_odeiv2_step_type* odeMethod = gsl_odeiv2_step_rkf45;
-
-        const double odeHStart = 1e-6;
-        const double odeEpsAbs = 1e-6;
-        const double odeEpsRel = 0.0;
+        // ODE solver settings & driver
+        Solver solver;
 
         std::vector<std::string> keys = {"time"   ,
                                         "linAccZ" ,

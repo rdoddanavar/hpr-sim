@@ -7,7 +7,7 @@ pybind11_add_module(input MODULE ${SRC} ${HDR})
 
 #-----------------------------------------------------------------------------#
 
-# MODEL
+# "model" module
 
 set(SRC "./model/model.cpp"
         "./model/engine.cpp"
@@ -27,10 +27,14 @@ target_link_libraries(model PUBLIC ${DEP})
 
 #-----------------------------------------------------------------------------#
 
-# UTIL
+# "util" shared library
 
 set(SRC "./util/util_interp.cpp")
-set(HDR "./util/util_interp.h")
+
+set(HDR "./util/util_interp.h"
+        "./util/util_ode.h"
+        )
+
 set(DEP gsl)
 
 add_library(util SHARED ${SRC} ${HDR})
