@@ -1,5 +1,4 @@
 // System libraries
-#include <cstdio>
 #include <vector>
 
 // External libraries
@@ -41,7 +40,7 @@ void EOM::set_state()
     state->emplace("linAccZ", &linAcc[2]);
     state->emplace("linVelZ", &linVel[2]);
     state->emplace("linPosZ", &linPos[2]);
-    printf("test eom\n");
+
 }
 
 //---------------------------------------------------------------------------//

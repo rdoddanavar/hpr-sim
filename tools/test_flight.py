@@ -51,20 +51,4 @@ flt.init(t0, dt, tf)
 flt.massBody = 5
 
 flt.update()
-
-breakpoint()
-
-#------------------------------------------------------#
-
-time = np.array(flt.stateTelem["time"])
-data = np.array(flt.stateTelem["linPosZ"])
-
-plt.plot(time, data)
-
-plt.xlabel("Time [s]")
-plt.ylabel("Altitude [m]")
-plt.title("linPosZ")
-plt.grid()
-plt.show()
-
-breakpoint()
+flt.write_telem("test.csv")

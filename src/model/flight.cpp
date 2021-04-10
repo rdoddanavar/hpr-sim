@@ -1,13 +1,12 @@
 // System libraries
-#include <map>
-#include <cstdio>
-
-#include <sstream>
 #include <string>
 #include <vector>
-#include <iterator>
+#include <map>
+
 #include <iostream>
+#include <sstream>
 #include <fstream>
+#include <iterator>
 #include <iomanip>
 
 // External libraries
@@ -65,11 +64,13 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
     odeSolver.epsAbs = 1e-6;
     odeSolver.epsRel = 0.0;
 
-    odeSolver.driver = gsl_odeiv2_driver_alloc_y_new(&odeSolver.sys        ,
-                                                      odeMethod.at("rkf45"),
-                                                      odeSolver.hStart     ,
-                                                      odeSolver.epsAbs     ,
-                                                      odeSolver.epsRel     );
+    odeSolver.set_method("rkf45");
+
+    odeSolver.driver = gsl_odeiv2_driver_alloc_y_new(&odeSolver.sys   ,
+                                                      odeSolver.method,
+                                                      odeSolver.hStart,
+                                                      odeSolver.epsAbs,
+                                                      odeSolver.epsRel);
 
     nStep = static_cast<int>(tf/dt);
 
@@ -97,8 +98,8 @@ void Flight::update()
 
     int nStep = static_cast<int>(tf/dt);
 
-    double y[2] = {*state->at("linVelZ"),
-                   *state->at("linAccZ")};
+    double y[] = {*state->at("linVelZ"),
+                  *state->at("linAccZ")};
 
     for (int iStep = 1; iStep <= nStep; iStep++)
     {

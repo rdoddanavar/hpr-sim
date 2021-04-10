@@ -95,7 +95,7 @@ void bind_Flight(py::module &m)
 
     py::class_<OdeSolver>(m, "OdeSolver")
         .def(py::init<>())
-        .def_readwrite("method", &OdeSolver::method)
+        .def("set_method", &OdeSolver::set_method)
         .def_readwrite("hStart", &OdeSolver::hStart)
         .def_readwrite("epsAbs", &OdeSolver::epsAbs)
         .def_readwrite("epsRel", &OdeSolver::epsRel);
