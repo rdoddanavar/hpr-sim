@@ -88,9 +88,16 @@ void bind_Flight(py::module &m)
     py::class_<Flight, Model>(m, "Flight")
         .def(py::init<>())
         .def("init"  , &Flight::init)
-        .def_readonly("stateTelem", &Flight::stateTelem)
-        .def_readwrite("massBody", &Flight::massBody)
         .def("write_telem", &Flight::write_telem)
-        .def("update", &Flight::update);
+        .def("update", &Flight::update)
+        .def_readwrite("massBody", &Flight::massBody)
+        .def_readwrite("odeSolver", &Flight::odeSolver);
+
+    py::class_<OdeSolver>(m, "OdeSolver")
+        .def(py::init<>())
+        .def_readwrite("method", &OdeSolver::method)
+        .def_readwrite("hStart", &OdeSolver::hStart)
+        .def_readwrite("epsAbs", &OdeSolver::epsAbs)
+        .def_readwrite("epsRel", &OdeSolver::epsRel);
 
 }

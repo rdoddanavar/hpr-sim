@@ -16,7 +16,7 @@
 
 // Project headers
 #include "model.h"
-#include "util_ode.h"
+#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
@@ -49,31 +49,33 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
     dt   = dtInit;
     tf   = tfInit;
 
+    nPrec = 3;
+
     massBody = 10.0;
     
     state = new stateMap;
     init_state(state);
 
-    solver.sys.function  = &ode_update;
-    solver.sys.jacobian  = nullptr;
-    solver.sys.dimension = 2;
-    solver.sys.params    = this;
+    odeSolver.sys.function  = &ode_update;
+    odeSolver.sys.jacobian  = nullptr;
+    odeSolver.sys.dimension = 2;
+    odeSolver.sys.params    = this;
 
-    solver.hStart = 1e-6;
-    solver.epsAbs = 1e-6;
-    solver.epsRel = 0.0;
+    odeSolver.hStart = 1e-6;
+    odeSolver.epsAbs = 1e-6;
+    odeSolver.epsRel = 0.0;
 
-    solver.driver = gsl_odeiv2_driver_alloc_y_new(&solver.sys       ,
-                                                  method.at("rkf45"),
-                                                  solver.hStart     ,
-                                                  solver.epsAbs     ,
-                                                  solver.epsRel     );
+    odeSolver.driver = gsl_odeiv2_driver_alloc_y_new(&odeSolver.sys        ,
+                                                      odeMethod.at("rkf45"),
+                                                      odeSolver.hStart     ,
+                                                      odeSolver.epsAbs     ,
+                                                      odeSolver.epsRel     );
 
     nStep = static_cast<int>(tf/dt);
 
-    for (const auto& key : keys)
+    for (const auto& field : fields)
     {
-        stateTelem[key] = std::vector<double>(nStep, 0.0);
+        stateTelem[field] = std::vector<double>(nStep, 0.0);
     }
 
     isInit = true;
@@ -103,11 +105,11 @@ void Flight::update()
         
         double ti = iStep*dt;
 
-        int status = gsl_odeiv2_driver_apply(solver.driver, state->at("time"), ti, y);
+        int status = gsl_odeiv2_driver_apply(odeSolver.driver, state->at("time"), ti, y);
 
-        for (const auto& key : keys)
+        for (const auto& field : fields)
         {
-            stateTelem[key][iStep] = *state->at(key);
+            stateTelem[field][iStep] = *state->at(field);
         }
 
         /*
@@ -138,8 +140,8 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
     std::ostringstream oss;
     const char* delim = ",";
 
-    std::copy(keys.begin(), keys.end() - 1, std::ostream_iterator<std::string>(oss, delim));
-    oss << keys.back() << std::endl;
+    std::copy(fields.begin(), fields.end() - 1, std::ostream_iterator<std::string>(oss, delim));
+    oss << fields.back() << std::endl;
 
     std::copy(units.begin(), units.end() - 1, std::ostream_iterator<std::string>(oss, delim));
     oss << units.back() << std::endl;
@@ -155,9 +157,9 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
         oss.str("");
         oss.clear();
 
-        for (const auto& key : keys)
+        for (const auto& field : fields)
         {
-            oss << std::fixed << std::setprecision(nPrec) << stateTelem[key][iStep] << delim;
+            oss << std::fixed << std::setprecision(nPrec) << stateTelem[field][iStep] << delim;
         }
 
         strOut = oss.str();
@@ -177,7 +179,7 @@ Flight::~Flight()
     if (isInit)
     {
         delete state;
-        gsl_odeiv2_driver_free(solver.driver);
+        gsl_odeiv2_driver_free(odeSolver.driver);
     }
 
 }

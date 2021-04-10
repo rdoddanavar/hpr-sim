@@ -17,7 +17,7 @@
 #include "gsl/ode-initval2/gsl_odeiv2.h"
 
 // Project headers
-#include "util_ode.h"
+#include "util_model.h"
 
 namespace py = pybind11;
 
@@ -175,6 +175,9 @@ class Flight : public Model
 
         double massBody;
 
+        // ODE solver settings & driver
+        OdeSolver odeSolver;
+
     private:
 
         // Data
@@ -184,15 +187,12 @@ class Flight : public Model
         double dt;
         double tf;
         int nStep;
-        int nPrec = 3;
+        int nPrec;
 
-        // ODE solver settings & driver
-        Solver solver;
-
-        std::vector<std::string> keys = {"time"   ,
-                                        "linAccZ" ,
-                                        "linVelZ" ,
-                                        "linPosZ"};
+        std::vector<std::string> fields = {"time"   ,
+                                           "linAccZ" ,
+                                           "linVelZ" ,
+                                           "linPosZ"};
 
         std::vector<std::string> units = {"s"    ,
                                           "m/s^2",

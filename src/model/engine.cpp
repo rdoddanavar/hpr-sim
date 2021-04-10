@@ -7,8 +7,8 @@
 #include "pybind11/numpy.h"
 
 // Project headers
-#include "util_interp.h"
 #include "model.h"
+#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
