@@ -13,6 +13,8 @@ for item in paths:
 # Project modules
 import preproc_input
 
+#-----------------------------------------------------------------------------#
+
 def exec(inputPath, configPath):
 
     # Parse CLI

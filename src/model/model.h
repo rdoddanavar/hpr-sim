@@ -159,6 +159,8 @@ class EOM : public Model
 
 //---------------------------------------------------------------------------//
 
+int ode_update(double t, const double y[], double f[], void *params);
+
 class Flight : public Model
 {
 
@@ -189,12 +191,14 @@ class Flight : public Model
         int nStep;
         int nPrec;
 
-        std::vector<std::string> fields = {"time"   ,
+        std::vector<std::string> fields = {"time"    ,
+                                           "thrust"  ,
                                            "linAccZ" ,
                                            "linVelZ" ,
                                            "linPosZ"};
 
         std::vector<std::string> units = {"s"    ,
+                                          "N"    ,
                                           "m/s^2",
                                           "m/s"  ,
                                           "m"    };

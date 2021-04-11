@@ -19,28 +19,6 @@
 
 //---------------------------------------------------------------------------//
 
-int ode_update(double t, const double y[], double f[], void *params)
-{
-    
-    Model*    flight = static_cast<Model*>(params);
-    stateMap* state  = flight->state;
-
-    // Set current state
-    *state->at("linPosZ") = y[0];
-    *state->at("linVelZ") = y[1];
-
-    flight->update_deps();
-
-    // Set state derivatives for solver
-    f[0] = y[1];
-    f[1] = *state->at("linAccZ");
-    
-    return GSL_SUCCESS;
-
-}
-
-//---------------------------------------------------------------------------//
-
 void Flight::init(double t0Init, double dtInit, double tfInit)
 {
 
@@ -50,7 +28,7 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
 
     nPrec = 3;
 
-    massBody = 10.0;
+    massBody = 2.0;
     
     state = new stateMap;
     init_state(state);
@@ -98,8 +76,17 @@ void Flight::update()
 
     int nStep = static_cast<int>(tf/dt);
 
-    double y[] = {*state->at("linVelZ"),
-                  *state->at("linAccZ")};
+    double y[] = {*state->at("linPosZ"),
+                  *state->at("linVelZ")};
+
+    // Save initial state
+
+    for (const auto& field : fields)
+    {
+        stateTelem[field][0] = *state->at(field);
+    }
+
+    // Solve ODE system
 
     for (int iStep = 1; iStep <= nStep; iStep++)
     {
@@ -113,6 +100,11 @@ void Flight::update()
             stateTelem[field][iStep] = *state->at(field);
         }
 
+        if (y[0] <= 0.0)
+        {
+            break;
+        }
+
         /*
         if (status != GSL_SUCCESS)
         {
@@ -121,6 +113,28 @@ void Flight::update()
         }
         */
     }
+}
+
+//---------------------------------------------------------------------------//
+
+int ode_update(double t, const double y[], double f[], void *params)
+{
+    
+    Model*    flight = static_cast<Model*>(params);
+    stateMap* state  = flight->state;
+
+    // Set current state
+    *state->at("linPosZ") = y[0];
+    *state->at("linVelZ") = y[1];
+
+    flight->update_deps();
+
+    // Set state derivatives for solver
+    f[0] = y[1];
+    f[1] = *state->at("linAccZ");
+    
+    return GSL_SUCCESS;
+
 }
 
 //---------------------------------------------------------------------------//
