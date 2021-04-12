@@ -1,5 +1,4 @@
 // System libraries
-#include <cstdio>
 #include <vector>
 
 // External libraries
@@ -36,37 +35,11 @@ void EOM::init()
 void EOM::set_state()
 {
     
-    state->emplace("forceX", &force[0]);
-    state->emplace("forceY", &force[1]);
     state->emplace("forceZ", &force[2]);
 
-    state->emplace("linAccX", &linAcc[0]);
-    state->emplace("linAccY", &linAcc[1]);
     state->emplace("linAccZ", &linAcc[2]);
-
-    state->emplace("linPosX", &linPos[0]);
-    state->emplace("linPosY", &linPos[1]);
+    state->emplace("linVelZ", &linVel[2]);
     state->emplace("linPosZ", &linPos[2]);
-
-}
-
-//---------------------------------------------------------------------------//
-
-void EOM::init_test()
-{
-    init_state(&tState);
-
-    state->emplace("time", &time);
-    state->emplace("massBody", &massBody);
-
-}
-
-void EOM::test(double timeEval)
-{
-    
-    time = timeEval;
-    massBody = 2.0;
-    update();
 
 }
 
@@ -87,5 +60,12 @@ void EOM::update()
 
     // Linear EOM
     linAcc = force / (massBody + massEng);
+
+    // Ground contact condition
+    if (linPos[2] <= 0.0)
+    {
+        linVel[2] = 0.0;
+        linPos[2] = 0.0;
+    }
 
 }

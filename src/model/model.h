@@ -14,14 +14,16 @@
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
 #include "eigen/Eigen/Core"
+#include "gsl/ode-initval2/gsl_odeiv2.h"
 
 // Project headers
-// <none>
+#include "util_model.h"
 
 namespace py = pybind11;
 
 // Type aliases
-using stateMap = std::map<std::string, double*>;
+using stateMap    = std::map<std::string, double*>;
+using stateMapVec = std::map<std::string, std::vector<double>>;
 
 //---------------------------------------------------------------------------//
 
@@ -139,14 +141,6 @@ class EOM : public Model
         void update() override;
         void set_state() override;
 
-        //----------------------------------------------//
-        void init_test();
-        void test(double timeEval);
-        stateMap tState;
-
-        double time;
-        double massBody;
-
     private:
 
         // Data
@@ -160,5 +154,53 @@ class EOM : public Model
         Eigen::Vector3d angAcc; // Angular acceleration [rad/s^2]
         Eigen::Vector3d angVel; // Angular velocity     [rad/s]
         Eigen::Vector3d angPos; // Angular position     [rad]
+
+};
+
+//---------------------------------------------------------------------------//
+
+int ode_update(double t, const double y[], double f[], void *params);
+
+class Flight : public Model
+{
+
+    public:
+
+        void init(double tfInit, double dtInit, double t0Init);
+        void update() override;
+        void set_state() override;
+        void write_telem(std::string fileOut);
+
+        stateMapVec stateTelem;
+
+        ~Flight(); // Destructor
+
+        double massBody;
+
+        // ODE solver settings & driver
+        OdeSolver odeSolver;
+
+    private:
+
+        // Data
+        double time;
+
+        double t0;
+        double dt;
+        double tf;
+        int nStep;
+        int nPrec;
+
+        std::vector<std::string> fields = {"time"    ,
+                                           "thrust"  ,
+                                           "linAccZ" ,
+                                           "linVelZ" ,
+                                           "linPosZ"};
+
+        std::vector<std::string> units = {"s"    ,
+                                          "N"    ,
+                                          "m/s^2",
+                                          "m/s"  ,
+                                          "m"    };
 
 };

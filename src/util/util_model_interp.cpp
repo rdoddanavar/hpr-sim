@@ -5,7 +5,7 @@
 #include "gsl/interpolation/gsl_spline.h"
 
 // Project headers
-#include "util_interp.h"
+#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
@@ -22,6 +22,8 @@ void interp1d_init(const double      x[]    ,
     gsl_spline_init(spline, x, y, n);
 
 }
+
+//---------------------------------------------------------------------------//
 
 double interp1d_eval(gsl_spline*       spline,
                      const double      xq    ,

@@ -1,6 +1,5 @@
 # System modules
 import sys # System utilities
-import pdb # Python debugger
 from pathlib import Path
 import numpy as np
 import matplotlib.pyplot as plt
@@ -39,26 +38,17 @@ eom.init()
 eom.add_dep(eng)
 eom.add_dep(geo)
 
-eom.init_test()
+# Initialize flight
+flt = model.Flight()
+flt.add_dep(eom)
 
-#------------------------------------------------------#
+t0 =  0.0
+dt =  0.01
+tf = 50.0
 
-time  = np.linspace(0.0, 5.0, 50)
-accel = np.array([])
+flt.init(t0, dt, tf)
 
-#pdb.set_trace()
+flt.massBody = 5
 
-for val in time:
-    
-    eom.test(val)
-    accel = np.append(accel, eom.tState["linAccZ"])
-
-plt.plot(time, accel, marker='o')
-
-plt.xlabel("Time [s]")
-plt.ylabel("Acceleration [m/s]")
-plt.title("EOM State: linAccZ")
-plt.grid()
-plt.show()
-
-pdb.set_trace()
+flt.update()
+flt.write_telem("../output/test.csv")
