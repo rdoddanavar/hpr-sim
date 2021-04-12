@@ -43,7 +43,7 @@ flt = model.Flight()
 flt.add_dep(eom)
 
 t0 =  0.0
-dt =  0.1
+dt =  0.01
 tf = 50.0
 
 flt.init(t0, dt, tf)

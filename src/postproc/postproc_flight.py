@@ -43,7 +43,7 @@ def postproc(filePath):
 
     for iAx in range(len(ax)):
 
-        ax[iAx].plot(data["time"], data[fields[iAx]])
+        ax[iAx].plot(data["time"][:iGnd+1], data[fields[iAx]][:iGnd+1])
 
         ax[iAx].set_title(fields[iAx])
         ax[iAx].set_xlabel("time [s]")

@@ -19,7 +19,7 @@ void EOM::init()
     moment = Eigen::Vector3d::Zero();
     
     linAcc = Eigen::Vector3d::Zero();
-    linVel = Eigen::Vector3d::Zero(); linVel[2] = 50.0;
+    linVel = Eigen::Vector3d::Zero();
     linPos = Eigen::Vector3d::Zero();
 
     angAcc = Eigen::Vector3d::Zero();
@@ -51,14 +51,21 @@ void EOM::update()
     update_deps();
 
     // Populate vectors
-    double thrust   = *state->at("thrust") * 0.0;
+    double thrust   = *state->at("thrust");
     double gravity  = *state->at("gravity");
-    double massEng  = *state->at("massEng") * 0.0;
+    double massEng  = *state->at("massEng");
     double massBody = *state->at("massBody");
 
     force[2] = thrust - gravity*(massBody + massEng);
 
     // Linear EOM
     linAcc = force / (massBody + massEng);
+
+    // Ground contact condition
+    if (linPos[2] <= 0.0)
+    {
+        linVel[2] = 0.0;
+        linPos[2] = 0.0;
+    }
 
 }

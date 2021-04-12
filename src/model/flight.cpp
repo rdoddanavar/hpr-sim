@@ -80,6 +80,7 @@ void Flight::update()
                   *state->at("linVelZ")};
 
     // Save initial state
+    update_deps();
 
     for (const auto& field : fields)
     {
@@ -93,7 +94,7 @@ void Flight::update()
         
         double ti = iStep*dt;
 
-        int status = gsl_odeiv2_driver_apply(odeSolver.driver, state->at("time"), ti, y);
+        int status = gsl_odeiv2_driver_apply(odeSolver.driver, &time, ti, y);
 
         for (const auto& field : fields)
         {
@@ -132,7 +133,7 @@ int ode_update(double t, const double y[], double f[], void *params)
     // Set state derivatives for solver
     f[0] = y[1];
     f[1] = *state->at("linAccZ");
-    
+
     return GSL_SUCCESS;
 
 }
