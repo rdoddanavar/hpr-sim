@@ -39,8 +39,8 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
     odeSolver.sys.params    = this;
 
     odeSolver.hStart = 1e-6;
-    odeSolver.epsAbs = 1e-6;
-    odeSolver.epsRel = 0.0;
+    odeSolver.epsAbs = 1e-9;
+    odeSolver.epsRel = 1e-9;
 
     odeSolver.set_method("rkf45");
 
@@ -103,7 +103,7 @@ void Flight::update()
 
         if (y[0] <= 0.0)
         {
-            break;
+            break; // could include more complex logic with an "apogeeFlag"
         }
 
         /*
