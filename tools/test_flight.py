@@ -48,7 +48,7 @@ tf = 50.0
 
 flt.init(t0, dt, tf)
 
-flt.massBody = 5
+#flt.massBody = 5
 
 flt.update()
 flt.write_telem("../output/test.csv")

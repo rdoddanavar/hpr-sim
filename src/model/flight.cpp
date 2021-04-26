@@ -28,7 +28,7 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
 
     nPrec = 3;
 
-    massBody = 2.0;
+    massBody = 5.0;
     
     state = new stateMap;
     init_state(state);
