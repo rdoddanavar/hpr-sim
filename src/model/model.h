@@ -155,6 +155,8 @@ class EOM : public Model
         Eigen::Vector3d angVel; // Angular velocity     [rad/s]
         Eigen::Vector3d angPos; // Angular position     [rad]
 
+        bool launchFlag = false;
+
 };
 
 //---------------------------------------------------------------------------//

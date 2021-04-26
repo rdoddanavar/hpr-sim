@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 
 def postproc(filePath):
 
+    ## READ OUTPUT CSV
+
     with open(filePath, 'r') as file:
         lines = file.read().splitlines()
     
@@ -31,6 +33,8 @@ def postproc(filePath):
 
     #-------------------------------------------------------------------------#
 
+    ## BUILD PLOTS
+
     fig, ax = plt.subplots(2, 2)
     ax = [ax[0][0], ax[0][1], ax[1][0], ax[1][1]]
 
@@ -38,8 +42,11 @@ def postproc(filePath):
     units.remove("s")
 
     # Set reasonable xlim
-    iGnd = np.where(data["linPosZ"] < 0)
-    iGnd = iGnd[0][0]
+    iPos = np.where(data["linPosZ"] <= 0)
+    iVel = np.where(data["linVelZ"] <  0)
+    iGnd = np.intersect1d(iPos, iVel)[0]
+
+    iGnd = iVel[0][-1]
 
     for iAx in range(len(ax)):
 
@@ -56,7 +63,7 @@ def postproc(filePath):
 
     fig.show()
 
-    breakpoint()
+    print("apogee = " + str(data["linPosZ"].max()))
 
 if __name__ == "__main__":
 

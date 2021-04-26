@@ -58,14 +58,18 @@ void EOM::update()
 
     force[2] = thrust - gravity*(massBody + massEng);
 
+    // Ground contact condition at launch
+
+    if ((force[2] < 0.0) && (!launchFlag))
+    {
+        force[2] = 0.0;
+    }
+    else if (!launchFlag)
+    {
+        launchFlag = true;
+    }
+
     // Linear EOM
     linAcc = force / (massBody + massEng);
-
-    // Ground contact condition
-    if (linPos[2] <= 0.0)
-    {
-        linVel[2] = 0.0;
-        linPos[2] = 0.0;
-    }
 
 }
