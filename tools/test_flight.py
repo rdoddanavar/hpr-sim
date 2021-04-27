@@ -23,6 +23,11 @@ time, thrust, mass = preproc_engine.load("../input/engine/AeroTech_J450DM.eng")
 eng = model.Engine()
 eng.init(time, thrust, mass)
 
+# Initialize mass model
+mass = model.Mass()
+mass.init(5)
+mass.add_dep(eng)
+
 # Initialize geodetic model
 # SARA launch site: (32.269798483027344, -111.27475082401067)
 lat  = 32.2698
@@ -36,6 +41,7 @@ eom = model.EOM()
 eom.init()
 
 eom.add_dep(eng)
+eom.add_dep(mass)
 eom.add_dep(geo)
 
 # Initialize flight
@@ -47,8 +53,6 @@ dt =  0.01
 tf = 50.0
 
 flt.init(t0, dt, tf)
-
-#flt.massBody = 5
 
 flt.update()
 flt.write_telem("../output/test.csv")
