@@ -11,6 +11,7 @@ pybind11_add_module(input MODULE ${SRC} ${HDR})
 
 set(SRC "./model/model.cpp"
         "./model/engine.cpp"
+        "./model/mass.cpp"
         "./model/geodetic.cpp"
         "./model/eom.cpp"
         "./model/flight.cpp"

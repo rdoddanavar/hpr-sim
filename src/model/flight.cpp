@@ -27,8 +27,6 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
     tf   = tfInit;
 
     nPrec = 3;
-
-    massBody = 5.0;
     
     state = new stateMap;
     init_state(state);
@@ -66,7 +64,6 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
 void Flight::set_state()
 {
     state->emplace("time", &time);
-    state->emplace("massBody", &massBody);
 }
 
 //---------------------------------------------------------------------------//

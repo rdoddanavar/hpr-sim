@@ -51,12 +51,11 @@ void EOM::update()
     update_deps();
 
     // Populate vectors
-    double thrust   = *state->at("thrust");
-    double gravity  = *state->at("gravity");
-    double massEng  = *state->at("massEng");
-    double massBody = *state->at("massBody");
+    double thrust  = *state->at("thrust");
+    double mass    = *state->at("mass");
+    double gravity = *state->at("gravity");
 
-    force[2] = thrust - gravity*(massBody + massEng);
+    force[2] = thrust - mass*gravity;
 
     // Ground contact condition at launch
 
@@ -70,6 +69,6 @@ void EOM::update()
     }
 
     // Linear EOM
-    linAcc = force / (massBody + massEng);
+    linAcc = force / mass;
 
 }
