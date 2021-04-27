@@ -92,12 +92,34 @@ class Engine : public Model
 
         // Data
         double thrust;
-        double mass;
+        double massEng;
 
         gsl_spline       *thrustSpline, *massSpline;
         gsl_interp_accel *thrustAcc   , *massAcc   ;
 
 };
+
+//---------------------------------------------------------------------------//
+
+class Mass : public Model
+{
+    
+    public:
+
+        // Function(s)
+        void init(double massBodyInit);
+
+        void update() override;
+        void set_state() override;
+
+    private:
+
+        // Data
+        double massBody;
+        double mass;
+
+};
+
 
 //---------------------------------------------------------------------------//
 
@@ -174,24 +196,19 @@ class Flight : public Model
         void write_telem(std::string fileOut);
 
         stateMapVec stateTelem;
+        OdeSolver   odeSolver; // ODE solver settings & driver
 
         ~Flight(); // Destructor
-
-        double massBody;
-
-        // ODE solver settings & driver
-        OdeSolver odeSolver;
 
     private:
 
         // Data
         double time;
-
         double t0;
         double dt;
         double tf;
-        int nStep;
-        int nPrec;
+        int    nStep;
+        int    nPrec;
 
         std::vector<std::string> fields = {"time"    ,
                                            "thrust"  ,

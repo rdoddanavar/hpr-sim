@@ -21,10 +21,11 @@ Release Notes (pybind11 v2.6.0):
 */
 
 // Expose derived classes
-void bind_Engine(py::module &);
-void bind_Geodetic(py::module &);
-void bind_EOM(py::module &);
-void bind_Flight(py::module &);
+void bind_Engine   (py::module &);
+void bind_Mass     (py::module &);
+void bind_Geodetic (py::module &);
+void bind_EOM      (py::module &);
+void bind_Flight   (py::module &);
 
 PYBIND11_MODULE(model, m)
 {
@@ -37,10 +38,11 @@ PYBIND11_MODULE(model, m)
         .def("add_dep", &Model::add_dep);
 
     // Expose derived classes
-    bind_Engine(m);
-    bind_Geodetic(m);
-    bind_EOM(m);
-    bind_Flight(m);
+    bind_Engine   (m);
+    bind_Mass     (m);
+    bind_Geodetic (m);
+    bind_EOM      (m);
+    bind_Flight   (m);
 
 }
 
@@ -51,8 +53,18 @@ void bind_Engine(py::module &m)
 
     py::class_<Engine, Model>(m, "Engine")
         .def(py::init<>())
-        .def("init"  , &Engine::init  )
-        .def("update", &Engine::update);
+        .def("init"  , &Engine::init  );
+
+}
+
+//---------------------------------------------------------------------------//
+
+void bind_Mass(py::module &m)
+{
+
+    py::class_<Mass, Model>(m, "Mass")
+        .def(py::init<>())
+        .def("init"  , &Mass::init  );
 
 }
 
@@ -63,8 +75,7 @@ void bind_Geodetic(py::module &m)
 
     py::class_<Geodetic, Model>(m, "Geodetic")
         .def(py::init<>())
-        .def("init"  , &Geodetic::init  )
-        .def("update", &Geodetic::update);
+        .def("init"  , &Geodetic::init  );
 
 }
 
@@ -75,8 +86,7 @@ void bind_EOM(py::module &m)
 
     py::class_<EOM, Model>(m, "EOM")
         .def(py::init<>())
-        .def("init"  , &EOM::init  )
-        .def("update", &EOM::update);
+        .def("init"  , &EOM::init  );
 
 }
 
@@ -90,7 +100,6 @@ void bind_Flight(py::module &m)
         .def("init"  , &Flight::init)
         .def("write_telem", &Flight::write_telem)
         .def("update", &Flight::update)
-        .def_readwrite("massBody", &Flight::massBody)
         .def_readwrite("odeSolver", &Flight::odeSolver);
 
     py::class_<OdeSolver>(m, "OdeSolver")
