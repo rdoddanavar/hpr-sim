@@ -12,11 +12,17 @@ project(hpr-sim DESCRIPTION "High Power Rocktry - Flight Simulation"
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON) # For shared libs; delete in future if unnecessary
 
+# GNU GSL - minimize build
+set(NO_AMPL_BINDINGS  true)
+set(GSL_DISABLE_TESTS true)
+
+set(BUILDLIBS "interpolation"
+              "ode-initval2"
+              )
+
 #-----------------------------------------------------------------------------#
 
 # SOURCE SUBDIRECTORIES
-
-set(GSL_DISABLE_TESTS true) # Reduce build time
 
 add_subdirectory(lib/pybind11) # Provides CMake helpers for src
 add_subdirectory(lib/gsl)      # Tests disabled
