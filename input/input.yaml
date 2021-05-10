@@ -1,21 +1,15 @@
 # /input/input.yaml
 # Input file unit test
 ---
-sim:
-    session:
-        value: test
-    modeRand:
-        value: nominal
-    modeProc:
-        value: serial
-    numMC:
-        value: 1
-    seedMaster:
-        value: 1
-airframe:
-    loadedMass:
-        value: 10
+# User constants
+const:
+    pi: 3.141592653589793
+    deg2rad: ref(const.pi)/180
+#-----------------------------------------------------------------------------#
+mass:
+    massBody: 5.0
+geodetic:
+    latitude: 32.2698*ref(const.deg2rad) # SARA launch site: (32.269798483027344, -111.27475082401067)
 engine:
-    inputPath:
-        value: ./prop/AeroTech_J450DM.eng
+    inputPath: ./prop/AeroTech_J450DM.eng
 ...
