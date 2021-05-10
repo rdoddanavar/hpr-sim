@@ -81,12 +81,7 @@ def process(yamlDict, subDict=None, path=[], first=True):
                 # Parse value for target
                 idxA   = value.find("ref(") + 4
                 idxB   = value[idxA:].find(')') + idxA
-                target = value[idxA:idxB]
-
-                # Get keys to target
-                target = target.split('.')
-                nRel   = len(path) - len(target)
-                target = path[:nRel] + target
+                target = value[idxA:idxB].split('.')
 
                 # Error handling: circular reference
                 if target == path:
