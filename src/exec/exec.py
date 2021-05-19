@@ -1,26 +1,36 @@
 # System modules
 import sys # System utilities
 import pdb # Python debugger
-from pathlib import Path
+import pathlib
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
 
 for item in paths:
-    addPath = Path(__file__).parent / item
+    addPath = pathlib.Path(__file__).parent / item
     sys.path.append(str(addPath.resolve()))
 
 # Project modules
 import preproc_input
 
-#-----------------------------------------------------------------------------#
+# Module variables
+configPathRel = "../../config/config_param.yml"
 
-def exec(inputPath, configPath):
+#------------------------------------------------------------------------------#
+
+def exec(inputPath):
 
     # Parse CLI
 
     # Pre-processing
-    preproc_input.load(inputPath,configPath)
+    configPath = pathlib.Path(__file__).parent / configPathRel
+    configPath = str(configPath.resolve())
+    configDict = util_yaml.load(configPath)
+
+    inputDict = util_yaml.load(inputPath)
+    inputDict = util_yaml.process(inputDict)
+
+    preproc_input.load(inputDict, configDict)
 
     # Sim execution 
 
@@ -28,8 +38,6 @@ def exec(inputPath, configPath):
 
 if __name__ == "__main__":
 
-    inputPath  = sys.argv[1]
-    configPath = Path(__file__).parent / "../../config/config_param.yaml"
-    configPath = str(configPath.resolve())
+    inputPath = sys.argv[1]
 
-    exec(inputPath, configPath)
+    exec(inputPath)

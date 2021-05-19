@@ -17,19 +17,17 @@ Functions:
     convert
 Classes:
     None
-Dependencies:
-    hpr-sim/src/util/util_yaml
-                    /config_unit.yaml
 '''
 
 # System modules
-from pathlib import Path
+import pathlib
 
 # Project modules
 import util_yaml
 
 # Module variables
-unitDict = None
+configPathRel = "../../config/config_unit.yml"
+unitDict      = None
 
 def config():
 
@@ -44,7 +42,7 @@ def config():
 
     if not unitDict:
 
-        configPath = Path(__file__).parent / "../../config/config_unit.yaml"
+        configPath = pathlib.Path(__file__).parent / configPathRel
         configPath = str(configPath.resolve())
         unitDict   = util_yaml.load(configPath)
 

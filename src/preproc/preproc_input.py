@@ -15,38 +15,26 @@ Description:
 Functions:
     load
 Classes:
-    None
-Dependencies:
-    hpr-sim/src/preproc/input.cpp
-                       /input.h
-                /util/util_yaml.py
-                     /util_unit.py
+    <none>
 '''
 
 # System modules
 import sys # System utilities
-import pdb # Python debugger
 
 # Project modules
 import util_yaml
 import util_unit
 
-# Pybind11 modules
-import input # Input classes 
+#------------------------------------------------------------------------------#
 
-def load(inputPath, configPath):
+def load(inputDict, configDict):
 
     '''
     Populates input parameters via YAML input; converts and validates parameters.
 
-    Input(s): inputPath (str), configPath (str) \n
+    Input(s): inputDict (dict), configDict (dict) \n
     Output(s): <none>
     '''
-
-    # YAML parse
-    configDict = util_yaml.load(configPath)
-    inputDict  = util_yaml.load(inputPath)
-    inputDict  = util_yaml.process(inputDict)
 
     # Instantiate input object
     inp = input.Input()
