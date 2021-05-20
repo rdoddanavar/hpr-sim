@@ -6,12 +6,11 @@ const:
     pi: 3.141592653589793
 #-----------------------------------------------------------------------------#
 mass:
-    massBody:
-        value: 5
+    massBody: 5
 geodetic:
     latitude:
         value: 32.2698 # SARA launch site: (32.269798483027344, -111.27475082401067)
         unit: deg
 engine:
-    inputPath: ./prop/AeroTech_J450DM.eng
+    inputPath: ./input/engine/AeroTech_J450DM.eng
 ...

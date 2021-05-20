@@ -20,6 +20,7 @@ Classes:
 
 # System modules
 import os
+import pathlib
 
 # Project modules
 import util_yaml
@@ -47,19 +48,26 @@ def process(inputDict, configDict):
 
             for param in inputDict[group].keys():
                 
+                # Get input parameter value & properties
+
                 temp = inputDict[group][param]
 
                 if type(temp) is dict:
+
                     props = temp.keys()
 
                     if "value" in props:
                         value = inputDict[group][param]["value"]
 
                 else:
+                    
                     props = []
                     value = temp
+                    
+                    inputDict[group][param] = {}
 
                 # Convert units if specified by user
+
                 if "unit" in props:
 
                     value    = inputDict[group][param]["value"]
@@ -67,6 +75,8 @@ def process(inputDict, configDict):
                     unit     = inputDict[group][param]["unit"]
 
                     value = util_unit.convert(value, quantity, unit)
+
+                # Validate parameter value
 
                 if "isPath" in configDict[group][param].keys():
                     check_path(value)
@@ -77,7 +87,18 @@ def process(inputDict, configDict):
 
                     check_value(param, value, paramMin, paramMax)
 
+                # Correct parameter value
+                inputDict[group][param]["value"] = value
+
+    breakpoint()
+
 def check_value(param, value, paramMin, paramMax):
+
+    '''
+    Checks value against lower & upper bounds.
+
+    Inputs(s): parameter (str), value (float), paramMin (float), paramMax (float)
+    '''
 
     if (value >= paramMin) and (value <= paramMax):
         return True
@@ -85,6 +106,13 @@ def check_value(param, value, paramMin, paramMax):
         raise ValueError("Input parameter violates bounds", param, value)
 
 def check_path(value):
+
+    '''
+    Checks for file path existence.
+
+    Input(s): value (str) \n
+    Output(s): (bool)
+    '''
     
     if os.path.exists(value):
         return True
