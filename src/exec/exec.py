@@ -12,9 +12,10 @@ for item in paths:
 
 # Project modules
 import preproc_input
+import util_yaml
 
 # Module variables
-configPathRel = "../../config/config_param.yml"
+configPathRel = "../../config/config_input.yml"
 
 #------------------------------------------------------------------------------#
 
@@ -30,7 +31,7 @@ def exec(inputPath):
     inputDict = util_yaml.load(inputPath)
     inputDict = util_yaml.process(inputDict)
 
-    preproc_input.load(inputDict, configDict)
+    preproc_input.process(inputDict, configDict)
 
     # Sim execution 
 
