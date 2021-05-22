@@ -29,6 +29,8 @@ import util_yaml
 configPathRel = "../../config/config_unit.yml"
 unitDict      = None
 
+#------------------------------------------------------------------------------#
+
 def config():
 
     '''
@@ -45,6 +47,8 @@ def config():
         configPath = pathlib.Path(__file__).parent / configPathRel
         configPath = str(configPath.resolve())
         unitDict   = util_yaml.load(configPath)
+
+#------------------------------------------------------------------------------#
 
 def convert(*args):
 
@@ -101,6 +105,8 @@ def convert(*args):
     # Original value returned if unit is not specified or nondimensional 
     return value
 
+#------------------------------------------------------------------------------#
+
 def convert_temp(*args):
 
     '''
@@ -135,6 +141,8 @@ def convert_temp(*args):
         value = (value - offsetB)/factorB
     
     return value
+
+#------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
 

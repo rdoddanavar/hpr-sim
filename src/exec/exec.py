@@ -11,8 +11,11 @@ for item in paths:
     sys.path.append(str(addPath.resolve()))
 
 # Project modules
-import preproc_input
 import util_yaml
+import util_unit
+import preproc_input
+import preproc_engine
+import model
 
 # Module variables
 configPathRel = "../../config/config_input.yml"
@@ -21,9 +24,9 @@ configPathRel = "../../config/config_input.yml"
 
 def exec(inputPath):
 
-    # Parse CLI
-
     # Pre-processing
+    util_unit.config()
+
     configPath = pathlib.Path(__file__).parent / configPathRel
     configPath = str(configPath.resolve())
     configDict = util_yaml.load(configPath)
@@ -31,11 +34,53 @@ def exec(inputPath):
     inputDict = util_yaml.load(inputPath)
     inputDict = util_yaml.process(inputDict)
 
-    preproc_input.process(inputDict, configDict)
+    inputDict = preproc_input.process(inputDict, configDict)
 
-    # Sim execution 
+    # Initialize model - engine
+    enginePath = inputDict["engine"]["inputPath"]["value"]
+    timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
+
+    engine = model.Engine()
+    engine.init(timeEng, thrustEng, massEng)
+
+    # Initialize model - mass
+    mass     = model.Mass()
+    massBody = inputDict["mass"]["massBody"]["value"]
+
+    mass.init(massBody)
+    mass.add_dep(engine)
+
+    # Initialize model - geodetic
+    geodetic = model.Geodetic()
+    latitude = inputDict["geodetic"]["latitude"]["value"]
+
+    geodetic.init(latitude)
+
+    # Initialize model - EOM
+    eom = model.EOM()
+    eom.init()
+
+    eom.add_dep(engine)
+    eom.add_dep(mass)
+    eom.add_dep(geodetic)
+
+    # Initialize model - flight
+    flight = model.Flight()
+    flight.add_dep(eom)
+
+    t0 = 0.0
+    dt = 0.01
+    tf = 50.0
+
+    flight.init(t0, dt, tf)
+
+    # Sim execution
+    flight.update()
+    flight.write_telem("./output/test.csv")
 
     # Post-processing
+
+#------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
 

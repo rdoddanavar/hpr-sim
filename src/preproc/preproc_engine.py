@@ -36,6 +36,8 @@ import util_unit
 
 util_unit.config() # remove later when setup process updated
 
+#------------------------------------------------------------------------------#
+
 # Add error for bad engine file reading! Maybe data vectors are mismatched?
 # Feed in bad files to test
 
@@ -51,6 +53,8 @@ def load(inputPath):
         raise ValueError('Unknown engine file extension', ext)
 
     return time, thrust, mass
+
+#------------------------------------------------------------------------------#
 
 def load_eng(inputPath):
     
@@ -95,6 +99,8 @@ def load_eng(inputPath):
 
     return time, thrust, mass
 
+#------------------------------------------------------------------------------#
+
 def load_rse(inputPath):
     
     tree = ET.parse(inputPath)
@@ -130,6 +136,8 @@ def load_rse(inputPath):
     mass = totalMass - (propMass - mass)
 
     return time, thrust, mass
+
+#------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
 

@@ -40,7 +40,6 @@ def process(inputDict, configDict):
     groupValid = configDict.keys()
 
     # Param conversion & validation 
-    util_unit.config()
 
     for group in inputDict.keys():
 
@@ -79,7 +78,10 @@ def process(inputDict, configDict):
                 # Validate parameter value
 
                 if "isPath" in configDict[group][param].keys():
+
+                    # Resolve relative paths to input file
                     check_path(value)
+
                 else:
 
                     paramMin = configDict[group][param]["min"]
@@ -90,7 +92,9 @@ def process(inputDict, configDict):
                 # Correct parameter value
                 inputDict[group][param]["value"] = value
 
-    breakpoint()
+    return inputDict
+
+#------------------------------------------------------------------------------#
 
 def check_value(param, value, paramMin, paramMax):
 
@@ -105,6 +109,8 @@ def check_value(param, value, paramMin, paramMax):
     else:
         raise ValueError("Input parameter violates bounds", param, value)
 
+#------------------------------------------------------------------------------#
+
 def check_path(value):
 
     '''
@@ -118,6 +124,8 @@ def check_path(value):
         return True
     else:
         raise FileNotFoundError(value)
+
+#------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
 
