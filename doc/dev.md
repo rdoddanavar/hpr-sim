@@ -31,10 +31,16 @@
  - Errors & Logging
    - https://docs.python.org/3/tutorial/errors.html
    - https://realpython.com/python-logging/
+    - https://docs.python.org/3/library/exceptions.html
  - Pathlib example
    - https://stackoverflow.com/questions/40416072/reading-file-using-relative-path-in-python-project/40416154
  - XML
    - https://stackabuse.com/reading-and-writing-xml-files-in-python/
+ - `argparse` usage
+   - https://docs.python.org/3/howto/argparse.html#id1
+   - https://stackoverflow.com/questions/22333636/argparse-compulsory-optional-arguments?noredirect=1&lq=1
+   https://stackoverflow.com/questions/24180527/argparse-required-arguments-listed-under-optional-arguments
+   - Why can't I see `args` in `pdb`? https://stackoverflow.com/questions/58193427/why-cant-i-see-the-boolean-value-of-my-argparse-variables-in-pdb
 
 ### Pyinstaller 
 
@@ -145,6 +151,3 @@ py::module is provided for backward compatibility. #2489
    - https://stackoverflow.com/questions/30793804/how-do-i-list-the-defined-make-targets-from-the-command-line 
  - Group dependencies
    - https://stackoverflow.com/questions/37189937/group-build-targets-in-cmake-project
-
-
-## Errors & Logging

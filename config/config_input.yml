@@ -25,18 +25,19 @@
 # Dependencies:
 #     None
 ---
-sim:
-    numMC:
-        min: 0
-        max: .inf    
-    seedMaster:
-        min: 0
-        max: 2147483647 # 32 bit integer limit
-airframe:
-    loadedMass:
-        min: 0 
-        max: .inf
-prop:
+mass:
+    massBody:
+        quantity: mass
+        unit:     kg
+        min:      0.0
+        max:      .inf
+geodetic:
+    latitude:
+        quantity: angle
+        unit:     deg
+        min:      -90.0
+        max:       90.0
+engine:
     inputPath:
         isPath: true
 ...

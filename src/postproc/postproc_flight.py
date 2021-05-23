@@ -61,9 +61,9 @@ def postproc(filePath):
 
         ax[iAx].set_xlim(data["time"][0], data["time"][iGnd])
 
-    fig.show()
-
     print("apogee = " + str(data["linPosZ"].max()))
+
+    plt.show()
 
 if __name__ == "__main__":
 

@@ -35,6 +35,8 @@ import sys  # System utilities
 import pdb  # Python debugger
 import yaml # YAML parser
 
+#------------------------------------------------------------------------------#
+
 def load(filePath):
 
     """
@@ -48,6 +50,8 @@ def load(filePath):
     yamlDict = yaml.safe_load(stream)
 
     return yamlDict
+
+#------------------------------------------------------------------------------#
 
 def process(yamlDict, subDict=None, path=[], first=True):
 
@@ -81,12 +85,7 @@ def process(yamlDict, subDict=None, path=[], first=True):
                 # Parse value for target
                 idxA   = value.find("ref(") + 4
                 idxB   = value[idxA:].find(')') + idxA
-                target = value[idxA:idxB]
-
-                # Get keys to target
-                target = target.split('.')
-                nRel   = len(path) - len(target)
-                target = path[:nRel] + target
+                target = value[idxA:idxB].split('.')
 
                 # Error handling: circular reference
                 if target == path:
@@ -108,6 +107,8 @@ def process(yamlDict, subDict=None, path=[], first=True):
     
     return yamlDict
 
+#------------------------------------------------------------------------------#
+
 def get_value(nested, path):
 
     '''
@@ -123,6 +124,8 @@ def get_value(nested, path):
         value = value[key]
 
     return value
+
+#------------------------------------------------------------------------------#
 
 def set_value(nested, value, path):
 
@@ -147,7 +150,9 @@ def set_value(nested, value, path):
         nested[path[0]] = value
 
         return nested
-    
+
+#------------------------------------------------------------------------------#
+
 def math_eval(value):
 
     """
@@ -169,6 +174,8 @@ def math_eval(value):
         return eval(value) # Evaluate original expression if valid
     else:
         return value
+
+#------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
 

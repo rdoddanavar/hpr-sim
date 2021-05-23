@@ -1,0 +1,16 @@
+# /input/input.yaml
+# Input file unit test
+---
+# User constants
+const:
+    pi: 3.141592653589793
+#-----------------------------------------------------------------------------#
+mass:
+    massBody: 5
+geodetic:
+    latitude:
+        value: 32.269798 # SARA launch site: (32.269798, -111.274751)
+        unit: deg
+engine:
+    inputPath: ./input/engine/AeroTech_J450DM.eng
+...

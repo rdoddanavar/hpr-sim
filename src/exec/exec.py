@@ -1,35 +1,90 @@
 # System modules
 import sys # System utilities
 import pdb # Python debugger
-from pathlib import Path
+import pathlib
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
 
 for item in paths:
-    addPath = Path(__file__).parent / item
+    addPath = pathlib.Path(__file__).parent / item
     sys.path.append(str(addPath.resolve()))
 
 # Project modules
+import util_yaml
+import util_unit
 import preproc_input
+import preproc_engine
+import model
 
-#-----------------------------------------------------------------------------#
+# Module variables
+configPathRel = "../../config/config_input.yml"
 
-def exec(inputPath, configPath):
+#------------------------------------------------------------------------------#
 
-    # Parse CLI
+def exec(inputPath, outputPath):
 
     # Pre-processing
-    preproc_input.load(inputPath,configPath)
+    util_unit.config()
 
-    # Sim execution 
+    configPath = pathlib.Path(__file__).parent / configPathRel
+    configPath = str(configPath.resolve())
+    configDict = util_yaml.load(configPath)
+
+    inputDict = util_yaml.load(inputPath)
+    inputDict = util_yaml.process(inputDict)
+
+    inputDict = preproc_input.process(inputDict, configDict)
+
+    # Initialize model - engine
+    enginePath = inputDict["engine"]["inputPath"]["value"]
+    timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
+
+    engine = model.Engine()
+    engine.init(timeEng, thrustEng, massEng)
+
+    # Initialize model - mass
+    mass     = model.Mass()
+    massBody = inputDict["mass"]["massBody"]["value"]
+
+    mass.init(massBody)
+    mass.add_dep(engine)
+
+    # Initialize model - geodetic
+    geodetic = model.Geodetic()
+    latitude = inputDict["geodetic"]["latitude"]["value"]
+
+    geodetic.init(latitude)
+
+    # Initialize model - EOM
+    eom = model.EOM()
+    eom.init()
+
+    eom.add_dep(engine)
+    eom.add_dep(mass)
+    eom.add_dep(geodetic)
+
+    # Initialize model - flight
+    flight = model.Flight()
+    flight.add_dep(eom)
+
+    t0 = 0.0
+    dt = 0.01
+    tf = 50.0
+
+    flight.init(t0, dt, tf)
+
+    # Sim execution
+    flight.update()
+    flight.write_telem(outputPath)
 
     # Post-processing
 
+#------------------------------------------------------------------------------#
+
 if __name__ == "__main__":
 
-    inputPath  = sys.argv[1]
-    configPath = Path(__file__).parent / "../../config/config_param.yaml"
-    configPath = str(configPath.resolve())
+    inputPath = sys.argv[1]
+    inputPath = sys.argv[2]
 
-    exec(inputPath, configPath)
+    exec(inputPath, outputPath)

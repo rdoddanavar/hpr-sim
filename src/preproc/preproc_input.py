@@ -15,90 +15,117 @@ Description:
 Functions:
     load
 Classes:
-    None
-Dependencies:
-    hpr-sim/src/preproc/input.cpp
-                       /input.h
-                /util/util_yaml.py
-                     /util_unit.py
+    <none>
 '''
 
 # System modules
-import sys # System utilities
-import pdb # Python debugger
+import os
+import pathlib
 
 # Project modules
 import util_yaml
 import util_unit
 
-# Pybind11 modules
-import input # Input classes 
+#------------------------------------------------------------------------------#
 
-def load(inputPath, configPath):
+def process(inputDict, configDict):
 
     '''
     Populates input parameters via YAML input; converts and validates parameters.
 
-    Input(s): inputPath (str), configPath (str) \n
+    Input(s): inputDict (dict), configDict (dict) \n
     Output(s): <none>
-    '''
+    ''' 
 
-    # YAML parse
-    configDict = util_yaml.load(configPath)
-    inputDict  = util_yaml.load(inputPath)
-    inputDict  = util_yaml.process(inputDict)
-
-    # Instantiate input object
-    inp = input.Input()
-
-    # Param config: min, max, quantity 
-
-    for group in configDict.keys():
-        for param in configDict[group].keys():
-                for field in configDict[group][param].keys():
-
-                    value = configDict[group][param][field]
-                    setattr(getattr(getattr(inp, group), param), field, value)
-
-    # Param assignment: value, unit, dist
-
-    for group in inputDict.keys():
-        for param in inputDict[group].keys():
-
-            # Multiple fields specified by user
-            if (isinstance(inputDict[group][param], dict)):
-
-                for field in inputDict[group][param].keys():
-
-                    value = inputDict[group][param][field]
-                    setattr(getattr(getattr(inp, group), param), field, value)
-
-            # Only "value" is specified by user
-            else: 
-
-                value = inputDict[group][param]
-                getattr(getattr(inp, group), param).value = value
+    groupValid = configDict.keys()
 
     # Param conversion & validation 
-    util_unit.config()
 
     for group in inputDict.keys():
-        for param in inputDict[group].keys():
+
+        if group in groupValid:
+
+            for param in inputDict[group].keys():
                 
-            obj = getattr(getattr(inp, group), param)
+                # Get input parameter value & properties
 
-            if (isinstance(obj, input.Param)):
+                temp = inputDict[group][param]
 
-                obj.value = util_unit.convert(obj.value, obj.quantity, obj.unit)
+                if type(temp) is dict:
 
-                print("value: ", obj.value)
+                    props = temp.keys()
 
-                cond = obj.check_value()
+                    if "value" in props:
+                        value = inputDict[group][param]["value"]
 
-            elif (isinstance(obj, input.Name)):
-                cond = obj.check_path()
-            
-            print(param + ": ", cond)
+                else:
+                    
+                    props = []
+                    value = temp
+                    
+                    inputDict[group][param] = {}
+
+                # Convert units if specified by user
+
+                if "unit" in props:
+
+                    value    = inputDict[group][param]["value"]
+                    quantity = configDict[group][param]["quantity"]
+                    unit     = inputDict[group][param]["unit"]
+
+                    value = util_unit.convert(value, quantity, unit)
+
+                # Validate parameter value
+
+                if "isPath" in configDict[group][param].keys():
+
+                    # Resolve relative paths to input file
+                    check_path(value)
+
+                else:
+
+                    paramMin = configDict[group][param]["min"]
+                    paramMax = configDict[group][param]["max"]
+
+                    check_value(param, value, paramMin, paramMax)
+
+                # Correct parameter value
+                inputDict[group][param]["value"] = value
+
+    return inputDict
+
+#------------------------------------------------------------------------------#
+
+def check_value(param, value, paramMin, paramMax):
+
+    '''
+    Checks value against lower & upper bounds.
+
+    Inputs(s): parameter (str), value (float), paramMin (float), paramMax (float)
+    '''
+
+    if (value >= paramMin) and (value <= paramMax):
+        return True
+    else:
+        raise ValueError("Input parameter violates bounds", param, value)
+
+#------------------------------------------------------------------------------#
+
+def check_path(value):
+
+    '''
+    Checks for file path existence.
+
+    Input(s): value (str) \n
+    Output(s): (bool)
+    '''
+    
+    if os.path.exists(value):
+        return True
+    else:
+        raise FileNotFoundError(value)
+
+#------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
 
