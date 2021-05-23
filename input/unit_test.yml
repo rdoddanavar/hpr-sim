@@ -9,7 +9,7 @@ mass:
     massBody: 5
 geodetic:
     latitude:
-        value: 32.2698 # SARA launch site: (32.269798483027344, -111.27475082401067)
+        value: 32.269798 # SARA launch site: (32.269798, -111.274751)
         unit: deg
 engine:
     inputPath: ./input/engine/AeroTech_J450DM.eng

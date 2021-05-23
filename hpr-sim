@@ -1,3 +1,0 @@
-#!/usr/bin/bash
-
-python ./src/exec/exec.py $1

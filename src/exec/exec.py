@@ -22,7 +22,7 @@ configPathRel = "../../config/config_input.yml"
 
 #------------------------------------------------------------------------------#
 
-def exec(inputPath):
+def exec(inputPath, outputPath):
 
     # Pre-processing
     util_unit.config()
@@ -76,7 +76,7 @@ def exec(inputPath):
 
     # Sim execution
     flight.update()
-    flight.write_telem("./output/test.csv")
+    flight.write_telem(outputPath)
 
     # Post-processing
 
@@ -85,5 +85,6 @@ def exec(inputPath):
 if __name__ == "__main__":
 
     inputPath = sys.argv[1]
+    inputPath = sys.argv[2]
 
-    exec(inputPath)
+    exec(inputPath, outputPath)
