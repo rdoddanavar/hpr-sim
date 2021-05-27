@@ -92,8 +92,6 @@ def process(inputDict, configDict):
                 # Correct parameter value
                 inputDict[group][param]["value"] = value
 
-    return inputDict
-
 #------------------------------------------------------------------------------#
 
 def check_value(param, value, paramMin, paramMax):

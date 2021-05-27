@@ -2,6 +2,7 @@
 import sys # System utilities
 import pdb # Python debugger
 import pathlib
+import multiprocessing as mp
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
@@ -32,9 +33,8 @@ def exec(inputPath, outputPath):
     configDict = util_yaml.load(configPath)
 
     inputDict = util_yaml.load(inputPath)
-    inputDict = util_yaml.process(inputDict)
-
-    inputDict = preproc_input.process(inputDict, configDict)
+    util_yaml.process(inputDict)
+    preproc_input.process(inputDict, configDict)
 
     # Initialize model - engine
     enginePath = inputDict["engine"]["inputPath"]["value"]
@@ -75,16 +75,25 @@ def exec(inputPath, outputPath):
     flight.init(t0, dt, tf)
 
     # Sim execution
-    flight.update()
-    flight.write_telem(outputPath)
+    run_mc(flight, outputPath, 1)
 
     # Post-processing
 
 #------------------------------------------------------------------------------#
 
+outputName = "output"
+
+def run_mc(flight, outputPath, iRun):
+
+    flight.update()
+    outputPath += f"{outputName}{iRun}.csv"
+    flight.write_telem(outputPath)
+
+#------------------------------------------------------------------------------#
+
 if __name__ == "__main__":
 
-    inputPath = sys.argv[1]
-    inputPath = sys.argv[2]
+    inputPath  = sys.argv[1]
+    outputPath = sys.argv[2]
 
     exec(inputPath, outputPath)
