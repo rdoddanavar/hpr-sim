@@ -1,8 +1,9 @@
 # System modules
-import sys # System utilities
-import pdb # Python debugger
+import sys
+import pdb
 import pathlib
 import multiprocessing as mp
+import functools
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
@@ -20,6 +21,7 @@ import model
 
 # Module variables
 configPathRel = "../../config/config_input.yml"
+nProc = 4
 
 #------------------------------------------------------------------------------#
 
@@ -75,19 +77,35 @@ def exec(inputPath, outputPath):
     flight.init(t0, dt, tf)
 
     # Sim execution
-    run_mc(flight, outputPath, 1)
+    iRun = list(range(nProc))
+    pool = mp.Pool(nProc)
+
+    #pool.map_async(functools.partial(run_mc, flight), iRun)
+    flights = [flight]*nProc
+    breakpoint()
+    pool.map_async(test, flights)
+
+    pool.close()
+    pool.join()
 
     # Post-processing
 
 #------------------------------------------------------------------------------#
 
+outputPath = "output/"
 outputName = "output"
 
-def run_mc(flight, outputPath, iRun):
+def run_mc(flight, iRun):
+
+    print("test")
 
     flight.update()
-    outputPath += f"{outputName}{iRun}.csv"
+    #outputPath += f"{outputName}{iRun}.csv"
+    outputPath = f"output/output{iRun}.csv"
     flight.write_telem(outputPath)
+
+def test(flight):
+    flight.update()
 
 #------------------------------------------------------------------------------#
 
