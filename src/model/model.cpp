@@ -12,14 +12,6 @@ namespace py = pybind11;
 
 // BINDING CODE
 
-/*
-Current version - pybind11 v2.5.0
-
-Release Notes (pybind11 v2.6.0):
-    py::module_ was renamed py::module__ to avoid issues with C++20 when used unqualified,
-    but an alias py::module_ is provided for backward compatibility. #2489
-*/
-
 // Expose derived classes
 void bind_Engine   (py::module_ &);
 void bind_Mass     (py::module_ &);
