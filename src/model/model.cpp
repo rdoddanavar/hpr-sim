@@ -16,16 +16,16 @@ namespace py = pybind11;
 Current version - pybind11 v2.5.0
 
 Release Notes (pybind11 v2.6.0):
-    py::module was renamed py::module_ to avoid issues with C++20 when used unqualified,
-    but an alias py::module is provided for backward compatibility. #2489
+    py::module_ was renamed py::module__ to avoid issues with C++20 when used unqualified,
+    but an alias py::module_ is provided for backward compatibility. #2489
 */
 
 // Expose derived classes
-void bind_Engine   (py::module &);
-void bind_Mass     (py::module &);
-void bind_Geodetic (py::module &);
-void bind_EOM      (py::module &);
-void bind_Flight   (py::module &);
+void bind_Engine   (py::module_ &);
+void bind_Mass     (py::module_ &);
+void bind_Geodetic (py::module_ &);
+void bind_EOM      (py::module_ &);
+void bind_Flight   (py::module_ &);
 
 PYBIND11_MODULE(model, m)
 {
@@ -48,7 +48,7 @@ PYBIND11_MODULE(model, m)
 
 //---------------------------------------------------------------------------//
 
-void bind_Engine(py::module &m)
+void bind_Engine(py::module_ &m)
 {
 
     py::class_<Engine, Model>(m, "Engine")
@@ -59,7 +59,7 @@ void bind_Engine(py::module &m)
 
 //---------------------------------------------------------------------------//
 
-void bind_Mass(py::module &m)
+void bind_Mass(py::module_ &m)
 {
 
     py::class_<Mass, Model>(m, "Mass")
@@ -70,7 +70,7 @@ void bind_Mass(py::module &m)
 
 //---------------------------------------------------------------------------//
 
-void bind_Geodetic(py::module &m)
+void bind_Geodetic(py::module_ &m)
 {
 
     py::class_<Geodetic, Model>(m, "Geodetic")
@@ -81,7 +81,7 @@ void bind_Geodetic(py::module &m)
 
 //---------------------------------------------------------------------------//
 
-void bind_EOM(py::module &m)
+void bind_EOM(py::module_ &m)
 {
 
     py::class_<EOM, Model>(m, "EOM")
@@ -92,7 +92,7 @@ void bind_EOM(py::module &m)
 
 //---------------------------------------------------------------------------//
 
-void bind_Flight(py::module &m)
+void bind_Flight(py::module_ &m)
 {
 
     py::class_<Flight, Model>(m, "Flight")
