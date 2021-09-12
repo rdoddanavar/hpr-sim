@@ -1,5 +1,6 @@
 # System modules
 import sys
+import os
 import pdb
 import pathlib
 import multiprocessing as mp
@@ -22,6 +23,7 @@ import model
 # Module variables
 configPathRel = "../../config/config_input.yml"
 outputPath    = None
+inputDict     = None
 
 #------------------------------------------------------------------------------#
 
@@ -34,23 +36,26 @@ def exec(inputPath, outputPathBase):
     configPath = str(configPath.resolve())
     configDict = util_yaml.load(configPath)
 
+    global inputDict
+
     inputDict = util_yaml.load(inputPath)
     util_yaml.process(inputDict)
     preproc_input.process(inputDict, configDict)
 
-    breakpoint()
+    # Output setup
+    outputDir = pathlib.Path(inputPath).stem
 
-    # # Sim execution
+    if not os.path.exists(outputDir):
+        os.mkdir(outputDir)
+
+    # Sim execution
     numProc = inputDict['exec']['numProc']['value']
     numMC   = inputDict['exec']['numMC']['value']
-    numMC   = inputDict['exec']['seedMaster']['value']
 
     pool  = mp.Pool(numProc)
-    intMC = range(numMC)
-    seeds = np.array(intMC)
-    seeds += seedMaster
+    iRuns = range(numMC)
 
-    pool.map_async(run_mc, seeds)
+    pool.map_async(run_mc, iRuns)
 
     pool.close()
     pool.join()
@@ -59,7 +64,10 @@ def exec(inputPath, outputPathBase):
 
 #------------------------------------------------------------------------------#
 
-def run_mc(seed):
+def run_mc(iRun):
+
+    seedMaster = inputDict['exec']['seedMaster']['value']
+    seedRun    = seedMaster + iRun
 
     # Initialize model - engine
     enginePath = inputDict["engine"]["inputPath"]["value"]
@@ -98,13 +106,13 @@ def run_mc(seed):
     flight.add_dep(eom)
 
     t0 = 0.0
-    dt = 0.01
-    tf = 50.0
+    dt = inputDict['exec']['timeStep']['value']
+    tf = inputDict['exec']['timeFlight']['value']
 
     flight.init(t0, dt, tf)
-
     flight.update()
-    #outputPath += f"{outputName}{iRun}.csv"
+
+    # Write output
     outputPath = f"output/output{iRun}.csv"
     flight.write_telem(outputPath)
 

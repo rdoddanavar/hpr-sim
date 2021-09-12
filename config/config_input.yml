@@ -31,6 +31,26 @@ exec:
         unit: null
         min: 0.0
         max: .inf
+    numMC:
+        quantity: null
+        unit: null
+        min: 0.0
+        max: .inf
+    numProc:
+        quantity: null
+        unit: null
+        min: 0.0
+        max: .inf
+    timeFlight:
+        quantity: time
+        unit: s
+        min: 0.0
+        max: .inf
+    timeStep:
+        quantity: time
+        unit: s
+        min: 0.0
+        max: .inf
     numProc:
         quantity: null
         unit: null

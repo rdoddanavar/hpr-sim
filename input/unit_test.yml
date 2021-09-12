@@ -6,8 +6,11 @@ const:
     pi: 3.141592653589793
 #-----------------------------------------------------------------------------#
 exec:
-    numProc: 4
     seedMaster: 0
+    numMC: 4
+    numProc: 4
+    timeFlight: 50.0
+    timeStep: 0.01
 mass:
     massBody: 5.0
 geodetic:
