@@ -25,18 +25,29 @@
 # Dependencies:
 #     None
 ---
+exec:
+    seedMaster:
+        quantity: null
+        unit: null
+        min: 0.0
+        max: .inf
+    numProc:
+        quantity: null
+        unit: null
+        min: 0.0
+        max: .inf
 mass:
     massBody:
         quantity: mass
-        unit:     kg
-        min:      0.0
-        max:      .inf
+        unit: kg
+        min: 0.0
+        max: .inf
 geodetic:
     latitude:
         quantity: angle
-        unit:     deg
-        min:      -90.0
-        max:       90.0
+        unit: deg
+        min: -90.0
+        max: 90.0
 engine:
     inputPath:
         isPath: true
