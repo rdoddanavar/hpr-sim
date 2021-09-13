@@ -22,12 +22,12 @@ import model
 
 # Module variables
 configPathRel = "../../config/config_input.yml"
-outputPath    = None
+outputPath2   = None
 inputDict     = None
 
 #------------------------------------------------------------------------------#
 
-def exec(inputPath, outputPathBase):
+def exec(inputPath, outputPath):
 
     # Pre-processing
     util_unit.config()
@@ -37,16 +37,17 @@ def exec(inputPath, outputPathBase):
     configDict = util_yaml.load(configPath)
 
     global inputDict
-
     inputDict = util_yaml.load(inputPath)
     util_yaml.process(inputDict)
     preproc_input.process(inputDict, configDict)
 
     # Output setup
-    outputDir = pathlib.Path(inputPath).stem
-
-    if not os.path.exists(outputDir):
-        os.mkdir(outputDir)
+    global outputPath2
+    inputName   = pathlib.Path(inputPath).stem
+    outputPath2 = pathlib.Path(outputPath) / inputName
+    
+    if not os.path.exists(outputPath2):
+        os.mkdir(outputPath2)
 
     # Sim execution
     numProc = inputDict['exec']['numProc']['value']
@@ -66,8 +67,10 @@ def exec(inputPath, outputPathBase):
 
 def run_mc(iRun):
 
+    # Initialize RNG
     seedMaster = inputDict['exec']['seedMaster']['value']
     seedRun    = seedMaster + iRun
+    # Philox rng here
 
     # Initialize model - engine
     enginePath = inputDict["engine"]["inputPath"]["value"]
@@ -81,7 +84,7 @@ def run_mc(iRun):
     massBody = inputDict["mass"]["massBody"]["value"]
 
     #--------------------#
-    massBody += iRun
+    #massBody += iRun
     #--------------------#
 
     mass.init(massBody)
@@ -113,8 +116,13 @@ def run_mc(iRun):
     flight.update()
 
     # Write output
-    outputPath = f"output/output{iRun}.csv"
-    flight.write_telem(outputPath)
+    outputPath3 = outputPath2 / f"run{iRun}"
+    
+    if not os.path.exists(outputPath3):
+        os.mkdir(outputPath3)
+    
+    outputPath4 = outputPath3 / "telem.csv"
+    flight.write_telem(str(outputPath4))
 
 #------------------------------------------------------------------------------#
 
