@@ -6,9 +6,11 @@ const:
     pi: 3.141592653589793
 #-----------------------------------------------------------------------------#
 exec:
+    mode: montecarlo
     seedMaster: 0
     numMC: 5
     numProc: 4
+flight:
     timeFlight: 50.0
     timeStep: 0.01
 mass:

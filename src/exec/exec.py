@@ -4,7 +4,7 @@ import os
 import pdb
 import pathlib
 import multiprocessing as mp
-import functools
+import numpy as np
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
@@ -50,27 +50,41 @@ def exec(inputPath, outputPath):
         os.mkdir(outputPath2)
 
     # Sim execution
+    mode    = inputDict['exec']['mode']['value']
     numProc = inputDict['exec']['numProc']['value']
     numMC   = inputDict['exec']['numMC']['value']
+    
+    if mode == "nominal":
+        
+        run_flight(None)
 
-    pool  = mp.Pool(numProc)
-    iRuns = range(numMC)
+    elif mode == "montecarlo":
+    
+        pool  = mp.Pool(numProc)
+        iRuns = range(numMC)
 
-    pool.map_async(run_mc, iRuns)
+        pool.map_async(run_flight, iRuns)
 
-    pool.close()
-    pool.join()
+        pool.close()
+        pool.join()
     
     # Post-processing
 
 #------------------------------------------------------------------------------#
 
-def run_mc(iRun):
+# def run_mc
+# def run_nominal
 
-    # Initialize RNG
-    seedMaster = inputDict['exec']['seedMaster']['value']
-    seedRun    = seedMaster + iRun
-    # Philox rng here
+def run_flight(iRun):
+
+    # Initialize RNG if run # valid
+
+    if iRun: 
+
+        seedMaster = inputDict['exec']['seedMaster']['value']
+        seedRun    = seedMaster + iRun
+        philox     = np.random.Philox(seedRun)
+        rng        = np.random.Generator(philox)
 
     # Initialize model - engine
     enginePath = inputDict["engine"]["inputPath"]["value"]
@@ -109,8 +123,8 @@ def run_mc(iRun):
     flight.add_dep(eom)
 
     t0 = 0.0
-    dt = inputDict['exec']['timeStep']['value']
-    tf = inputDict['exec']['timeFlight']['value']
+    dt = inputDict['flight']['timeStep']['value']
+    tf = inputDict['flight']['timeFlight']['value']
 
     flight.init(t0, dt, tf)
     flight.update()

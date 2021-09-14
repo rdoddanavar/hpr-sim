@@ -78,9 +78,10 @@ def process(inputDict, configDict):
                 # Validate parameter value
 
                 if "isPath" in configDict[group][param].keys():
-
-                    # Resolve relative paths to input file
-                    check_path(value)
+                    
+                    if configDict[group][param]['isPath']:
+                        # Resolve relative paths to input file
+                        check_path(value)
 
                 else:
 
@@ -91,6 +92,10 @@ def process(inputDict, configDict):
 
                 # Correct parameter value
                 inputDict[group][param]["value"] = value
+
+#------------------------------------------------------------------------------#
+
+# def check_type(): 
 
 #------------------------------------------------------------------------------#
 

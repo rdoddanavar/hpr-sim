@@ -26,49 +26,56 @@
 #     None
 ---
 exec:
+    mode:
+        type: str
+        isPath: false
     seedMaster:
+        type: int
         quantity: null
         unit: null
-        min: 0.0
+        min: 0
         max: .inf
     numMC:
+        type: int
         quantity: null
         unit: null
-        min: 0.0
+        min: 0
         max: .inf
     numProc:
+        type: int
         quantity: null
         unit: null
-        min: 0.0
+        min: 0
         max: .inf
+flight:
     timeFlight:
+        type: float
         quantity: time
         unit: s
         min: 0.0
         max: .inf
     timeStep:
+        type: float
         quantity: time
         unit: s
         min: 0.0
         max: .inf
-    numProc:
-        quantity: null
-        unit: null
-        min: 0.0
-        max: .inf
 mass:
     massBody:
+        type: float
         quantity: mass
         unit: kg
         min: 0.0
         max: .inf
 geodetic:
     latitude:
+        type: float
         quantity: angle
         unit: deg
         min: -90.0
         max: 90.0
 engine:
     inputPath:
+        type: str
         isPath: true
 ...
