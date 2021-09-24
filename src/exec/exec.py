@@ -3,6 +3,7 @@ import sys
 import os
 import pdb
 import pathlib
+import copy
 import multiprocessing as mp
 import numpy as np
 
@@ -56,7 +57,8 @@ def exec(inputPath, outputPath):
     
     if mode == "nominal":
         
-        run_flight(None)
+        #run_flight(None)
+        run_flight(0)
 
     elif mode == "montecarlo":
     
@@ -72,19 +74,48 @@ def exec(inputPath, outputPath):
 
 #------------------------------------------------------------------------------#
 
+def mc_draw(rng):
+
+    inputDictRun = copy.deepcopy(inputDict)
+
+    for group in inputDictRun.keys():
+
+        for param in inputDictRun[group].keys():
+
+            props = inputDictRun[group][param].keys()
+
+            if "dist" in props:
+
+                distName  = inputDictRun[group][param]["name"]
+                distParam = inputDictRun[group][param]["param"]
+                rngFun    = getattr(rng, distName)
+                rngEval   = rngFun(*distParam)
+
+                breakpoint()
+
+    breakpoint()
+
+    return inputDictRun
+
+#------------------------------------------------------------------------------#
+
 # def run_mc
 # def run_nominal
 
 def run_flight(iRun):
 
-    # Initialize RNG if run # valid
+    # Initialize RNG
 
-    if iRun: 
+    seedMaster = inputDict['exec']['seedMaster']['value']
+    seedRun    = seedMaster + iRun
+    philox     = np.random.Philox(seedRun)
+    rng        = np.random.Generator(philox)
 
-        seedMaster = inputDict['exec']['seedMaster']['value']
-        seedRun    = seedMaster + iRun
-        philox     = np.random.Philox(seedRun)
-        rng        = np.random.Generator(philox)
+    inputDictRun = mc_draw(rng)
+
+    breakpoint()
+
+    # 
 
     # Initialize model - engine
     enginePath = inputDict["engine"]["inputPath"]["value"]

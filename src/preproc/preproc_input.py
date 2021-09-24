@@ -38,6 +38,7 @@ def process(inputDict, configDict):
     ''' 
 
     groupValid = configDict.keys()
+    # TODO - separate inputDictRaw, inputDict to filter invalid fields
 
     # Param conversion & validation 
 
