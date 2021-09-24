@@ -86,14 +86,10 @@ def mc_draw(rng):
 
             if "dist" in props:
 
-                distName  = inputDictRun[group][param]["name"]
-                distParam = inputDictRun[group][param]["param"]
+                distName  = inputDictRun[group][param]["dist"]["name"]
+                distParam = inputDictRun[group][param]["dist"]["param"]
                 rngFun    = getattr(rng, distName)
                 rngEval   = rngFun(*distParam)
-
-                breakpoint()
-
-    breakpoint()
 
     return inputDictRun
 

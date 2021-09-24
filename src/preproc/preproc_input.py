@@ -37,8 +37,14 @@ def process(inputDict, configDict):
     Output(s): <none>
     ''' 
 
-    groupValid = configDict.keys()
-    # TODO - separate inputDictRaw, inputDict to filter invalid fields
+    groupValid   = configDict.keys()
+    groupInvalid = set(inputDict.keys()) - set(groupValid)
+
+    for key in groupInvalid:
+        inputDict.pop(key)
+    
+    # TODO - catch error if inputDict does not have all necessary keys?
+    # Is this necessary? Will the defaults be filled in automatically by configDict?
 
     # Param conversion & validation 
 
