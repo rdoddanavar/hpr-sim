@@ -21,6 +21,8 @@ import preproc_input
 import preproc_engine
 import model
 
+#------------------------------------------------------------------------------#
+
 # Module variables
 configPathRel = "../../config/config_input.yml"
 outputPath2   = None
@@ -73,30 +75,6 @@ def exec(inputPath, outputPath):
     # Post-processing
 
 #------------------------------------------------------------------------------#
-
-def mc_draw(rng):
-
-    inputDictRun = copy.deepcopy(inputDict)
-
-    for group in inputDictRun.keys():
-
-        for param in inputDictRun[group].keys():
-
-            props = inputDictRun[group][param].keys()
-
-            if "dist" in props:
-
-                distName  = inputDictRun[group][param]["dist"]["name"]
-                distParam = inputDictRun[group][param]["dist"]["param"]
-                rngFun    = getattr(rng, distName)
-                rngEval   = rngFun(*distParam)
-
-    return inputDictRun
-
-#------------------------------------------------------------------------------#
-
-# def run_mc
-# def run_nominal
 
 def run_flight(iRun):
 
