@@ -6,8 +6,8 @@ const:
     pi: 3.141592653589793
 #-----------------------------------------------------------------------------#
 exec:
-    mode: nominal
-    seedMaster: 0
+    mode: montecarlo
+    seed: 0
     numMC: 5
     numProc: 4
 flight:

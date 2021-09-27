@@ -54,7 +54,9 @@ import numpy as np
 
 #------------------------------------------------------------------------------#
 
-def mc_draw(inputDictRun, seedRun):
+def mc_draw(inputDictRun):
+
+    seedRun = inputDictRun["exec"]["seed"]["value"]
 
     # Initialize RNG
     philox = np.random.Philox(seedRun)

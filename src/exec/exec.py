@@ -55,9 +55,9 @@ def exec(inputPath, outputPath):
         os.mkdir(outputPath2)
 
     # Sim execution
-    mode    = inputDict['exec']['mode']['value']
-    numProc = inputDict['exec']['numProc']['value']
-    numMC   = inputDict['exec']['numMC']['value']
+    mode    = inputDict["exec"]["mode"]["value"]
+    numProc = inputDict["exec"]["numProc"]["value"]
+    numMC   = inputDict["exec"]["numMC"]["value"]
     
     if mode == "nominal":
         
@@ -84,10 +84,12 @@ def run_flight(iRun):
 
     if not(np.isnan(iRun)):
 
-        seedMaster   = inputDictRun['exec']['seedMaster']['value']
-        seedRun      = seedMaster + iRun
+        seedMaster = inputDict["exec"]["seed"]["value"]
+        seedRun    = seedMaster + iRun
         
-        exec_rand.mc_draw(inputDictRun, seedRun)
+        inputDictRun["exec"]["seed"]["value"] = seedRun
+
+        exec_rand.mc_draw(inputDictRun)
 
     # Initialize model - engine
     enginePath = inputDictRun["engine"]["inputPath"]["value"]
@@ -100,8 +102,8 @@ def run_flight(iRun):
     mass     = model.Mass()
     massBody = inputDictRun["mass"]["massBody"]["value"]
 
-    mass.init(massBody)
     mass.add_dep(engine)
+    mass.init(massBody)
 
     # Initialize model - geodetic
     geodetic = model.Geodetic()
@@ -111,33 +113,43 @@ def run_flight(iRun):
 
     # Initialize model - EOM
     eom = model.EOM()
-    eom.init()
 
     eom.add_dep(engine)
     eom.add_dep(mass)
     eom.add_dep(geodetic)
+    eom.init()
 
     # Initialize model - flight
     flight = model.Flight()
     flight.add_dep(eom)
 
     t0 = 0.0
-    dt = inputDictRun['flight']['timeStep']['value']
-    tf = inputDictRun['flight']['timeFlight']['value']
+    dt = inputDictRun["flight"]["timeStep"]["value"]
+    tf = inputDictRun["flight"]["timeFlight"]["value"]
 
     flight.init(t0, dt, tf)
-    flight.update()
 
-    # Write output
+    flight.update() # Execute flight
+    write_output(iRun, inputDictRun, flight)
+
+#------------------------------------------------------------------------------#
+
+def write_output(iRun, inputDictRun, flight):
+
+    # Setup run output folder
     outputPath3 = outputPath2 / f"run{iRun}"
     
     if not os.path.exists(outputPath3):
         os.mkdir(outputPath3)
     
+    # Write telemetry *.csv
     outputCSV = outputPath3 / "telem.csv"
     flight.write_telem(str(outputCSV))
 
-    # Archive input file for run recreation
+    # Write input *.yml
+    # Archives montecarlo draw for run recreation
+    inputDictRun["exec"]["mode"]["value"] = "nominal"
+
     outputYML = outputPath3 / "input.yml"
 
     with open(str(outputYML), 'w') as file:

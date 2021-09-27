@@ -29,7 +29,7 @@ exec:
     mode:
         type: str
         isPath: false
-    seedMaster:
+    seed:
         type: int
         quantity: null
         unit: null
