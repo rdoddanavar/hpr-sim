@@ -14,12 +14,10 @@ flight:
     timeFlight: 50.0
     timeStep: 0.01
 mass:
-    massBody: 5.0
-mass:
     massBody:
         dist:
             name: normal
-            param: [0, 1]
+            param: [5.0, 0.5]
 geodetic:
     latitude:
         value: 32.269798 # SARA launch site: (32.269798, -111.274751)

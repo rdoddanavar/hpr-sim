@@ -6,7 +6,7 @@ import argparse
 import pathlib
 
 # Path modifications
-paths = ["./src/exec", "./src/postproc"]
+paths = ["../src/exec", "../src/postproc"]
 
 for item in paths:
     addPath = pathlib.Path(__file__).parent / item

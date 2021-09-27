@@ -6,6 +6,7 @@ import pathlib
 import copy
 import multiprocessing as mp
 import numpy as np
+import yaml
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
@@ -15,6 +16,7 @@ for item in paths:
     sys.path.append(str(addPath.resolve()))
 
 # Project modules
+import exec_rand
 import util_yaml
 import util_unit
 import preproc_input
@@ -59,7 +61,7 @@ def exec(inputPath, outputPath):
     
     if mode == "nominal":
         
-        #run_flight(None)
+        #run_flight(np.nan)
         run_flight(0)
 
     elif mode == "montecarlo":
@@ -78,21 +80,17 @@ def exec(inputPath, outputPath):
 
 def run_flight(iRun):
 
-    # Initialize RNG
+    inputDictRun = copy.deepcopy(inputDict)
 
-    seedMaster = inputDict['exec']['seedMaster']['value']
-    seedRun    = seedMaster + iRun
-    philox     = np.random.Philox(seedRun)
-    rng        = np.random.Generator(philox)
+    if not(np.isnan(iRun)):
 
-    inputDictRun = mc_draw(rng)
-
-    breakpoint()
-
-    # 
+        seedMaster   = inputDictRun['exec']['seedMaster']['value']
+        seedRun      = seedMaster + iRun
+        
+        exec_rand.mc_draw(inputDictRun, seedRun)
 
     # Initialize model - engine
-    enginePath = inputDict["engine"]["inputPath"]["value"]
+    enginePath = inputDictRun["engine"]["inputPath"]["value"]
     timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
 
     engine = model.Engine()
@@ -100,18 +98,14 @@ def run_flight(iRun):
 
     # Initialize model - mass
     mass     = model.Mass()
-    massBody = inputDict["mass"]["massBody"]["value"]
-
-    #--------------------#
-    #massBody += iRun
-    #--------------------#
+    massBody = inputDictRun["mass"]["massBody"]["value"]
 
     mass.init(massBody)
     mass.add_dep(engine)
 
     # Initialize model - geodetic
     geodetic = model.Geodetic()
-    latitude = inputDict["geodetic"]["latitude"]["value"]
+    latitude = inputDictRun["geodetic"]["latitude"]["value"]
 
     geodetic.init(latitude)
 
@@ -128,8 +122,8 @@ def run_flight(iRun):
     flight.add_dep(eom)
 
     t0 = 0.0
-    dt = inputDict['flight']['timeStep']['value']
-    tf = inputDict['flight']['timeFlight']['value']
+    dt = inputDictRun['flight']['timeStep']['value']
+    tf = inputDictRun['flight']['timeFlight']['value']
 
     flight.init(t0, dt, tf)
     flight.update()
@@ -140,8 +134,14 @@ def run_flight(iRun):
     if not os.path.exists(outputPath3):
         os.mkdir(outputPath3)
     
-    outputPath4 = outputPath3 / "telem.csv"
-    flight.write_telem(str(outputPath4))
+    outputCSV = outputPath3 / "telem.csv"
+    flight.write_telem(str(outputCSV))
+
+    # Archive input file for run recreation
+    outputYML = outputPath3 / "input.yml"
+
+    with open(str(outputYML), 'w') as file:
+        yaml.dump(inputDictRun, file)
 
 #------------------------------------------------------------------------------#
 

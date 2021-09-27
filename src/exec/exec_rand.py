@@ -1,4 +1,5 @@
 # System modules
+import numpy as np
 
 # Path modifications
 
@@ -8,49 +9,56 @@
 
 # Module variables
 
-distArg = {"beta": (2, []),
-#"binomial": (,),
-"chisquare": (,),
-"dirichlet": (,),
-"exponential": (,),
-"f": (,),
-"gamma": (,),
-"geometric": (,),
-"gumbel": (,),
-"hypergeometric": (,),
-"laplace": (,),
-"logistic": (,),
-"lognormal": (,),
-"logseries": (,),
-"multinomial": (,),
-"multivariate_hypergeometric": (,),
-"multivariate_normal": (,),
-"negative_binomial": (,),
-"noncentral_chisquare": (,),
-"noncentral_f": (,),
-"normal": (,),
-"pareto": (,),
-"poisson": (,),
-"power": (,),
-"rayleigh": (,),
-"standard_cauchy": (,),
-"standard_exponential": (,),
-"standard_gamma": (,),
-"standard_normal": (,),
-"standard_t": (,),
-"triangular": (,),
-"uniform": (,),
-"vonmises": (,),
-"wald": (,),
-"weibull": (,),
-"zipf": (,),
-}
+# distArg = {"beta": (2, []),
+# #"binomial": (,),
+# "chisquare": (,),
+# "dirichlet": (,),
+# "exponential": (,),
+# "f": (,),
+# "gamma": (,),
+# "geometric": (,),
+# "gumbel": (,),
+# "hypergeometric": (,),
+# "laplace": (,),
+# "logistic": (,),
+# "lognormal": (,),
+# "logseries": (,),
+# "multinomial": (,),
+# "multivariate_hypergeometric": (,),
+# "multivariate_normal": (,),
+# "negative_binomial": (,),
+# "noncentral_chisquare": (,),
+# "noncentral_f": (,),
+# "normal": (,),
+# "pareto": (,),
+# "poisson": (,),
+# "power": (,),
+# "rayleigh": (,),
+# "standard_cauchy": (,),
+# "standard_exponential": (,),
+# "standard_gamma": (,),
+# "standard_normal": (,),
+# "standard_t": (,),
+# "triangular": (,),
+# "uniform": (,),
+# "vonmises": (,),
+# "wald": (,),
+# "weibull": (,),
+# "zipf": (,),
+# }
 
 #------------------------------------------------------------------------------#
 
-def mc_draw(rng):
+# def check_dist(inputDict):
+# Validate dist definition in master inputDict
 
-    inputDictRun = copy.deepcopy(inputDict)
+#------------------------------------------------------------------------------#
+
+def mc_draw(inputDictRun, seedRun):
+
+    # Initialize RNG
+    philox = np.random.Philox(seedRun)
+    rng    = np.random.Generator(philox)
 
     for group in inputDictRun.keys():
 
@@ -65,6 +73,7 @@ def mc_draw(rng):
                 rngFun    = getattr(rng, distName)
                 rngEval   = rngFun(*distParam)
 
-    return inputDictRun
+                # Assign value from random draw
+                inputDictRun[group][param]["value"] = rngEval
 
 #------------------------------------------------------------------------------#
