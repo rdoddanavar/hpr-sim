@@ -50,7 +50,7 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
 
     nStep = static_cast<int>(tf/dt);
 
-    for (const auto& field : fields)
+    for (const auto& field : telemFields)
     {
         stateTelem[field] = std::vector<double>(nStep, 0.0);
     }
@@ -79,7 +79,7 @@ void Flight::update()
     // Save initial state
     update_deps();
 
-    for (const auto& field : fields)
+    for (const auto& field : telemFields)
     {
         stateTelem[field][0] = *state->at(field);
     }
@@ -93,13 +93,17 @@ void Flight::update()
 
         int status = gsl_odeiv2_driver_apply(odeSolver.driver, &time, ti, y);
 
-        for (const auto& field : fields)
+        for (const auto& field : telemFields)
         {
             stateTelem[field][iStep] = *state->at(field);
         }
 
         if (y[0] <= 0.0)
         {
+            
+            flightTerm = true;
+            flightTime = time;
+
             break; // could include more complex logic with an "apogeeFlag"
         }
 
@@ -140,7 +144,14 @@ int ode_update(double t, const double y[], double f[], void *params)
 void Flight::write_telem(std::string fileOut) // maybe return bool for success/error status?
 {
 
-    std::ofstream ofs(fileOut);
+    if (!flightTerm)
+    {
+        // some kind of error message?
+        return;
+    }
+
+    std::ofstream ofs;
+    ofs.open(fileOut);
 
     /*
     if (!ofs.is_open())
@@ -153,11 +164,11 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
     std::ostringstream oss;
     const char* delim = ",";
 
-    std::copy(fields.begin(), fields.end() - 1, std::ostream_iterator<std::string>(oss, delim));
-    oss << fields.back() << std::endl;
+    std::copy(telemFields.begin(), telemFields.end() - 1, std::ostream_iterator<std::string>(oss, delim));
+    oss << telemFields.back() << std::endl;
 
-    std::copy(units.begin(), units.end() - 1, std::ostream_iterator<std::string>(oss, delim));
-    oss << units.back() << std::endl;
+    std::copy(telemUnits.begin(), telemUnits.end() - 1, std::ostream_iterator<std::string>(oss, delim));
+    oss << telemUnits.back() << std::endl;
 
     ofs << oss.str();
 
@@ -170,7 +181,7 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
         oss.str("");
         oss.clear();
 
-        for (const auto& field : fields)
+        for (const auto& field : telemFields)
         {
             oss << std::fixed << std::setprecision(nPrec) << stateTelem[field][iStep] << delim;
         }
@@ -182,6 +193,49 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
 
     }
 
+    ofs.close();
+
+}
+
+//---------------------------------------------------------------------------//
+
+void Flight::write_stats(std::string fileOut) // maybe return bool for success/error status?
+{
+
+    if (!flightTerm)
+    {
+        // some kind of error message?
+        return;
+    }
+
+    std::ofstream ofs;
+    ofs.open(fileOut);
+
+    /*
+    if (!ofs.is_open())
+    {
+        ; raise some error
+    }
+    */
+
+    // Flight Time
+    //ofs << "Flight Time: " << std::fixed << std::setprecision(nPrec) << flightTime << std::endl;
+
+    // Max values
+    double maxValue;
+
+    for (const auto& field : statsFields)
+    {
+        
+        maxValue = *std::max_element(stateTelem[field].begin(), stateTelem[field].end());
+        
+        ofs << "(MAX) " << field << ": ";
+        ofs << std::fixed << std::setprecision(nPrec) << maxValue << std::endl;
+
+    }
+
+    ofs.close();
+ 
 }
 
 //---------------------------------------------------------------------------//

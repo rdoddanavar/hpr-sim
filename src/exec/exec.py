@@ -131,6 +131,7 @@ def run_flight(iRun):
 
     flight.update() # Execute flight
     write_output(iRun, inputDictRun, flight)
+    # write_summary
 
 #------------------------------------------------------------------------------#
 
@@ -142,18 +143,27 @@ def write_output(iRun, inputDictRun, flight):
     if not os.path.exists(outputPath3):
         os.mkdir(outputPath3)
     
-    # Write telemetry *.csv
-    outputCSV = outputPath3 / "telem.csv"
-    flight.write_telem(str(outputCSV))
-
     # Write input *.yml
     # Archives montecarlo draw for run recreation
     inputDictRun["exec"]["mode"]["value"] = "nominal"
 
-    outputYML = outputPath3 / "input.yml"
+    outputYml = outputPath3 / "input.yml"
 
-    with open(str(outputYML), 'w') as file:
+    with open(str(outputYml), 'w') as file:
         yaml.dump(inputDictRun, file)
+
+    # Write telemetry *.csv
+    outputCsv = outputPath3 / "telem.csv"
+    flight.write_telem(str(outputCsv))
+
+    # Write telemetry *.txt
+    outputTxt = outputPath3 / "stats.txt"
+    flight.write_stats(str(outputTxt))
+
+
+#------------------------------------------------------------------------------#
+
+# def write_summary():
 
 #------------------------------------------------------------------------------#
 

@@ -91,6 +91,7 @@ void bind_Flight(py::module_ &m)
         .def(py::init<>())
         .def("init"  , &Flight::init)
         .def("write_telem", &Flight::write_telem)
+        .def("write_stats", &Flight::write_stats)
         .def("update", &Flight::update)
         .def_readwrite("odeSolver", &Flight::odeSolver);
 

@@ -194,6 +194,7 @@ class Flight : public Model
         void update() override;
         void set_state() override;
         void write_telem(std::string fileOut);
+        void write_stats(std::string fileOut);
 
         stateMapVec stateTelem;
         OdeSolver   odeSolver; // ODE solver settings & driver
@@ -210,16 +211,24 @@ class Flight : public Model
         int    nStep;
         int    nPrec;
 
-        std::vector<std::string> fields = {"time"    ,
-                                           "thrust"  ,
-                                           "linAccZ" ,
-                                           "linVelZ" ,
-                                           "linPosZ"};
+        double flightTime;
+        bool   flightTerm = false;
 
-        std::vector<std::string> units = {"s"    ,
-                                          "N"    ,
-                                          "m/s^2",
-                                          "m/s"  ,
-                                          "m"    };
+        std::vector<std::string> telemFields = {"time"   ,
+                                                "thrust" ,
+                                                "linAccZ",
+                                                "linVelZ",
+                                                "linPosZ"};
+
+        std::vector<std::string> telemUnits = {"s"    ,
+                                               "N"    ,
+                                               "m/s^2",
+                                               "m/s"  ,
+                                               "m"    };
+
+        std::vector<std::string> statsFields = {"time"   ,
+                                                "linAccZ",
+                                                "linVelZ",
+                                                "linPosZ"};
 
 };
