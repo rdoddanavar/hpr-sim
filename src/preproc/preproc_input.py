@@ -37,7 +37,14 @@ def process(inputDict, configDict):
     Output(s): <none>
     ''' 
 
-    groupValid = configDict.keys()
+    groupValid   = configDict.keys()
+    groupInvalid = set(inputDict.keys()) - set(groupValid)
+
+    for key in groupInvalid:
+        inputDict.pop(key)
+    
+    # TODO - catch error if inputDict does not have all necessary keys?
+    # Is this necessary? Will the defaults be filled in automatically by configDict?
 
     # Param conversion & validation 
 
@@ -78,9 +85,10 @@ def process(inputDict, configDict):
                 # Validate parameter value
 
                 if "isPath" in configDict[group][param].keys():
-
-                    # Resolve relative paths to input file
-                    check_path(value)
+                    
+                    if configDict[group][param]['isPath']:
+                        # Resolve relative paths to input file
+                        check_path(value)
 
                 else:
 
@@ -92,7 +100,9 @@ def process(inputDict, configDict):
                 # Correct parameter value
                 inputDict[group][param]["value"] = value
 
-    return inputDict
+#------------------------------------------------------------------------------#
+
+# def check_type(): 
 
 #------------------------------------------------------------------------------#
 

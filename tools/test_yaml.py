@@ -13,6 +13,6 @@ for item in paths:
 import util_yaml
 
 yamlDict = util_yaml.load(sys.argv[1])
-yamlDict = util_yaml.process(yamlDict)
+util_yaml.process(yamlDict)
 
 breakpoint()

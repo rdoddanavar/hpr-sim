@@ -59,7 +59,7 @@ def process(yamlDict, subDict=None, path=[], first=True):
     Processes pyYAML output; resolves references and evaluates arithmetic expressions.
 
     Input(s): yamlDict (dict), subDict=None (dict), path=[] (str), first=True (bool) \n
-    Output(s): yamlDict (dict)
+    Output(s): <none>
     """
 
     if subDict is None:
@@ -76,7 +76,7 @@ def process(yamlDict, subDict=None, path=[], first=True):
             path[-1] = key
 
         if isinstance(value, dict):
-            yamlDict = process(yamlDict, value, path)
+            process(yamlDict, value, path)
 
         elif isinstance(value, str):
 
@@ -102,10 +102,8 @@ def process(yamlDict, subDict=None, path=[], first=True):
                 value  = value.replace(refStr, str(targetValue))
 
             # Evaluate any arithmetic expressions & reassign field
-            value    = math_eval(value)
-            yamlDict = set_value(yamlDict, value, path)
-    
-    return yamlDict
+            value = math_eval(value)
+            set_value(yamlDict, value, path)
 
 #------------------------------------------------------------------------------#
 
@@ -114,7 +112,7 @@ def get_value(nested, path):
     '''
     Fetches value in arbitrarily nested dict given list of keys.
 
-    Input(s): nested (dict), path (str) \n
+    Input(s): nested (dict), path (list(str)) \n
     Output(s): value (str)
     '''
 
@@ -132,24 +130,19 @@ def set_value(nested, value, path):
     '''
     Sets value in arbitrarily nested dict given list of keys.
 
-    Input(s): nested (dict), value (str), path (str) \n
-    Outputs(s): nested (dict)
+    Input(s): nested (dict), value (str), path (list(str)) \n
+    Outputs(s): <none>
     '''
 
     sub = nested[path[0]]
 
     if isinstance(sub, dict):
 
-        sub = set_value(sub, value, path[1:])
+        set_value(sub, value, path[1:])
         nested[path[0]] = sub
 
-        return nested
-
     else:
-
         nested[path[0]] = value
-
-        return nested
 
 #------------------------------------------------------------------------------#
 

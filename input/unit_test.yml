@@ -5,8 +5,19 @@
 const:
     pi: 3.141592653589793
 #-----------------------------------------------------------------------------#
+exec:
+    mode: montecarlo
+    seed: 0
+    numMC: 5
+    numProc: 4
+flight:
+    timeFlight: 50.0
+    timeStep: 0.01
 mass:
-    massBody: 5
+    massBody:
+        dist:
+            name: normal
+            param: [5.0, 0.5]
 geodetic:
     latitude:
         value: 32.269798 # SARA launch site: (32.269798, -111.274751)
