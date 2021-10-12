@@ -1,0 +1,10 @@
+name: build
+on: push
+jobs:
+    build:
+        runs-on: ubuntu-20.04
+        steps:
+            - uses: actions/checkout@v2
+            - run: cd ./build
+            - run: cmake ../src
+            - run: make
