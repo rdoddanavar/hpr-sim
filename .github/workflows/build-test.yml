@@ -3,8 +3,12 @@ on: push
 jobs:
     build-ubuntu:
         runs-on: ubuntu-20.04
+        defaults:
+            run:
+                working-directory: ./build
         steps:
             - uses: actions/checkout@v2
-            - run: cd ./build
-            - run: cmake ../
-            - run: make
+            - name: Configure Build
+              run: cmake ../
+            - name: Execute Build
+              run: make
