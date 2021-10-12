@@ -30,7 +30,7 @@
 #------------------------------------------------------------#
 
 target="/home/${USER}/Git/hpr-sim/"
-file="/home/${USER}/Git/hpr-sim/README.md"
+file="/home/${USER}/Git/hpr-sim/readme.md"
 blk='```'
 lvl=$1 # No. lvl in tree
 
