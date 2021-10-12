@@ -7,8 +7,11 @@ jobs:
             run:
                 working-directory: ./build
         steps:
-            - uses: actions/checkout@v2
-            - name: Configure Build
+            - name: Checkout repository and submodules
+              uses: actions/checkout@v2
+              with:
+                submodules: recursive
+            - name: Configure build
               run: cmake ../
-            - name: Execute Build
+            - name: Execute build
               run: make
