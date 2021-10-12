@@ -21,21 +21,30 @@ The intent is to lean on the respective strengths of python and C++ to create a 
 
 Current efforts are focused on a build for Ubuntu-based linux systems (x64). 
 
-## Dependencies
+## System Dependencies
 
-See `doc/MANUAL.md` for project build, execution, & dependency handling. 
+Must be present on user's machine to build & run simulation:
 
-| Package  | Version  | Purpose                    | Link                                         |
-|----------|----------|----------------------------|----------------------------------------------|
-| g++      | `x.x.x`  | C++ compiler               |                                              |
-| eigen    | `3.3.7`  | Linear algebra library     | https://gitlab.com/libeigen/eigen/-/releases |
-| Anaconda | `3.7`    | Python distribution        | https://www.anaconda.com/distribution/       |
-| pybind11 | `2.5.0`  | Python/C++ binding library | https://github.com/pybind/pybind11           |
-| CMake    | `3.10.2` | Build system manager       | https://cmake.org/install/                   |
+|          | Version   | Purpose              | Link                                   |
+|----------|-----------|--------------------- |--------------------------------------- |
+| gcc      | `4.8+`    | C/C++ compiler       |                                        |
+| Anaconda | `3.7+`    | Python distribution  | https://www.anaconda.com/distribution/ |
+| CMake    | `3.10.2+` | Build system manager | https://cmake.org/install/             |
+
+## External Libraries
+
+Managed through `git submodule`; included with repository by default:
+
+|          | Version | Purpose                       | Link                               |
+|----------|---------|-------------------------------|----------------------------------- |
+| eigen    | `3.4.0` | Linear algebra utilities      | https://gitlab.com/libeigen/eigen  |
+| gsl      | `2.7.0` | Scientific/numerical utilties | https://github.com/ampl/gsl        |
+| pybind11 | `2.7.1` | Python/C++ bindings           | https://github.com/pybind/pybind11 |
 
 ## Directory Index
 
  - `build/` - CMake build directory
+ - `config/` - Default simulation settings
  - `doc/` - Manual & supporting documentation
  - `input/` - Simulation & model input
  - `lib/` - External libraries
@@ -45,36 +54,30 @@ See `doc/MANUAL.md` for project build, execution, & dependency handling.
 
 ```
 .
-├── build
-├── doc
-│   ├── figs
-│   ├── DEV.md
-│   ├── FEATURES.md
-│   ├── HEADER.md
-│   ├── INPUT.md
-│   └── MANUAL.md
-├── input
-│   ├── aero
-│   ├── prop
-│   └── input.yaml
-├── lib
-│   └── eigen-3.3.7.tar.gz
-├── output
-│   └── placeholder
-├── src
-│   ├── exec
-│   ├── models
-│   ├── postproc
-│   ├── preproc
-│   ├── solvers
-│   ├── util
+├── build/
+├── config/
+├── doc/
+├── input/
+│   ├── aero/
+│   ├── engine/
+│   └── unit_test.yml
+├── lib/
+│   ├── eigen/
+│   ├── gsl/
+│   └── pybind11/
+├── output/
+├── src/
+│   ├── exec/
+│   ├── model/
+│   ├── postproc/
+│   ├── preproc/
+│   ├── util/
 │   └── CMakeLists.txt
-├── tools
-│   ├── gui
-│   ├── test
-│   ├── makefile_old
-│   └── update_index.sh
+├── tools/
 ├── CMakeLists.txt
-├── LICENSE
-└── README.md
+├── hpr-sim.py*
+├── license
+└── readme.md
+
+21 directories, 17 files
 ```
