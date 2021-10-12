@@ -1,9 +1,9 @@
 name: build-test
 on:
     push:
-        branches: [main]
+        branches: [master]
     pull_request:
-        branches: [main]
+        branches: [master]
 jobs:
     build-ubuntu:
         runs-on: ubuntu-20.04
