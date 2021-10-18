@@ -50,55 +50,53 @@ def process(inputDict, configDict):
 
     for group in inputDict.keys():
 
-        if group in groupValid:
+        for param in inputDict[group].keys():
+            
+            # Get input parameter value & properties
 
-            for param in inputDict[group].keys():
+            temp = inputDict[group][param]
+
+            if type(temp) is dict:
+
+                props = temp.keys()
+
+                if "value" in props:
+                    value = inputDict[group][param]["value"]
+
+            else:
                 
-                # Get input parameter value & properties
+                props = []
+                value = temp
+                
+                inputDict[group][param] = {}
 
-                temp = inputDict[group][param]
+            # Convert units if specified by user
 
-                if type(temp) is dict:
+            if "unit" in props:
 
-                    props = temp.keys()
+                value    = inputDict[group][param]["value"]
+                quantity = configDict[group][param]["quantity"]
+                unit     = inputDict[group][param]["unit"]
 
-                    if "value" in props:
-                        value = inputDict[group][param]["value"]
+                value = util_unit.convert(value, quantity, unit)
 
-                else:
-                    
-                    props = []
-                    value = temp
-                    
-                    inputDict[group][param] = {}
+            # Validate parameter value
 
-                # Convert units if specified by user
+            if "isPath" in configDict[group][param].keys():
+                
+                if configDict[group][param]['isPath']:
+                    # Resolve relative paths to input file
+                    check_path(value)
 
-                if "unit" in props:
+            else:
 
-                    value    = inputDict[group][param]["value"]
-                    quantity = configDict[group][param]["quantity"]
-                    unit     = inputDict[group][param]["unit"]
+                paramMin = configDict[group][param]["min"]
+                paramMax = configDict[group][param]["max"]
 
-                    value = util_unit.convert(value, quantity, unit)
+                check_value(param, value, paramMin, paramMax)
 
-                # Validate parameter value
-
-                if "isPath" in configDict[group][param].keys():
-                    
-                    if configDict[group][param]['isPath']:
-                        # Resolve relative paths to input file
-                        check_path(value)
-
-                else:
-
-                    paramMin = configDict[group][param]["min"]
-                    paramMax = configDict[group][param]["max"]
-
-                    check_value(param, value, paramMin, paramMax)
-
-                # Correct parameter value
-                inputDict[group][param]["value"] = value
+            # Correct parameter value
+            inputDict[group][param]["value"] = value
 
 #------------------------------------------------------------------------------#
 

@@ -45,6 +45,7 @@ def exec(inputPath, outputPath):
     inputDict = util_yaml.load(inputPath)
     util_yaml.process(inputDict)
     preproc_input.process(inputDict, configDict)
+    exec_rand.check_dist(inputDict) # Validate random distribution choice, parameters
 
     # Output setup
     global outputPath2

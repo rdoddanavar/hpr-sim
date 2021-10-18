@@ -9,7 +9,7 @@ import numpy as np
 
 # Module variables
 
-# distArg = {"beta": (2, []),
+# distArgs = {"beta": (2, []),
 # #"binomial": (,),
 # "chisquare": (,),
 # "dirichlet": (,),
@@ -47,10 +47,31 @@ import numpy as np
 # "zipf": (,),
 # }
 
+distAvailable = {"normal":  [True, True],
+                 "uniform": [True, True]}
+
 #------------------------------------------------------------------------------#
 
-# def check_dist(inputDict):
 # Validate dist definition in master inputDict
+
+def check_dist(inputDict):
+
+    for group in inputDict.keys():
+
+        for param in inputDict[group].keys():
+
+            props = inputDict[group][param].keys()
+
+            if "dist" in props:
+
+                distName  = inputDict[group][param]["dist"]["name"]
+                distParam = inputDict[group][param]["dist"]["param"]
+
+                if distName not in distAvailable.keys():
+                    raise ValueError("Random distribution choice not valid", distName)
+
+                elif len(distParam) != len(distAvailable[distName]):
+                    raise ValueError("Number of random distribution parameters incorrect", distName, len(distParam))
 
 #------------------------------------------------------------------------------#
 
@@ -72,10 +93,12 @@ def mc_draw(inputDictRun):
 
                 distName  = inputDictRun[group][param]["dist"]["name"]
                 distParam = inputDictRun[group][param]["dist"]["param"]
-                rngFun    = getattr(rng, distName)
-                rngEval   = rngFun(*distParam)
+
+                # Should I convert the units of the dist params here?
 
                 # Assign value from random draw
+                rngFun  = getattr(rng, distName)
+                rngEval = rngFun(*distParam)
                 inputDictRun[group][param]["value"] = rngEval
 
 #------------------------------------------------------------------------------#
