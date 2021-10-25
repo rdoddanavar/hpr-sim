@@ -18,7 +18,7 @@ mass:
         value: 5.0
         unit: lbm
         dist:
-            name: none
+            name: normal
             param: [5.0, 0.5]
 geodetic:
     latitude:

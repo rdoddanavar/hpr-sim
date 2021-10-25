@@ -61,16 +61,15 @@ def exec(inputPath, outputPath):
     numMC   = inputDict["exec"]["numMC"]["value"]
     
     if mode == "nominal":
-        
-        #run_flight(np.nan)
-        run_flight(0)
+        run_flight(inputDict, 0)
 
     elif mode == "montecarlo":
     
         pool  = mp.Pool(numProc)
         iRuns = range(numMC)
 
-        pool.map_async(run_flight, iRuns)
+        # could probably use functools.partial here to avoid global inputDict
+        pool.map_async(run_flight_mc, iRuns)
 
         pool.close()
         pool.join()
@@ -79,18 +78,21 @@ def exec(inputPath, outputPath):
 
 #------------------------------------------------------------------------------#
 
-def run_flight(iRun):
+def run_flight_mc(iRun):
 
     inputDictRun = copy.deepcopy(inputDict)
 
-    if not(np.isnan(iRun)):
+    seedMaster = inputDict["exec"]["seed"]["value"]
+    seedRun    = seedMaster + iRun
+    
+    inputDictRun["exec"]["seed"]["value"] = seedRun
 
-        seedMaster = inputDict["exec"]["seed"]["value"]
-        seedRun    = seedMaster + iRun
-        
-        inputDictRun["exec"]["seed"]["value"] = seedRun
+    exec_rand.mc_draw(inputDictRun)
+    run_flight(inputDictRun, iRun)
 
-        exec_rand.mc_draw(inputDictRun)
+#------------------------------------------------------------------------------#
+
+def run_flight(inputDictRun, iRun):
 
     # Initialize model - engine
     enginePath = inputDictRun["engine"]["inputPath"]["value"]
@@ -132,7 +134,7 @@ def run_flight(iRun):
 
     flight.update() # Execute flight
     write_output(iRun, inputDictRun, flight)
-    # write_summary
+    #write_summary()
 
 #------------------------------------------------------------------------------#
 
@@ -148,10 +150,12 @@ def write_output(iRun, inputDictRun, flight):
     # Archives montecarlo draw for run recreation
     inputDictRun["exec"]["mode"]["value"] = "nominal"
 
+    # HERE: unconvert "value" fields for each parameter if necessary
+
     outputYml = outputPath3 / "input.yml"
 
     with open(str(outputYml), 'w') as file:
-        yaml.dump(inputDictRun, file)
+        yaml.dump(inputDictRun, file, sort_keys=False)
 
     # Write telemetry *.csv
     outputCsv = outputPath3 / "telem.csv"
