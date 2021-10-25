@@ -47,8 +47,9 @@ import numpy as np
 # "zipf": (,),
 # }
 
-distAvailable = {"normal":  [True, True],
-                 "uniform": [True, True]}
+distAvailable = {"none"    :           [],
+                 "normal"  : [True, True],
+                 "uniform" : [True, True]}
 
 #------------------------------------------------------------------------------#
 
@@ -67,10 +68,13 @@ def check_dist(inputDict):
                 distName  = inputDict[group][param]["dist"]["name"]
                 distParam = inputDict[group][param]["dist"]["param"]
 
+                if distName == "none":
+                    continue
+
                 if distName not in distAvailable.keys():
                     raise ValueError("Random distribution choice not valid", distName)
 
-                elif len(distParam) != len(distAvailable[distName]):
+                if len(distParam) != len(distAvailable[distName]):
                     raise ValueError("Number of random distribution parameters incorrect", distName, len(distParam))
 
 #------------------------------------------------------------------------------#
@@ -94,7 +98,16 @@ def mc_draw(inputDictRun):
                 distName  = inputDictRun[group][param]["dist"]["name"]
                 distParam = inputDictRun[group][param]["dist"]["param"]
 
-                # Should I convert the units of the dist params here?
+                if distName == "none":
+                    continue
+
+                # # Convert units of distribution parameters, if necessary
+                # quantity = 
+                # unit     = 
+
+                # for iParam in range(len(distParam)):
+                #     if distAvailable[distName]:
+                #         distParam[iParam] = util_unit.convert(distParam[iParam], quantity, unit)
 
                 # Assign value from random draw
                 rngFun  = getattr(rng, distName)

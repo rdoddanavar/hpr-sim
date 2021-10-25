@@ -63,8 +63,14 @@ def process(inputDict, configDict):
                 if "value" in props:
                     value = inputDict[group][param]["value"]
 
+                # else: # add case for missing "value" field
+                    # what if this was nominal case? no draws available to define value?
+                    # enforce "value" field?
+
             else:
                 
+                # Implied parameter value
+
                 props = []
                 value = temp
                 

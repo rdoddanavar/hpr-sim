@@ -15,8 +15,10 @@ flight:
     timeStep: 0.01
 mass:
     massBody:
+        value: 5.0
+        unit: lbm
         dist:
-            name: normal
+            name: none
             param: [5.0, 0.5]
 geodetic:
     latitude:
