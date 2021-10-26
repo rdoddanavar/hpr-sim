@@ -155,7 +155,7 @@ def write_output(iRun, inputDictRun, flight):
     outputYml = outputPath3 / "input.yml"
 
     with open(str(outputYml), 'w') as file:
-        yaml.dump(inputDictRun, file, sort_keys=False)
+        yaml.dump(inputDictRun, file, sort_keys=False, indent=4)
 
     # Write telemetry *.csv
     outputCsv = outputPath3 / "telem.csv"
