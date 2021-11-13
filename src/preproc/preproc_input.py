@@ -37,16 +37,34 @@ def process(inputDict, configDict):
     Output(s): <none>
     ''' 
 
+    # Validate input groups
     groupValid   = configDict.keys()
     groupInvalid = set(inputDict.keys()) - set(groupValid)
 
     for key in groupInvalid:
         inputDict.pop(key)
-    
-    # TODO: catch error if inputDict does not have all necessary keys?
-    # Is this necessary? Will the defaults be filled in automatically by configDict?
 
-    # Param conversion & validation 
+    groupMissing = set(groupValid) - set(inputDict.keys())
+
+    if groupMissing:
+        raise ValueError("Missing input groups(s)", groupMissing)
+
+    # Validate input parameters in each input group
+
+    for group in groupValid:
+        
+        paramValid   = configDict[group].keys()
+        paramInvalid = set(inputDict[group].keys()) - set(paramValid)
+        
+        for key in paramInvalid:
+            inputDict[group].pop(key)
+
+        paramMissing = set(paramValid) - set(inputDict[group].keys())
+
+        if paramMissing:
+            raise ValueError("Missing input parameter(s)", group, paramMissing)
+
+    # Input parameter value processing & validation
 
     for group in inputDict.keys():
 
