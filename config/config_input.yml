@@ -29,6 +29,7 @@ exec:
     mode:
         type: str
         isPath: false
+        valid: [nominal, montecarlo]
     seed:
         type: int
         quantity: null

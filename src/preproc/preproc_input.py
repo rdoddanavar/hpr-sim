@@ -152,11 +152,15 @@ def process_string(inputDict, configDict, group, param):
     
     # Validate path
 
-    if configDict[group][param]['isPath']:
+    if configDict[group][param]["isPath"]:
         check_path(value)
 
-    # TODO: validate string choices
+    # Validate string choice
 
+    if "valid" in configDict[group][param].keys():
+        if value not in configDict[group][param]["valid"]:
+            raise ValueError("Invalid choice for input parameter", param, value)
+            
 #------------------------------------------------------------------------------#
 
 def check_bounds(param, value, paramMin, paramMax):
