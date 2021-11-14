@@ -101,10 +101,10 @@ void Flight::update()
         if (y[0] <= 0.0)
         {
             
-            flightTerm = true;
+            //flightTerm = true;
             flightTime = time;
 
-            break; // could include more complex logic with an "apogeeFlag"
+            break; // TODO: could include more complex logic with an "apogeeFlag"
         }
 
         /*
@@ -115,6 +115,9 @@ void Flight::update()
         }
         */
     }
+
+    flightTerm = true; // TODO: better handling for flight termination
+
 }
 
 //---------------------------------------------------------------------------//
@@ -141,7 +144,7 @@ int ode_update(double t, const double y[], double f[], void *params)
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_telem(std::string fileOut) // maybe return bool for success/error status?
+void Flight::write_telem(std::string fileOut) // TODO: maybe return bool for success/error status?
 {
 
     if (!flightTerm)

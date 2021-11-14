@@ -4,6 +4,7 @@ import numpy as np
 # Path modifications
 
 # Project modules
+import util_unit
 
 #------------------------------------------------------------------------------#
 
@@ -47,9 +48,9 @@ import numpy as np
 # "zipf": (,),
 # }
 
-distAvailable = {"none"    :           [],
-                 "normal"  : [True, True],
-                 "uniform" : [True, True]}
+distValid = {"none"    : 0,
+             "normal"  : 2,
+             "uniform" : 2}
 
 #------------------------------------------------------------------------------#
 
@@ -71,15 +72,15 @@ def check_dist(inputDict):
                 if distName == "none":
                     continue
 
-                if distName not in distAvailable.keys():
+                if distName not in distValid.keys():
                     raise ValueError("Random distribution choice not valid", distName)
 
-                if len(distParam) != len(distAvailable[distName]):
+                if len(distParam) != distValid[distName]:
                     raise ValueError("Number of random distribution parameters incorrect", distName, len(distParam))
 
 #------------------------------------------------------------------------------#
 
-def mc_draw(inputDictRun):
+def mc_draw(inputDictRun, configDict):
 
     seedRun = inputDictRun["exec"]["seed"]["value"]
 
@@ -101,17 +102,20 @@ def mc_draw(inputDictRun):
                 if distName == "none":
                     continue
 
-                # # Convert units of distribution parameters, if necessary
-                # quantity = 
-                # unit     = 
-
-                # for iParam in range(len(distParam)):
-                #     if distAvailable[distName]:
-                #         distParam[iParam] = util_unit.convert(distParam[iParam], quantity, unit)
-
-                # Assign value from random draw
+                # Execute random draw
                 rngFun  = getattr(rng, distName)
                 rngEval = rngFun(*distParam)
+
+                # Convert random draw value if necessary
+
+                if "unit" in props:
+                    
+                    quantity = configDict[group][param]["quantity"]
+                    unit     = inputDictRun[group][param]["unit"]
+
+                    if quantity:
+                        rngEval = util_unit.convert(rngEval, quantity, unit)
+
                 inputDictRun[group][param]["value"] = rngEval
 
 #------------------------------------------------------------------------------#

@@ -27,8 +27,9 @@ import model
 
 # Module variables
 configPathRel = "../../config/config_input.yml"
-outputPath2   = None
+configDict    = None
 inputDict     = None
+outputPath2   = None
 
 #------------------------------------------------------------------------------#
 
@@ -37,15 +38,16 @@ def exec(inputPath, outputPath):
     # Pre-processing
     util_unit.config()
 
+    global configDict
     configPath = pathlib.Path(__file__).parent / configPathRel
     configPath = str(configPath.resolve())
     configDict = util_yaml.load(configPath)
 
     global inputDict
     inputDict = util_yaml.load(inputPath)
-    util_yaml.process(inputDict)
-    preproc_input.process(inputDict, configDict)
-    exec_rand.check_dist(inputDict) # Validate random distribution choice, parameters
+    util_yaml.process(inputDict)                 # Validate raw input file, resolve references
+    preproc_input.process(inputDict, configDict) # Validate input parameter values
+    exec_rand.check_dist(inputDict)              # Validate random distribution choice, parameters
 
     # Output setup
     global outputPath2
@@ -87,7 +89,7 @@ def run_flight_mc(iRun):
     
     inputDictRun["exec"]["seed"]["value"] = seedRun
 
-    exec_rand.mc_draw(inputDictRun)
+    exec_rand.mc_draw(inputDictRun, configDict)
     run_flight(inputDictRun, iRun)
 
 #------------------------------------------------------------------------------#
@@ -150,7 +152,7 @@ def write_output(iRun, inputDictRun, flight):
     # Archives montecarlo draw for run recreation
     inputDictRun["exec"]["mode"]["value"] = "nominal"
 
-    # HERE: unconvert "value" fields for each parameter if necessary
+    # TODO: unconvert "value" fields for each parameter if necessary
 
     outputYml = outputPath3 / "input.yml"
 
@@ -161,7 +163,7 @@ def write_output(iRun, inputDictRun, flight):
     outputCsv = outputPath3 / "telem.csv"
     flight.write_telem(str(outputCsv))
 
-    # Write telemetry *.txt
+    # Write statistics *.txt
     outputTxt = outputPath3 / "stats.txt"
     flight.write_stats(str(outputTxt))
 
