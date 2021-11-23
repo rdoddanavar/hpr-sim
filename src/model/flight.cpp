@@ -93,6 +93,8 @@ void Flight::update()
 
         int status = gsl_odeiv2_driver_apply(odeSolver.driver, &time, ti, y);
 
+        update_deps(); // Reset state to correct time step
+
         for (const auto& field : telemFields)
         {
             stateTelem[field][iStep] = *state->at(field);
@@ -117,6 +119,7 @@ void Flight::update()
     }
 
     flightTerm = true; // TODO: better handling for flight termination
+    // TODO: Add additional while loop to keep integrating if flightTerm = false
 
 }
 

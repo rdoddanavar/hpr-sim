@@ -16,7 +16,7 @@ flight:
 mass:
     massBody:
         value: 5.0
-        unit: lbm
+        #unit: lbm
         dist:
             name: normal
             param: [5.0, 0.5]

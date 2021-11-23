@@ -216,12 +216,14 @@ class Flight : public Model
 
         std::vector<std::string> telemFields = {"time"   ,
                                                 "thrust" ,
+                                                "gravity",
                                                 "linAccZ",
                                                 "linVelZ",
                                                 "linPosZ"};
 
         std::vector<std::string> telemUnits = {"s"    ,
                                                "N"    ,
+                                               "m/s^2",
                                                "m/s^2",
                                                "m/s"  ,
                                                "m"    };
