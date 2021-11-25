@@ -80,7 +80,7 @@ def check_dist(inputDict):
 
 #------------------------------------------------------------------------------#
 
-def mc_draw(inputDictRun, configDict):
+def mc_draw(inputDictRun, configInput):
 
     seedRun = inputDictRun["exec"]["seed"]["value"]
 
@@ -110,7 +110,7 @@ def mc_draw(inputDictRun, configDict):
 
                 if "unit" in props:
                     
-                    quantity = configDict[group][param]["quantity"]
+                    quantity = configInput[group][param]["quantity"]
                     unit     = inputDictRun[group][param]["unit"]
 
                     if quantity:

@@ -193,8 +193,15 @@ class Flight : public Model
         void init(double tfInit, double dtInit, double t0Init);
         void update() override;
         void set_state() override;
+
         void write_telem(std::string fileOut);
         void write_stats(std::string fileOut);
+
+        static std::vector<std::string> telemFieldsDefault;
+        static std::vector<std::string> telemUnitsDefault;
+
+        std::vector<std::string> telemFields; // User defined in config/config_telem.yml
+        std::vector<std::string> telemUnits;
 
         stateMapVec stateTelem;
         OdeSolver   odeSolver; // ODE solver settings & driver
@@ -213,24 +220,5 @@ class Flight : public Model
 
         double flightTime;
         bool   flightTerm = false;
-
-        std::vector<std::string> telemFields = {"time"   ,
-                                                "thrust" ,
-                                                "gravity",
-                                                "linAccZ",
-                                                "linVelZ",
-                                                "linPosZ"};
-
-        std::vector<std::string> telemUnits = {"s"    ,
-                                               "N"    ,
-                                               "m/s^2",
-                                               "m/s^2",
-                                               "m/s"  ,
-                                               "m"    };
-
-        std::vector<std::string> statsFields = {"time"   ,
-                                                "linAccZ",
-                                                "linVelZ",
-                                                "linPosZ"};
 
 };

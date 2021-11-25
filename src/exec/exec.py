@@ -26,8 +26,9 @@ import model
 #------------------------------------------------------------------------------#
 
 # Module variables
-configPathRel = "../../config/config_input.yml"
-configDict    = None
+configPathRel = "../../config"
+configInput   = None
+configOutput  = None
 inputDict     = None
 outputPath2   = None
 
@@ -37,17 +38,21 @@ def exec(inputPath, outputPath):
 
     # Pre-processing
     util_unit.config()
+    
+    configPath  = pathlib.Path(__file__).parent / configPathRel
+    configPath  = configPath.resolve()
 
-    global configDict
-    configPath = pathlib.Path(__file__).parent / configPathRel
-    configPath = str(configPath.resolve())
-    configDict = util_yaml.load(configPath)
+    global configInput
+    configInput = util_yaml.load(str(configPath / "config_input.yml"))
+
+    global configOutput
+    configOutput = util_yaml.load(str(configPath / "config_output.yml"))
 
     global inputDict
     inputDict = util_yaml.load(inputPath)
-    util_yaml.process(inputDict)                 # Validate raw input file, resolve references
-    preproc_input.process(inputDict, configDict) # Validate input parameter values
-    exec_rand.check_dist(inputDict)              # Validate random distribution choice, parameters
+    util_yaml.process(inputDict)                  # Validate raw input file, resolve references
+    preproc_input.process(inputDict, configInput) # Validate input parameter values
+    exec_rand.check_dist(inputDict)               # Validate random distribution choice, parameters
 
     # Output setup
     global outputPath2
@@ -56,6 +61,12 @@ def exec(inputPath, outputPath):
     
     if not os.path.exists(outputPath2):
         os.mkdir(outputPath2)
+
+    # Validate telemetry output fields
+    telemInvalid = set(configOutput["telem"]) - set(model.Flight.telemFieldsDefault)
+
+    if telemInvalid:
+        raise ValueError("Invalid telemetry fields", telemInvalid)
 
     # Sim execution
     mode    = inputDict["exec"]["mode"]["value"]
@@ -89,7 +100,7 @@ def run_flight_mc(iRun):
     
     inputDictRun["exec"]["seed"]["value"] = seedRun
 
-    exec_rand.mc_draw(inputDictRun, configDict)
+    exec_rand.mc_draw(inputDictRun, configInput)
     run_flight(inputDictRun, iRun)
 
 #------------------------------------------------------------------------------#

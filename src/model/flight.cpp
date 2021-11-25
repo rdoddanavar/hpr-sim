@@ -21,16 +21,16 @@
 
 void Flight::init(double t0Init, double dtInit, double tfInit)
 {
-
+    
+    // Basic setup
     time = t0Init;
     dt   = dtInit;
     tf   = tfInit;
 
-    nPrec = 3;
-    
     state = new stateMap;
     init_state(state);
 
+    // Solver setup
     odeSolver.sys.function  = &ode_update;
     odeSolver.sys.jacobian  = nullptr;
     odeSolver.sys.dimension = 2;
@@ -48,7 +48,13 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
                                                       odeSolver.epsAbs,
                                                       odeSolver.epsRel);
 
+    
+    // Telemetry setup
+    telemFields = telemFieldsDefault;
+    telemUnits  = telemUnitsDefault;
+
     nStep = static_cast<int>(tf/dt);
+    nPrec = 3; // Telemetry output precision
 
     for (const auto& field : telemFields)
     {
@@ -78,12 +84,12 @@ void Flight::update()
 
     // Save initial state
     update_deps();
-
+    
     for (const auto& field : telemFields)
     {
         stateTelem[field][0] = *state->at(field);
     }
-
+    
     // Solve ODE system
 
     for (int iStep = 1; iStep <= nStep; iStep++)
@@ -110,6 +116,7 @@ void Flight::update()
         }
 
         /*
+        TODO
         if (status != GSL_SUCCESS)
         {
           printf ("error, return value=%d\n", status);
@@ -147,12 +154,34 @@ int ode_update(double t, const double y[], double f[], void *params)
 
 //---------------------------------------------------------------------------//
 
+std::vector<std::string> Flight::telemFieldsDefault = {"time"   ,
+                                                       "thrust" ,
+                                                       "massEng",
+                                                       "mass"   ,
+                                                       "gravity",
+                                                       "forceZ" ,
+                                                       "linAccZ",
+                                                       "linVelZ",
+                                                       "linPosZ"};
+
+std::vector<std::string> Flight::telemUnitsDefault = {"s"    ,
+                                                      "N"    ,
+                                                      "kg"   ,
+                                                      "kg"   ,
+                                                      "m/s^2",
+                                                      "N"    ,
+                                                      "m/s^2",
+                                                      "m/s"  ,
+                                                      "m"    };
+
+//---------------------------------------------------------------------------//
+
 void Flight::write_telem(std::string fileOut) // TODO: maybe return bool for success/error status?
 {
 
     if (!flightTerm)
     {
-        // some kind of error message?
+        // TODO: some kind of error message?
         return;
     }
 
@@ -162,7 +191,7 @@ void Flight::write_telem(std::string fileOut) // TODO: maybe return bool for suc
     /*
     if (!ofs.is_open())
     {
-        ; raise some error
+        ; TODO: raise some error
     }
     */
 
@@ -205,12 +234,12 @@ void Flight::write_telem(std::string fileOut) // TODO: maybe return bool for suc
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_stats(std::string fileOut) // maybe return bool for success/error status?
+void Flight::write_stats(std::string fileOut) // TODO: maybe return bool for success/error status?
 {
 
     if (!flightTerm)
     {
-        // some kind of error message?
+        // TODO: some kind of error message?
         return;
     }
 
@@ -220,7 +249,7 @@ void Flight::write_stats(std::string fileOut) // maybe return bool for success/e
     /*
     if (!ofs.is_open())
     {
-        ; raise some error
+        ; TODO: raise some error
     }
     */
 
@@ -230,7 +259,7 @@ void Flight::write_stats(std::string fileOut) // maybe return bool for success/e
     // Max values
     double maxValue;
 
-    for (const auto& field : statsFields)
+    for (const auto& field : telemFields)
     {
         
         maxValue = *std::max_element(stateTelem[field].begin(), stateTelem[field].end());

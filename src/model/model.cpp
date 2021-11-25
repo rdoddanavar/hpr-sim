@@ -89,11 +89,12 @@ void bind_Flight(py::module_ &m)
 
     py::class_<Flight, Model>(m, "Flight")
         .def(py::init<>())
-        .def("init"  , &Flight::init)
+        .def("init", &Flight::init)
         .def("write_telem", &Flight::write_telem)
         .def("write_stats", &Flight::write_stats)
         .def("update", &Flight::update)
-        .def_readwrite("odeSolver", &Flight::odeSolver);
+        .def_readwrite("odeSolver", &Flight::odeSolver)
+        .def_readonly_static("telemFieldsDefault", &Flight::telemFieldsDefault);
 
     py::class_<OdeSolver>(m, "OdeSolver")
         .def(py::init<>())

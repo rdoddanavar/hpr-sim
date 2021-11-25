@@ -1,0 +1,16 @@
+# <header>
+---
+telem:
+ - time
+ - thrust
+ - massEng
+ - mass
+ - gravity
+ - forceZ
+ - linAccZ
+ - linVelZ
+ - linPosZ
+# stats
+# time: max
+# etc.
+# TODO: populate stats and specific min, max, mean, stdDev, etc.
