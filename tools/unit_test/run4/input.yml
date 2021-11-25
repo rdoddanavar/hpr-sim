@@ -1,0 +1,29 @@
+exec:
+    mode:
+        value: nominal
+    seed:
+        value: 4
+    numMC:
+        value: 5
+    numProc:
+        value: 4
+flight:
+    timeFlight:
+        value: 50.0
+    timeStep:
+        value: 0.01
+mass:
+    massBody:
+        value: 5.163071121077698
+        dist:
+            name: normal
+            param:
+            - 5.0
+            - 0.5
+geodetic:
+    latitude:
+        value: 0.5632142240535182
+        unit: deg
+engine:
+    inputPath:
+        value: ./input/engine/AeroTech_J450DM.eng
