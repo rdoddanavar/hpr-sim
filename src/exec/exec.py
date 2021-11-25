@@ -67,6 +67,11 @@ def exec(inputPath, outputPath):
 
     if telemInvalid:
         raise ValueError("Invalid telemetry fields", telemInvalid)
+    else:
+        model.Flight.set_telem(configOutput["telem"])
+
+    # TODO: if issues with config_ouput.yml, resort to default fields
+    # Also, populate output stats fields
 
     # Sim execution
     mode    = inputDict["exec"]["mode"]["value"]

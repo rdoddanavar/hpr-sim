@@ -47,14 +47,12 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
                                                       odeSolver.hStart,
                                                       odeSolver.epsAbs,
                                                       odeSolver.epsRel);
-
     
     // Telemetry setup
-    telemFields = telemFieldsDefault;
-    telemUnits  = telemUnitsDefault;
-
     nStep = static_cast<int>(tf/dt);
     nPrec = 3; // Telemetry output precision
+
+    // TODO: initialize telemFields to default if user-defined fields not available
 
     for (const auto& field : telemFields)
     {
@@ -173,6 +171,26 @@ std::vector<std::string> Flight::telemUnitsDefault = {"s"    ,
                                                       "m/s^2",
                                                       "m/s"  ,
                                                       "m"    };
+
+std::vector<std::string> Flight::telemFields;
+std::vector<std::string> Flight::telemUnits;
+
+void Flight::set_telem(std::vector<std::string> telemFieldsInit)
+{
+
+    telemFields = telemFieldsInit;
+
+    for (const auto& field : telemFields)
+    {
+        
+        auto it  = std::find(telemFieldsDefault.begin(), telemFieldsDefault.end(), field);
+        int  idx = std::distance(telemFieldsDefault.begin(), it);
+
+        telemUnits.push_back(telemUnitsDefault[idx]);
+
+    }
+
+}
 
 //---------------------------------------------------------------------------//
 

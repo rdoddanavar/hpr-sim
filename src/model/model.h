@@ -197,11 +197,13 @@ class Flight : public Model
         void write_telem(std::string fileOut);
         void write_stats(std::string fileOut);
 
+        static void set_telem(std::vector<std::string> telemFieldsInit);
+
         static std::vector<std::string> telemFieldsDefault;
         static std::vector<std::string> telemUnitsDefault;
 
-        std::vector<std::string> telemFields; // User defined in config/config_telem.yml
-        std::vector<std::string> telemUnits;
+        static std::vector<std::string> telemFields;
+        static std::vector<std::string> telemUnits;
 
         stateMapVec stateTelem;
         OdeSolver   odeSolver; // ODE solver settings & driver
