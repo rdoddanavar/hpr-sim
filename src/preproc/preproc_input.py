@@ -37,76 +37,133 @@ def process(inputDict, configDict):
     Output(s): <none>
     ''' 
 
+    # Validate input groups
     groupValid   = configDict.keys()
     groupInvalid = set(inputDict.keys()) - set(groupValid)
 
     for key in groupInvalid:
         inputDict.pop(key)
-    
-    # TODO - catch error if inputDict does not have all necessary keys?
-    # Is this necessary? Will the defaults be filled in automatically by configDict?
 
-    # Param conversion & validation 
+    groupMissing = set(groupValid) - set(inputDict.keys())
+
+    if groupMissing:
+        raise ValueError("Missing input groups(s)", groupMissing)
+
+    # Validate input parameters in each input group
+
+    for group in groupValid:
+        
+        paramValid   = configDict[group].keys()
+        paramInvalid = set(inputDict[group].keys()) - set(paramValid)
+        
+        for key in paramInvalid:
+            inputDict[group].pop(key)
+
+        paramMissing = set(paramValid) - set(inputDict[group].keys())
+
+        if paramMissing:
+            raise ValueError("Missing input parameter(s)", group, paramMissing)
+
+    # Input parameter value processing & validation
 
     for group in inputDict.keys():
 
-        if group in groupValid:
+        for param in inputDict[group].keys():
+            
+            # Get input parameter value & properties
 
-            for param in inputDict[group].keys():
+            temp = inputDict[group][param]
+
+            if type(temp) is dict:
+
+                props = temp.keys()
+
+                if "value" in props:
+                    value = inputDict[group][param]["value"]
+                else:
+                    raise ValueError("Nominal parameter value missing", param)
+
+            else:
                 
-                # Get input parameter value & properties
+                # Implied parameter value
+                inputDict[group][param]          = {}
+                inputDict[group][param]["value"] = temp
 
-                temp = inputDict[group][param]
+            # Process input parameter by type
+            paramType = configDict[group][param]["type"]
 
-                if type(temp) is dict:
+            if (paramType == "int") or (paramType == "float"):
+                process_number(inputDict, configDict, group, param)
 
-                    props = temp.keys()
+            elif paramType == "str":
+                process_string(inputDict, configDict, group, param)
 
-                    if "value" in props:
-                        value = inputDict[group][param]["value"]
-
-                else:
-                    
-                    props = []
-                    value = temp
-                    
-                    inputDict[group][param] = {}
-
-                # Convert units if specified by user
-
-                if "unit" in props:
-
-                    value    = inputDict[group][param]["value"]
-                    quantity = configDict[group][param]["quantity"]
-                    unit     = inputDict[group][param]["unit"]
-
-                    value = util_unit.convert(value, quantity, unit)
-
-                # Validate parameter value
-
-                if "isPath" in configDict[group][param].keys():
-                    
-                    if configDict[group][param]['isPath']:
-                        # Resolve relative paths to input file
-                        check_path(value)
-
-                else:
-
-                    paramMin = configDict[group][param]["min"]
-                    paramMax = configDict[group][param]["max"]
-
-                    check_value(param, value, paramMin, paramMax)
-
-                # Correct parameter value
-                inputDict[group][param]["value"] = value
+            else:
+                raise ValueError("Invalid input parameter type; see config files", param)
 
 #------------------------------------------------------------------------------#
 
-# def check_type(): 
+def process_number(inputDict, configDict, group, param):
+    
+    value     = inputDict[group][param]["value"]
+    paramType = configDict[group][param]["type"]
+
+    # Check if numeric
+
+    try:
+        value = float(value)
+    except:
+        raise ValueError("Input parameter is not numeric", param, value)
+
+    # Check if integer
+
+    if (paramType == "int") and (not value.is_integer()):
+        raise ValueError("Input parameter is not integer", param, value)
+
+    # Convert units if specified by user
+    props = inputDict[group][param].keys()
+
+    if "unit" in props:
+        
+        quantity = configDict[group][param]["quantity"]
+        unit     = inputDict[group][param]["unit"]
+
+        if quantity:
+            value = util_unit.convert(value, quantity, unit)
+
+    # Check parameter value bounds
+    paramMin = configDict[group][param]["min"]
+    paramMax = configDict[group][param]["max"]
+
+    check_bounds(param, value, paramMin, paramMax)
+
+    # Finalize parameter value
+
+    if paramType == "int":
+        value = int(value)
+
+    inputDict[group][param]["value"] = value
 
 #------------------------------------------------------------------------------#
 
-def check_value(param, value, paramMin, paramMax):
+def process_string(inputDict, configDict, group, param):
+
+    value = inputDict[group][param]["value"]
+    
+    # Validate path
+
+    if configDict[group][param]["isPath"]:
+        check_path(value)
+
+    # Validate string choice
+
+    if "valid" in configDict[group][param].keys():
+        if value not in configDict[group][param]["valid"]:
+            raise ValueError("Invalid choice for input parameter", param, value)
+            
+#------------------------------------------------------------------------------#
+
+def check_bounds(param, value, paramMin, paramMax):
 
     '''
     Checks value against lower & upper bounds.
@@ -114,9 +171,7 @@ def check_value(param, value, paramMin, paramMax):
     Inputs(s): parameter (str), value (float), paramMin (float), paramMax (float)
     '''
 
-    if (value >= paramMin) and (value <= paramMax):
-        return True
-    else:
+    if (value < paramMin) or (value > paramMax):
         raise ValueError("Input parameter violates bounds", param, value)
 
 #------------------------------------------------------------------------------#
@@ -126,13 +181,10 @@ def check_path(value):
     '''
     Checks for file path existence.
 
-    Input(s): value (str) \n
-    Output(s): (bool)
+    Input(s): value (str)
     '''
     
-    if os.path.exists(value):
-        return True
-    else:
+    if not os.path.exists(value):
         raise FileNotFoundError(value)
 
 #------------------------------------------------------------------------------#

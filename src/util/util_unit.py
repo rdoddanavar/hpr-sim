@@ -27,7 +27,7 @@ import util_yaml
 
 # Module variables
 configPathRel = "../../config/config_unit.yml"
-unitDict      = None
+configUnit    = None
 
 #------------------------------------------------------------------------------#
 
@@ -40,13 +40,13 @@ def config():
     Outputs(s): <none>
     '''
 
-    global unitDict # Necessary for reassignment
+    global configUnit # Necessary for reassignment
 
-    if not unitDict:
+    if not configUnit:
 
         configPath = pathlib.Path(__file__).parent / configPathRel
         configPath = str(configPath.resolve())
-        unitDict   = util_yaml.load(configPath)
+        configUnit   = util_yaml.load(configPath)
 
 #------------------------------------------------------------------------------#
 
@@ -63,44 +63,46 @@ def convert(*args):
     quantity = args[1]
     unitA    = args[2]
 
+    if unitA == "default":
+        unitA = configUnit["default"][quantity]
+
     if len(args) == 3:
-        
-        if quantity and unitA:
             
-            if quantity == "temperature":
-                value = convert_temp(value, unitA)
+        if quantity == "temperature":
+            value = convert_temp(value, unitA)
 
-            else:
-                
-                # Need error handling here for bad key
-                factorA = unitDict[quantity][unitA]
-                
-                # Evaluate arithmetic operations, if necessary
-                factorA = util_yaml.math_eval(str(factorA))
+        else:
+            
+            # TODO: Need error handling here for bad key
+            factorA = configUnit[quantity][unitA]
+            
+            # Evaluate arithmetic operations, if necessary
+            factorA = util_yaml.math_eval(str(factorA))
 
-                value *= factorA
+            value *= factorA
 
     elif len(args) == 4:
 
         unitB = args[3]
 
-        if (quantity and unitA and unitB):
+        if unitB == "default":
+            unitB = configUnit["default"][quantity]
             
-            if quantity == "temperature":
-                value = convert_temp(value, unitA, unitB)
+        if quantity == "temperature":
+            value = convert_temp(value, unitA, unitB)
+        
+        else:
             
-            else:
-                
-                # Need error handling here for bad key
-                factorA = unitDict[quantity][unitA]
-                factorB = unitDict[quantity][unitB]
+            # TODO: Need error handling here for bad key
+            factorA = configUnit[quantity][unitA]
+            factorB = configUnit[quantity][unitB]
 
-                # Evaluate arithmetic operations, if necessary
-                factorA = util_yaml.math_eval(str(factorA))
-                factorB = util_yaml.math_eval(str(factorB))
+            # Evaluate arithmetic operations, if necessary
+            factorA = util_yaml.math_eval(str(factorA))
+            factorB = util_yaml.math_eval(str(factorB))
 
-                factorC = factorA/factorB
-                value  *= factorC
+            factorC = factorA/factorB
+            value  *= factorC
         
     # Original value returned if unit is not specified or nondimensional 
     return value
@@ -120,8 +122,8 @@ def convert_temp(*args):
     quantity = "temperature"
     unitA    = args[1]
 
-    factorA = unitDict[quantity][unitA][0]
-    offsetA = unitDict[quantity][unitA][1]
+    factorA = configUnit[quantity][unitA][0]
+    offsetA = configUnit[quantity][unitA][1]
 
     factorA = util_yaml.math_eval(str(factorA))
     offsetA = util_yaml.math_eval(str(offsetA))
@@ -132,8 +134,8 @@ def convert_temp(*args):
 
         unitB = args[2]
 
-        factorB = unitDict[quantity][unitB][0]
-        offsetB = unitDict[quantity][unitB][1]
+        factorB = configUnit[quantity][unitB][0]
+        offsetB = configUnit[quantity][unitB][1]
 
         factorB = util_yaml.math_eval(str(factorB))
         offsetB = util_yaml.math_eval(str(offsetB))

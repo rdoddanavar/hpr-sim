@@ -21,16 +21,16 @@
 
 void Flight::init(double t0Init, double dtInit, double tfInit)
 {
-
+    
+    // Basic setup
     time = t0Init;
     dt   = dtInit;
     tf   = tfInit;
 
-    nPrec = 3;
-    
     state = new stateMap;
     init_state(state);
 
+    // Solver setup
     odeSolver.sys.function  = &ode_update;
     odeSolver.sys.jacobian  = nullptr;
     odeSolver.sys.dimension = 2;
@@ -47,8 +47,12 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
                                                       odeSolver.hStart,
                                                       odeSolver.epsAbs,
                                                       odeSolver.epsRel);
-
+    
+    // Telemetry setup
     nStep = static_cast<int>(tf/dt);
+    nPrec = 3; // Telemetry output precision
+
+    // TODO: initialize telemFields to default if user-defined fields not available
 
     for (const auto& field : telemFields)
     {
@@ -78,12 +82,12 @@ void Flight::update()
 
     // Save initial state
     update_deps();
-
+    
     for (const auto& field : telemFields)
     {
         stateTelem[field][0] = *state->at(field);
     }
-
+    
     // Solve ODE system
 
     for (int iStep = 1; iStep <= nStep; iStep++)
@@ -93,6 +97,8 @@ void Flight::update()
 
         int status = gsl_odeiv2_driver_apply(odeSolver.driver, &time, ti, y);
 
+        update_deps(); // Reset state to correct time step
+
         for (const auto& field : telemFields)
         {
             stateTelem[field][iStep] = *state->at(field);
@@ -101,13 +107,14 @@ void Flight::update()
         if (y[0] <= 0.0)
         {
             
-            flightTerm = true;
+            //flightTerm = true;
             flightTime = time;
 
-            break; // could include more complex logic with an "apogeeFlag"
+            break; // TODO: could include more complex logic with an "apogeeFlag"
         }
 
         /*
+        TODO
         if (status != GSL_SUCCESS)
         {
           printf ("error, return value=%d\n", status);
@@ -115,6 +122,10 @@ void Flight::update()
         }
         */
     }
+
+    flightTerm = true; // TODO: better handling for flight termination
+    // TODO: Add additional while loop to keep integrating if flightTerm = false
+
 }
 
 //---------------------------------------------------------------------------//
@@ -141,12 +152,54 @@ int ode_update(double t, const double y[], double f[], void *params)
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_telem(std::string fileOut) // maybe return bool for success/error status?
+std::vector<std::string> Flight::telemFieldsDefault = {"time"   ,
+                                                       "thrust" ,
+                                                       "massEng",
+                                                       "mass"   ,
+                                                       "gravity",
+                                                       "forceZ" ,
+                                                       "linAccZ",
+                                                       "linVelZ",
+                                                       "linPosZ"};
+
+std::vector<std::string> Flight::telemUnitsDefault = {"s"    ,
+                                                      "N"    ,
+                                                      "kg"   ,
+                                                      "kg"   ,
+                                                      "m/s^2",
+                                                      "N"    ,
+                                                      "m/s^2",
+                                                      "m/s"  ,
+                                                      "m"    };
+
+std::vector<std::string> Flight::telemFields;
+std::vector<std::string> Flight::telemUnits;
+
+void Flight::set_telem(std::vector<std::string> telemFieldsInit)
+{
+
+    telemFields = telemFieldsInit;
+
+    for (const auto& field : telemFields)
+    {
+        
+        auto it  = std::find(telemFieldsDefault.begin(), telemFieldsDefault.end(), field);
+        int  idx = std::distance(telemFieldsDefault.begin(), it);
+
+        telemUnits.push_back(telemUnitsDefault[idx]);
+
+    }
+
+}
+
+//---------------------------------------------------------------------------//
+
+void Flight::write_telem(std::string fileOut) // TODO: maybe return bool for success/error status?
 {
 
     if (!flightTerm)
     {
-        // some kind of error message?
+        // TODO: some kind of error message?
         return;
     }
 
@@ -156,7 +209,7 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
     /*
     if (!ofs.is_open())
     {
-        ; raise some error
+        ; TODO: raise some error
     }
     */
 
@@ -199,12 +252,12 @@ void Flight::write_telem(std::string fileOut) // maybe return bool for success/e
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_stats(std::string fileOut) // maybe return bool for success/error status?
+void Flight::write_stats(std::string fileOut) // TODO: maybe return bool for success/error status?
 {
 
     if (!flightTerm)
     {
-        // some kind of error message?
+        // TODO: some kind of error message?
         return;
     }
 
@@ -214,7 +267,7 @@ void Flight::write_stats(std::string fileOut) // maybe return bool for success/e
     /*
     if (!ofs.is_open())
     {
-        ; raise some error
+        ; TODO: raise some error
     }
     */
 
@@ -224,7 +277,7 @@ void Flight::write_stats(std::string fileOut) // maybe return bool for success/e
     // Max values
     double maxValue;
 
-    for (const auto& field : statsFields)
+    for (const auto& field : telemFields)
     {
         
         maxValue = *std::max_element(stateTelem[field].begin(), stateTelem[field].end());

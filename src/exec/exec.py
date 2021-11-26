@@ -26,9 +26,11 @@ import model
 #------------------------------------------------------------------------------#
 
 # Module variables
-configPathRel = "../../config/config_input.yml"
-outputPath2   = None
+configPathRel = "../../config"
+configInput   = None
+configOutput  = None
 inputDict     = None
+outputPath2   = None
 
 #------------------------------------------------------------------------------#
 
@@ -36,15 +38,21 @@ def exec(inputPath, outputPath):
 
     # Pre-processing
     util_unit.config()
+    
+    configPath  = pathlib.Path(__file__).parent / configPathRel
+    configPath  = configPath.resolve()
 
-    configPath = pathlib.Path(__file__).parent / configPathRel
-    configPath = str(configPath.resolve())
-    configDict = util_yaml.load(configPath)
+    global configInput
+    configInput = util_yaml.load(str(configPath / "config_input.yml"))
+
+    global configOutput
+    configOutput = util_yaml.load(str(configPath / "config_output.yml"))
 
     global inputDict
     inputDict = util_yaml.load(inputPath)
-    util_yaml.process(inputDict)
-    preproc_input.process(inputDict, configDict)
+    util_yaml.process(inputDict)                  # Validate raw input file, resolve references
+    preproc_input.process(inputDict, configInput) # Validate input parameter values
+    exec_rand.check_dist(inputDict)               # Validate random distribution choice, parameters
 
     # Output setup
     global outputPath2
@@ -54,22 +62,32 @@ def exec(inputPath, outputPath):
     if not os.path.exists(outputPath2):
         os.mkdir(outputPath2)
 
+    # Validate telemetry output fields
+    telemInvalid = set(configOutput["telem"]) - set(model.Flight.telemFieldsDefault)
+
+    if telemInvalid:
+        raise ValueError("Invalid telemetry fields", telemInvalid)
+    else:
+        model.Flight.set_telem(configOutput["telem"])
+
+    # TODO: if issues with config_ouput.yml, resort to default fields
+    # Also, populate output stats fields
+
     # Sim execution
     mode    = inputDict["exec"]["mode"]["value"]
     numProc = inputDict["exec"]["numProc"]["value"]
     numMC   = inputDict["exec"]["numMC"]["value"]
     
     if mode == "nominal":
-        
-        #run_flight(np.nan)
-        run_flight(0)
+        run_flight(inputDict, 0)
 
     elif mode == "montecarlo":
     
         pool  = mp.Pool(numProc)
         iRuns = range(numMC)
 
-        pool.map_async(run_flight, iRuns)
+        # could probably use functools.partial here to avoid global inputDict
+        pool.map_async(run_flight_mc, iRuns)
 
         pool.close()
         pool.join()
@@ -78,18 +96,21 @@ def exec(inputPath, outputPath):
 
 #------------------------------------------------------------------------------#
 
-def run_flight(iRun):
+def run_flight_mc(iRun):
 
     inputDictRun = copy.deepcopy(inputDict)
 
-    if not(np.isnan(iRun)):
+    seedMaster = inputDict["exec"]["seed"]["value"]
+    seedRun    = seedMaster + iRun
+    
+    inputDictRun["exec"]["seed"]["value"] = seedRun
 
-        seedMaster = inputDict["exec"]["seed"]["value"]
-        seedRun    = seedMaster + iRun
-        
-        inputDictRun["exec"]["seed"]["value"] = seedRun
+    exec_rand.mc_draw(inputDictRun, configInput)
+    run_flight(inputDictRun, iRun)
 
-        exec_rand.mc_draw(inputDictRun)
+#------------------------------------------------------------------------------#
+
+def run_flight(inputDictRun, iRun):
 
     # Initialize model - engine
     enginePath = inputDictRun["engine"]["inputPath"]["value"]
@@ -131,7 +152,7 @@ def run_flight(iRun):
 
     flight.update() # Execute flight
     write_output(iRun, inputDictRun, flight)
-    # write_summary
+    #write_summary()
 
 #------------------------------------------------------------------------------#
 
@@ -147,19 +168,35 @@ def write_output(iRun, inputDictRun, flight):
     # Archives montecarlo draw for run recreation
     inputDictRun["exec"]["mode"]["value"] = "nominal"
 
+    for group in inputDictRun.keys():
+        for param in inputDictRun[group].keys():
+
+            props = inputDictRun[group][param].keys()
+
+        if "unit" in props:
+            
+            value    = inputDictRun[group][param]["value"]
+            quantity = configInput[group][param]["quantity"]
+            unit     = inputDictRun[group][param]["unit"]
+
+            # Convert values back to original units specified by user
+
+            if quantity:
+                value = util_unit.convert(value, quantity, "default", unit)
+                inputDictRun[group][param]["value"] = value
+
     outputYml = outputPath3 / "input.yml"
 
     with open(str(outputYml), 'w') as file:
-        yaml.dump(inputDictRun, file)
+        yaml.dump(inputDictRun, file, sort_keys=False, indent=4)
 
     # Write telemetry *.csv
     outputCsv = outputPath3 / "telem.csv"
     flight.write_telem(str(outputCsv))
 
-    # Write telemetry *.txt
+    # Write statistics *.txt
     outputTxt = outputPath3 / "stats.txt"
     flight.write_stats(str(outputTxt))
-
 
 #------------------------------------------------------------------------------#
 
