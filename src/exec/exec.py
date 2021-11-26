@@ -168,7 +168,22 @@ def write_output(iRun, inputDictRun, flight):
     # Archives montecarlo draw for run recreation
     inputDictRun["exec"]["mode"]["value"] = "nominal"
 
-    # TODO: unconvert "value" fields for each parameter if necessary
+    for group in inputDictRun.keys():
+        for param in inputDictRun[group].keys():
+
+            props = inputDictRun[group][param].keys()
+
+        if "unit" in props:
+            
+            value    = inputDictRun[group][param]["value"]
+            quantity = configInput[group][param]["quantity"]
+            unit     = inputDictRun[group][param]["unit"]
+
+            # Convert values back to original units specified by user
+
+            if quantity:
+                value = util_unit.convert(value, quantity, "default", unit)
+                inputDictRun[group][param]["value"] = value
 
     outputYml = outputPath3 / "input.yml"
 
@@ -182,7 +197,6 @@ def write_output(iRun, inputDictRun, flight):
     # Write statistics *.txt
     outputTxt = outputPath3 / "stats.txt"
     flight.write_stats(str(outputTxt))
-
 
 #------------------------------------------------------------------------------#
 

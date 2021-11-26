@@ -15,6 +15,7 @@ flight:
 mass:
     massBody:
         value: 5.3774548339920685
+        unit: lbm
         dist:
             name: normal
             param:
@@ -22,7 +23,7 @@ mass:
             - 0.5
 geodetic:
     latitude:
-        value: 0.5632142240535182
+        value: 32.269798
         unit: deg
 engine:
     inputPath:

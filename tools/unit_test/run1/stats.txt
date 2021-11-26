@@ -1,9 +1,9 @@
-(MAX) time: 33.590
+(MAX) time: 49.990
 (MAX) thrust: 541.260
 (MAX) massEng: 1.223
-(MAX) mass: 6.504
+(MAX) mass: 3.618
 (MAX) gravity: 9.795
-(MAX) forceZ: 479.887
-(MAX) linAccZ: 76.903
-(MAX) linVelZ: 147.822
-(MAX) linPosZ: 1286.605
+(MAX) forceZ: 508.150
+(MAX) linAccZ: 152.365
+(MAX) linVelZ: 294.060
+(MAX) linPosZ: 4757.155
