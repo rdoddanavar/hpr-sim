@@ -13,6 +13,7 @@ void Geodetic::init(double phiInit)
 {
 
     // WGS 84 Constants
+    // TODO: these vars should be static const
     gamE = 9.7803253359;        // [m/s^2]
     k    = 1.931852652458e-03;  // [-]
     e    = 8.1819190842622e-02; // [-]
@@ -20,8 +21,9 @@ void Geodetic::init(double phiInit)
     f    = 3.3528106647475e-03; // [-]
     m    = 3.449786506841e-03;  // [-]
 
-    phi     = phiInit; // [rad]
-    gravity = wgs84(0.0);
+    phi      = phiInit; // [rad]
+    altitude = 0.0;     // [m]
+    gravity  = wgs84(); // [m/s^2]
 
     isInit = true;
 
@@ -31,7 +33,10 @@ void Geodetic::init(double phiInit)
 
 void Geodetic::set_state()
 {
+
+    state->emplace("altitude", &altitude);
     state->emplace("gravity", &gravity);
+
 }
 
 //---------------------------------------------------------------------------//
@@ -41,14 +46,14 @@ void Geodetic::update()
 
     update_deps();
 
-    double alt = *state->at("linPosZ");
-    gravity    = wgs84(alt);
+    altitude = *state->at("linPosZ");
+    gravity  = wgs84();
 
 }
 
 //---------------------------------------------------------------------------//
 
-double Geodetic::wgs84(double h)
+double Geodetic::wgs84()
 {
     
     // WGS 84 ELLIPSOIDAL GRAVITY FORMULA
@@ -80,6 +85,7 @@ double Geodetic::wgs84(double h)
     */
 
     double a2 = pow(a, 2);
+    double h  = altitude;
     double h2 = pow(h, 2);
 
     double gamH = gam * (1 - (2/a)*(1 + f + m - 2*f*sin2phi)*h + (3/a2)*h2);

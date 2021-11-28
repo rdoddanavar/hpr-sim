@@ -13,11 +13,13 @@ namespace py = pybind11;
 // BINDING CODE
 
 // Expose derived classes
-void bind_Engine   (py::module_ &);
-void bind_Mass     (py::module_ &);
-void bind_Geodetic (py::module_ &);
-void bind_EOM      (py::module_ &);
-void bind_Flight   (py::module_ &);
+void bind_Engine       (py::module_ &);
+void bind_Mass         (py::module_ &);
+void bind_Geodetic     (py::module_ &);
+void bind_Atmosphere   (py::module_ &);
+void bind_Aerodynamics (py::module_ &);
+void bind_EOM          (py::module_ &);
+void bind_Flight       (py::module_ &);
 
 PYBIND11_MODULE(model, m)
 {
@@ -30,11 +32,13 @@ PYBIND11_MODULE(model, m)
         .def("add_dep", &Model::add_dep);
 
     // Expose derived classes
-    bind_Engine   (m);
-    bind_Mass     (m);
-    bind_Geodetic (m);
-    bind_EOM      (m);
-    bind_Flight   (m);
+    bind_Engine       (m);
+    bind_Mass         (m);
+    bind_Geodetic     (m);
+    bind_Atmosphere   (m);
+    bind_Aerodynamics (m);
+    bind_EOM          (m);
+    bind_Flight       (m);
 
 }
 
@@ -45,7 +49,7 @@ void bind_Engine(py::module_ &m)
 
     py::class_<Engine, Model>(m, "Engine")
         .def(py::init<>())
-        .def("init"  , &Engine::init  );
+        .def("init", &Engine::init);
 
 }
 
@@ -56,7 +60,7 @@ void bind_Mass(py::module_ &m)
 
     py::class_<Mass, Model>(m, "Mass")
         .def(py::init<>())
-        .def("init"  , &Mass::init  );
+        .def("init", &Mass::init);
 
 }
 
@@ -67,7 +71,29 @@ void bind_Geodetic(py::module_ &m)
 
     py::class_<Geodetic, Model>(m, "Geodetic")
         .def(py::init<>())
-        .def("init"  , &Geodetic::init  );
+        .def("init", &Geodetic::init);
+
+}
+
+//---------------------------------------------------------------------------//
+
+void bind_Atmosphere(py::module_ &m)
+{
+
+    py::class_<Atmosphere, Model>(m, "Atmosphere")
+        .def(py::init<>())
+        .def("init", &Atmosphere::init);
+
+}
+
+//---------------------------------------------------------------------------//
+
+void bind_Aerodynamics(py::module_ &m)
+{
+
+    py::class_<Aerodynamics, Model>(m, "Aerodynamics")
+        .def(py::init<>())
+        .def("init", &Aerodynamics::init);
 
 }
 

@@ -38,8 +38,8 @@ class Model
         std::set<Model*> depModels; // std::set enforces unique elements
 
         // Function(s)
-        virtual void update()    = 0; // Pure virtual
         virtual void set_state() = 0; // Pure virtual
+        virtual void update()    = 0; // Pure virtual
 
         void add_dep(Model* dep)
         {
@@ -83,8 +83,8 @@ class Engine : public Model
                   py::array_t<double> thrustInit, 
                   py::array_t<double> massInit  );
 
-        void update() override;
         void set_state() override;
+        void update() override;
 
         ~Engine(); // Destructor
 
@@ -108,9 +108,8 @@ class Mass : public Model
 
         // Function(s)
         void init(double massBodyInit);
-
-        void update() override;
         void set_state() override;
+        void update() override;
 
     private:
 
@@ -131,15 +130,17 @@ class Geodetic : public Model
 
         // Function(s)
         void init(double phiInit);
-        void update() override;
         void set_state() override;
+        void update() override;
 
     private:
 
         // Data
+        double phi;
+        double altitude;
         double gravity;
 
-        double phi;
+        // TODO: these vars should be static const
         double gamE;
         double k;
         double e;
@@ -148,7 +149,54 @@ class Geodetic : public Model
         double m;
 
         // Function(s)
-        double wgs84(double h);
+        double wgs84();
+
+};
+
+//---------------------------------------------------------------------------//
+
+class Atmosphere : public Model
+{
+
+    public:
+        
+        void init(double tempInit, double pressInit, double humInit);
+        void set_state() override;
+        void update() override;
+
+    private:
+
+        double temperature;      // [K]
+        double speedSound;       // [m/s]
+        double dynamicViscosity; // [-]
+        double humidity;         // [-]
+        double pressure;         // [Pa]
+        double density;          // [kg/m^3]
+
+};
+
+//---------------------------------------------------------------------------//
+
+class Aerodynamics : public Model
+{
+    
+    public:
+        
+        void init();
+        void set_state() override;
+        void update() override;
+
+    private:
+
+        double dynamicPressure; // [N/m^2]
+        double mach;            // [-]
+        double reynolds;        // [?]
+
+        // double cpX;    // Axial center of pressure [m]
+        // double alphaT; // Total angle-of-attack [rad]
+
+        // Eigen::Vector3d forceAero;  // Force  [N]
+        // Eigen::Vector3d momentAero; // Moment [N*m]
 
 };
 
@@ -160,8 +208,8 @@ class EOM : public Model
     public:
 
         void init();
-        void update() override;
         void set_state() override;
+        void update() override;
 
     private:
 
@@ -191,8 +239,8 @@ class Flight : public Model
     public:
 
         void init(double tfInit, double dtInit, double t0Init);
-        void update() override;
         void set_state() override;
+        void update() override;
 
         void write_telem(std::string fileOut);
         void write_stats(std::string fileOut);

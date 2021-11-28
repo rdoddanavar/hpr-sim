@@ -4,6 +4,8 @@ set(SRC "./model/model.cpp"
         "./model/engine.cpp"
         "./model/mass.cpp"
         "./model/geodetic.cpp"
+        "./model/atmosphere.cpp"
+        "./model/aerodynamics.cpp"
         "./model/eom.cpp"
         "./model/flight.cpp"
         )
