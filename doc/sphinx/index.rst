@@ -12,8 +12,6 @@ Welcome to hpr-sim's documentation!
 
    algorithms
 
-
-
 Indices and tables
 ==================
 
