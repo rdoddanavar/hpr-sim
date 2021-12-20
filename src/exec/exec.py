@@ -36,6 +36,17 @@ outputPath2   = None
 
 def exec(inputPath, outputPath):
 
+    """
+    Executes simluation using paramters defined in input file
+
+    Parameters
+    ----------
+    inputPath
+        File path to \*.yml input file
+    outputPath
+        File path for simulation data output
+    """
+
     # Pre-processing
     util_unit.config()
     
