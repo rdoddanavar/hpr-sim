@@ -39,12 +39,11 @@ def exec(inputPath, outputPath):
     """
     Executes simluation using paramters defined in input file
 
-    Parameters
-    ----------
-    inputPath
-        File path to \*.yml input file
-    outputPath
-        File path for simulation data output
+    :param inputPath: File path to \*.yml input file
+    :type inputPath: str
+
+    :param outputPath: File path for simulation data output
+    :type outputPath: str
     """
 
     # Pre-processing

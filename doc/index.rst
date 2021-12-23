@@ -10,8 +10,8 @@ Welcome to hpr-sim's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   algorithms
    src/developer
+   src/algorithms
 
 Indices and tables
 ==================
