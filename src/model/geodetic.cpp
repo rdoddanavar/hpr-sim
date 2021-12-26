@@ -22,7 +22,7 @@ void Geodetic::init(double phiInit)
     m    = 3.449786506841e-03;  // [-]
 
     phi      = phiInit; // [rad]
-    altitude = 0.0;     // [m]
+    altitude = 0.0;     // [m] // TODO: make launchsite altitude a parameter
     gravity  = wgs84(); // [m/s^2]
 
     isInit = true;

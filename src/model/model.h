@@ -173,6 +173,12 @@ class Atmosphere : public Model
         double pressure;         // [Pa]
         double density;          // [kg/m^3]
 
+        std::vector<double> tempProfileInd; // [m]
+        std::vector<double> tempProfileDep; // [K]
+
+        void usStd1976();
+        void usStd1976_init_temp();
+
 };
 
 //---------------------------------------------------------------------------//
