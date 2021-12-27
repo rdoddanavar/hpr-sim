@@ -152,21 +152,23 @@ int ode_update(double t, const double y[], double f[], void *params)
 
 //---------------------------------------------------------------------------//
 
-std::vector<std::string> Flight::telemFieldsDefault = {"time"   ,
-                                                       "thrust" ,
-                                                       "massEng",
-                                                       "mass"   ,
-                                                       "gravity",
-                                                       "forceZ" ,
-                                                       "linAccZ",
-                                                       "linVelZ",
-                                                       "linPosZ"};
+std::vector<std::string> Flight::telemFieldsDefault = {"time"       ,
+                                                       "thrust"     ,
+                                                       "massEng"    ,
+                                                       "mass"       ,
+                                                       "gravity"    ,
+                                                       "temperature",
+                                                       "forceZ"     ,
+                                                       "linAccZ"    ,
+                                                       "linVelZ"    ,
+                                                       "linPosZ"    };
 
 std::vector<std::string> Flight::telemUnitsDefault = {"s"    ,
                                                       "N"    ,
                                                       "kg"   ,
                                                       "kg"   ,
                                                       "m/s^2",
+                                                      "K"    ,
                                                       "N"    ,
                                                       "m/s^2",
                                                       "m/s"  ,

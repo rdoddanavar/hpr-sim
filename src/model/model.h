@@ -19,6 +19,9 @@
 // Project headers
 #include "util_model.h"
 
+//---------------------------------------------------------------------------//
+
+// Namespaces
 namespace py = pybind11;
 
 // Type aliases
@@ -94,8 +97,11 @@ class Engine : public Model
         double thrust;
         double massEng;
 
-        gsl_spline       *thrustSpline, *massSpline;
-        gsl_interp_accel *thrustAcc   , *massAcc   ;
+        gsl_spline *thrustSpline;
+        gsl_spline *massSpline;
+
+        gsl_interp_accel* thrustAcc;
+        gsl_interp_accel* massAcc;
 
 };
 
@@ -164,6 +170,8 @@ class Atmosphere : public Model
         void set_state() override;
         void update() override;
 
+        ~Atmosphere(); // Destructor
+
     private:
 
         double temperature;      // [K]
@@ -173,11 +181,14 @@ class Atmosphere : public Model
         double pressure;         // [Pa]
         double density;          // [kg/m^3]
 
-        std::vector<double> tempProfileInd; // [m]
-        std::vector<double> tempProfileDep; // [K]
+        double* tempProfileInd; // [m]
+        double* tempProfileDep; // [K]
 
-        void usStd1976();
+        gsl_interp*       tempInterp;
+        gsl_interp_accel* tempAcc;
+
         void usStd1976_init_temp();
+        void usStd1976(double altitude);
 
 };
 
