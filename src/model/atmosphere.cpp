@@ -1,5 +1,5 @@
 // System libraries
-// <none>
+#include <cmath>
 
 // External libraries
 #include "gsl/interpolation/gsl_interp.h"
@@ -17,16 +17,18 @@ const int nlapseRateBin = 7;
 const double lapseRateInd[7] = { 0.0e+3, 11.0e+3, 20.0e+3, 32.0e+3, 47.0e+3, 51.0e+3, 71.0e+3}; // [m]
 const double lapseRateDep[7] = {-6.5e-3,  0.0e-3,  1.0e-3,  2.8e-3,  0.0e-3, -2.8e-3, -2.0e-3}; // [K/m]
 
+const double gamma       = 1.4;
+const double gasConstAir = 287.05; // TODO: replace this with a more precise number: Rsp = R/M
+
 // TODO: add the last altitude value to round out 7 bins
 
 //---------------------------------------------------------------------------//
 
-void Atmosphere::init(double tempInit, double pressInit, double humInit)
+void Atmosphere::init(double tempInit, double pressInit)
 {
 
     temperature = tempInit;
     pressure    = pressInit;
-    humidity    = humInit;
 
     usStd1976_init_temp();
 
@@ -42,7 +44,6 @@ void Atmosphere::set_state()
     state->emplace("temperature", &temperature);
     //state->emplace("speedSound", &speedSound);
     //state->emplace("dynamicViscosity", &dynamicViscosity);
-    //state->emplace("humidity", &humidity);
     //state->emplace("pressure", &pressure);
     //state->emplace("density", &density);
 
@@ -68,8 +69,8 @@ void Atmosphere::usStd1976_init_temp()
     // Pre-compute temperature profile
     double altitude = 0.0; // TODO: *state->at("altitude");
 
-    tempProfileInd[0] = altitude; // TODO: better handling for altitude initialization; see Geodetic class
-    tempProfileDep[0] = temperature;
+    tempProfileInd.push_back(altitude); // TODO: better handling for altitude initialization; see Geodetic class
+    tempProfileDep.push_back(temperature);
 
     // TODO: what if initial altitude is above first temp bin? highly unlikely but possible
     double tempNext; // [K]
@@ -77,16 +78,16 @@ void Atmosphere::usStd1976_init_temp()
     for (int iBin = 1; iBin < nlapseRateBin; iBin++)
     {
         
-        tempProfileInd[iBin] = lapseRateInd[iBin];
+        tempProfileInd.push_back(lapseRateInd[iBin]);
 
         tempNext = tempProfileDep[iBin-1] + lapseRateDep[iBin-1] * (tempProfileInd[iBin] - tempProfileInd[iBin-1]);
 
-        tempProfileDep[iBin] = tempNext;
+        tempProfileDep.push_back(tempNext);
 
     }
 
     // Create interpolant
-    interp1d_init(tempInterp, tempProfileInd, tempProfileDep, nlapseRateBin, tempAcc);
+    interp1d_init(tempInterp, tempProfileInd.data(), tempProfileDep.data(), tempProfileInd.size(), tempAcc);
 
 }
 
@@ -96,7 +97,9 @@ void Atmosphere::usStd1976(double altitude)
 {
 
     // US Standard Atmosphere 1976
-    temperature = interp1d_eval(tempInterp, tempProfileInd, tempProfileDep, altitude, tempAcc);
+    temperature = interp1d_eval(tempInterp, tempProfileInd.data(), tempProfileDep.data(), altitude, tempAcc);
+
+    speedSound = sqrt(gamma * gasConstAir * temperature); 
 
 }
 

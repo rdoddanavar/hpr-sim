@@ -145,7 +145,7 @@ def run_flight(inputDictRun, iRun):
     # Initialize model - atmosphere
     atmosphere = model.Atmosphere()
     atmosphere.add_dep(geodetic)
-    atmosphere.init(288.15, 0.0, 0.0)
+    atmosphere.init(288.15, 0.0)
 
     # Initialize model - EOM
     eom = model.EOM()

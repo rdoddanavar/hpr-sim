@@ -177,12 +177,11 @@ class Atmosphere : public Model
         double temperature;      // [K]
         double speedSound;       // [m/s]
         double dynamicViscosity; // [-]
-        double humidity;         // [-]
         double pressure;         // [Pa]
         double density;          // [kg/m^3]
 
-        double* tempProfileInd; // [m]
-        double* tempProfileDep; // [K]
+        std::vector<double> tempProfileInd; // [m]
+        std::vector<double> tempProfileDep; // [K]
 
         gsl_interp*       tempInterp;
         gsl_interp_accel* tempAcc;
