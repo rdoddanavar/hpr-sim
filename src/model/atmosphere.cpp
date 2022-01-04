@@ -17,7 +17,7 @@ const int nlapseRateBin = 7;
 const double lapseRateInd[7] = { 0.0e+3, 11.0e+3, 20.0e+3, 32.0e+3, 47.0e+3, 51.0e+3, 71.0e+3}; // [m]
 const double lapseRateDep[7] = {-6.5e-3,  0.0e-3,  1.0e-3,  2.8e-3,  0.0e-3, -2.8e-3, -2.0e-3}; // [K/m]
 
-const double gamma       = 1.4;
+const double gammaAir    = 1.4;
 const double gasConstAir = 287.05; // TODO: replace this with a more precise number: Rsp = R/M
 
 // TODO: add the last altitude value to round out 7 bins
@@ -99,7 +99,7 @@ void Atmosphere::usStd1976(double altitude)
     // US Standard Atmosphere 1976
     temperature = interp1d_eval(tempInterp, tempProfileInd.data(), tempProfileDep.data(), altitude, tempAcc);
 
-    speedSound = sqrt(gamma * gasConstAir * temperature); 
+    speedSound = sqrt(gammaAir * gasConstAir * temperature); 
 
 }
 

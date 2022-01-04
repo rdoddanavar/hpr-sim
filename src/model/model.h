@@ -166,7 +166,7 @@ class Atmosphere : public Model
 
     public:
         
-        void init(double tempInit, double pressInit, double humInit);
+        void init(double tempInit, double pressInit);
         void set_state() override;
         void update() override;
 
