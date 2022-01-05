@@ -18,7 +18,7 @@ const double lapseRateInd[7] = { 0.0e+3, 11.0e+3, 20.0e+3, 32.0e+3, 47.0e+3, 51.
 const double lapseRateDep[7] = {-6.5e-3,  0.0e-3,  1.0e-3,  2.8e-3,  0.0e-3, -2.8e-3, -2.0e-3}; // [K/m]
 
 const double gammaAir    = 1.4;
-const double gasConstAir = 287.05; // TODO: replace this with a more precise number: Rsp = R/M
+const double gasConstAir = 8.31432e3/28.9644; // [J/(kg*K)]
 
 // TODO: add the last altitude value to round out 7 bins
 
@@ -42,7 +42,7 @@ void Atmosphere::set_state()
 {
 
     state->emplace("temperature", &temperature);
-    //state->emplace("speedSound", &speedSound);
+    state->emplace("speedSound", &speedSound);
     //state->emplace("dynamicViscosity", &dynamicViscosity);
     //state->emplace("pressure", &pressure);
     //state->emplace("density", &density);
