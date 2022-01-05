@@ -12,15 +12,14 @@
 
 // Model Constants
 
-// US Standard Atmosphere 1976 (Table 4.)
-const int nlapseRateBin = 7;
-const double lapseRateInd[7] = { 0.0e+3, 11.0e+3, 20.0e+3, 32.0e+3, 47.0e+3, 51.0e+3, 71.0e+3}; // [m]
-const double lapseRateDep[7] = {-6.5e-3,  0.0e-3,  1.0e-3,  2.8e-3,  0.0e-3, -2.8e-3, -2.0e-3}; // [K/m]
+// US Standard Atmosphere 1976: Table 4.
+const std::array<double, 8> lapseRateInd = { 0.0e+3, 11.0e+3, 20.0e+3, 32.0e+3, 47.0e+3, 51.0e+3, 71.0e+3, 84.8520e3}; // [m]
+const std::array<double, 7> lapseRateDep = {-6.5e-3,  0.0e-3,  1.0e-3,  2.8e-3,  0.0e-3, -2.8e-3, -2.0e-3};            // [K/m]
 
-const double gammaAir    = 1.4;
+// US Standard Atmosphere 1976: (univ. gas const.) / (molar mass air)
 const double gasConstAir = 8.31432e3/28.9644; // [J/(kg*K)]
 
-// TODO: add the last altitude value to round out 7 bins
+const double gammaAir    = 1.4;
 
 //---------------------------------------------------------------------------//
 
@@ -69,20 +68,27 @@ void Atmosphere::usStd1976_init_temp()
     // Pre-compute temperature profile
     double altitude = 0.0; // TODO: *state->at("altitude");
 
-    tempProfileInd.push_back(altitude); // TODO: better handling for altitude initialization; see Geodetic class
-    tempProfileDep.push_back(temperature);
+    // TODO: better handling for altitude initialization; see Geodetic class
+
+    tempProfileInd.resize(lapseRateInd.size());
+    tempProfileDep.resize(lapseRateInd.size());
+
+    // TODO: conversion between geometric & geopotential altitudes; do this in Geodetic class?
+
+    tempProfileInd[0] = altitude;
+    tempProfileDep[0] = temperature;
 
     // TODO: what if initial altitude is above first temp bin? highly unlikely but possible
     double tempNext; // [K]
 
-    for (int iBin = 1; iBin < nlapseRateBin; iBin++)
+    for (int iAlt = 1; iAlt < tempProfileInd.size(); iAlt++)
     {
         
-        tempProfileInd.push_back(lapseRateInd[iBin]);
+        tempProfileInd[iAlt] = lapseRateInd[iAlt];
 
-        tempNext = tempProfileDep[iBin-1] + lapseRateDep[iBin-1] * (tempProfileInd[iBin] - tempProfileInd[iBin-1]);
+        tempNext = tempProfileDep[iAlt-1] + lapseRateDep[iAlt-1] * (tempProfileInd[iAlt] - tempProfileInd[iAlt-1]);
 
-        tempProfileDep.push_back(tempNext);
+        tempProfileDep[iAlt] = tempNext;
 
     }
 
