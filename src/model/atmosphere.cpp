@@ -55,8 +55,8 @@ void Atmosphere::update()
 
     update_deps();
 
-    double altitude = *state->at("altitude");
-    usStd1976(altitude);
+    double altitudeMSL = *state->at("altitudeMSL");
+    usStd1976(altitudeMSL);
 
 }
 
@@ -66,7 +66,7 @@ void Atmosphere::usStd1976_init_temp()
 {
 
     // Pre-compute temperature profile
-    double altitude = 0.0; // TODO: *state->at("altitude");
+    double altitudeMSL = *state->at("altitudeMSL");
 
     // TODO: better handling for altitude initialization; see Geodetic class
 
@@ -75,7 +75,7 @@ void Atmosphere::usStd1976_init_temp()
 
     // TODO: conversion between geometric & geopotential altitudes; do this in Geodetic class?
 
-    tempProfileInd[0] = altitude;
+    tempProfileInd[0] = altitudeMSL;
     tempProfileDep[0] = temperature;
 
     // TODO: what if initial altitude is above first temp bin? highly unlikely but possible
@@ -99,11 +99,11 @@ void Atmosphere::usStd1976_init_temp()
 
 //---------------------------------------------------------------------------//
 
-void Atmosphere::usStd1976(double altitude)
+void Atmosphere::usStd1976(double altitudeMSL)
 {
 
     // US Standard Atmosphere 1976
-    temperature = interp1d_eval(tempInterp, tempProfileInd.data(), tempProfileDep.data(), altitude, tempAcc);
+    temperature = interp1d_eval(tempInterp, tempProfileInd.data(), tempProfileDep.data(), altitudeMSL, tempAcc);
 
     speedSound = sqrt(gammaAir * gasConstAir * temperature); 
 

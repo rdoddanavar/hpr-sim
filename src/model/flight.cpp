@@ -27,9 +27,6 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
     dt   = dtInit;
     tf   = tfInit;
 
-    state = new stateMap;
-    init_state(state);
-
     // Solver setup
     odeSolver.sys.function  = &ode_update;
     odeSolver.sys.jacobian  = nullptr;

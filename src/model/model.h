@@ -59,6 +59,11 @@ class Model
             }
         }
 
+        void init_state()
+        {
+            init_state(new stateMap);
+        }
+
         void init_state(stateMap* stateIn)
         {
             
@@ -135,7 +140,7 @@ class Geodetic : public Model
         // Data
 
         // Function(s)
-        void init(double phiInit);
+        void init(double phiInit, double altInit);
         void set_state() override;
         void update() override;
 
@@ -143,16 +148,10 @@ class Geodetic : public Model
 
         // Data
         double phi;
-        double altitude;
+        double altitudeMSL0;
+        double altitudeMSL;
+        double altitudeAGL;
         double gravity;
-
-        // TODO: these vars should be static const
-        double gamE;
-        double k;
-        double e;
-        double a;
-        double f;
-        double m;
 
         // Function(s)
         double wgs84();
@@ -187,7 +186,7 @@ class Atmosphere : public Model
         gsl_interp_accel* tempAcc;
 
         void usStd1976_init_temp();
-        void usStd1976(double altitude);
+        void usStd1976(double altitudeMSL);
 
 };
 

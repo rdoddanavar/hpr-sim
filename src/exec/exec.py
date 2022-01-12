@@ -122,51 +122,53 @@ def run_flight_mc(iRun):
 
 def run_flight(inputDictRun, iRun):
 
-    # Initialize model - engine
-    enginePath = inputDictRun["engine"]["inputPath"]["value"]
-    timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
-
-    engine = model.Engine()
-    engine.init(timeEng, thrustEng, massEng)
-
-    # Initialize model - mass
-    mass     = model.Mass()
-    massBody = inputDictRun["mass"]["massBody"]["value"]
-
-    mass.add_dep(engine)
-    mass.init(massBody)
-
-    # Initialize model - geodetic
-    geodetic = model.Geodetic()
-    latitude = inputDictRun["geodetic"]["latitude"]["value"]
-
-    geodetic.init(latitude)
-
-    # Initialize model - atmosphere
+    # Create model instances
+    engine     = model.Engine()
+    mass       = model.Mass()
+    geodetic   = model.Geodetic()
     atmosphere = model.Atmosphere()
+    eom        = model.EOM()
+    flight     = model.Flight()
+
+    # Set model dependencies
+    # TODO: allow list of models as argument
+    mass.add_dep(engine)
     atmosphere.add_dep(geodetic)
-    atmosphere.init(288.15, 0.0)
-
-    # Initialize model - EOM
-    eom = model.EOM()
-
     eom.add_dep(engine)
     eom.add_dep(mass)
     eom.add_dep(geodetic)
-    eom.init()
-
-    # Initialize model - flight
-    flight = model.Flight()
     flight.add_dep(atmosphere)
     flight.add_dep(eom)
+
+    # Initialize state from top-level model
+    flight.init_state()
+
+    # Initialize models
+
+    enginePath = inputDictRun["engine"]["inputPath"]["value"]
+    timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
+    engine.init(timeEng, thrustEng, massEng)
+
+    massBody = inputDictRun["mass"]["massBody"]["value"]
+    mass.init(massBody)
+
+    latitude = inputDictRun["geodetic"]["latitude"]["value"]
+    altitude = inputDictRun["geodetic"]["altitude"]["value"]
+    geodetic.init(latitude, altitude)
+
+    temperature = inputDictRun["atmosphere"]["temperature"]["value"]
+    pressure    = inputDictRun["atmosphere"]["pressure"]["value"]
+    atmosphere.init(temperature, pressure)
+
+    eom.init()
 
     t0 = 0.0
     dt = inputDictRun["flight"]["timeStep"]["value"]
     tf = inputDictRun["flight"]["timeFlight"]["value"]
-
     flight.init(t0, dt, tf)
 
-    flight.update() # Execute flight
+    # Execute flight
+    flight.update()
     write_output(iRun, inputDictRun, flight)
     #write_summary()
 
@@ -189,17 +191,17 @@ def write_output(iRun, inputDictRun, flight):
 
             props = inputDictRun[group][param].keys()
 
-        if "unit" in props:
-            
-            value    = inputDictRun[group][param]["value"]
-            quantity = configInput[group][param]["quantity"]
-            unit     = inputDictRun[group][param]["unit"]
+            if "unit" in props:
+                
+                value    = inputDictRun[group][param]["value"]
+                quantity = configInput[group][param]["quantity"]
+                unit     = inputDictRun[group][param]["unit"]
 
-            # Convert values back to original units specified by user
+                # Convert values back to original units specified by user
 
-            if quantity:
-                value = util_unit.convert(value, quantity, "default", unit)
-                inputDictRun[group][param]["value"] = value
+                if quantity:
+                    value = util_unit.convert(value, quantity, "default", unit)
+                    inputDictRun[group][param]["value"] = value
 
     outputYml = outputPath3 / "input.yml"
 

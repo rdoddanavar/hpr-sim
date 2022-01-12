@@ -29,7 +29,8 @@ PYBIND11_MODULE(model, m)
     // Exposing base class necessary for derived construction
     // Base methods exposed once, automatically available to dervied in python
     py::class_<Model>(m, "Model")
-        .def("add_dep", &Model::add_dep);
+        .def("add_dep", &Model::add_dep)
+        .def("init_state", static_cast<void (Model::*)()>(&Model::init_state));
 
     // Expose derived classes
     bind_Engine       (m);

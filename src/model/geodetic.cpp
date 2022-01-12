@@ -9,21 +9,27 @@
 
 //---------------------------------------------------------------------------//
 
-void Geodetic::init(double phiInit) 
+// WGS 84 Constants
+// TODO: these vars should be static const
+const double gamE = 9.7803253359;        // [m/s^2]
+const double k    = 1.931852652458e-03;  // [-]
+const double e    = 8.1819190842622e-02; // [-]
+const double a    = 6378137.0;           // [m]
+const double f    = 3.3528106647475e-03; // [-]
+const double m    = 3.449786506841e-03;  // [-]
+
+//---------------------------------------------------------------------------//
+
+void Geodetic::init(double phiInit, double altInit) 
 {
 
-    // WGS 84 Constants
-    // TODO: these vars should be static const
-    gamE = 9.7803253359;        // [m/s^2]
-    k    = 1.931852652458e-03;  // [-]
-    e    = 8.1819190842622e-02; // [-]
-    a    = 6378137.0;           // [m]
-    f    = 3.3528106647475e-03; // [-]
-    m    = 3.449786506841e-03;  // [-]
+    phi          = phiInit; // [rad]
 
-    phi      = phiInit; // [rad]
-    altitude = 0.0;     // [m] // TODO: make launchsite altitude a parameter
-    gravity  = wgs84(); // [m/s^2]
+    altitudeMSL0 = altInit;      // [m]
+    altitudeMSL  = altitudeMSL0; // [m]
+    altitudeAGL  = 0.0;          // [m]
+
+    gravity      = wgs84(); // [m/s^2]
 
     isInit = true;
 
@@ -34,7 +40,8 @@ void Geodetic::init(double phiInit)
 void Geodetic::set_state()
 {
 
-    state->emplace("altitude", &altitude);
+    state->emplace("altitudeMSL", &altitudeMSL);
+    state->emplace("altitudeAGL", &altitudeAGL);
     state->emplace("gravity", &gravity);
 
 }
@@ -46,8 +53,9 @@ void Geodetic::update()
 
     update_deps();
 
-    altitude = *state->at("linPosZ");
-    gravity  = wgs84();
+    altitudeAGL = *state->at("linPosZ");
+    altitudeMSL = altitudeMSL0 + altitudeAGL;
+    gravity     = wgs84();
 
 }
 
@@ -69,6 +77,9 @@ double Geodetic::wgs84()
     phi  = geodetic latitude
     */
 
+   // TODO: make this part a one-time init
+   // TODO: calculate latitude drift with rocket drift downrange?
+
     double sin2phi = pow(sin(phi), 2);
     double e2      = pow(e, 2);
 
@@ -85,7 +96,7 @@ double Geodetic::wgs84()
     */
 
     double a2 = pow(a, 2);
-    double h  = altitude;
+    double h  = altitudeMSL;
     double h2 = pow(h, 2);
 
     double gamH = gam * (1 - (2/a)*(1 + f + m - 2*f*sin2phi)*h + (3/a2)*h2);
