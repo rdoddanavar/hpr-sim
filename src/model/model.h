@@ -168,14 +168,19 @@ class Geodetic : public Model
     private:
 
         // Model subroutines
-        double wgs84();
+        void wgs84_init();
+        void wgs84();
 
         // State variables
-        double phi;
-        double altitudeMSL0;
         double altitudeMSL;
         double altitudeAGL;
         double gravity;
+
+        // Miscellaneous
+        double phi;
+        double altitudeMSL0;
+        double sin2phi;
+        double gamma;
 
 };
 
@@ -195,7 +200,7 @@ class Atmosphere : public Model
     private:
 
         // Model subroutines
-        void usStd1976_init_temp();
+        void usStd1976_init(double altitudeMSL0);
         void usStd1976(double altitudeMSL);
 
         // State variables
@@ -287,20 +292,20 @@ class Flight : public Model
 
         static void set_telem(std::vector<std::string> telemFieldsInit);
 
+        ~Flight(); // Destructor
+
         static std::vector<std::string> telemFieldsDefault;
         static std::vector<std::string> telemUnitsDefault;
 
         static std::vector<std::string> telemFields;
         static std::vector<std::string> telemUnits;
 
-        stateMapVec stateTelem;
-        OdeSolver   odeSolver; // ODE solver settings & driver
-
-        ~Flight(); // Destructor
+        OdeSolver odeSolver; // ODE solver settings & driver
 
     private:
 
         // State variables
+        stateMapVec stateTelem;
         double time;
 
         // Miscellaneous

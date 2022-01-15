@@ -19,7 +19,7 @@ const std::array<double, 7> lapseRateDep = {-6.5e-3,  0.0e-3,  1.0e-3,  2.8e-3, 
 // US Standard Atmosphere 1976: (univ. gas const.) / (molar mass air)
 const double gasConstAir = 8.31432e3/28.9644; // [J/(kg*K)]
 
-const double gammaAir    = 1.4;
+const double gammaAir = 1.4;
 
 //---------------------------------------------------------------------------//
 
@@ -29,7 +29,8 @@ void Atmosphere::init(double tempInit, double pressInit)
     temperature = tempInit;
     pressure    = pressInit;
 
-    usStd1976_init_temp();
+    double altitudeMSL0 = *state->at("altitudeMSL");
+    usStd1976_init(altitudeMSL0);
 
     isInit = true;
 
@@ -62,20 +63,17 @@ void Atmosphere::update()
 
 //---------------------------------------------------------------------------//
 
-void Atmosphere::usStd1976_init_temp()
+void Atmosphere::usStd1976_init(double altitudeMSL0)
 {
 
     // Pre-compute temperature profile
-    double altitudeMSL = *state->at("altitudeMSL");
-
-    // TODO: better handling for altitude initialization; see Geodetic class
 
     tempProfileInd.resize(lapseRateInd.size());
     tempProfileDep.resize(lapseRateInd.size());
 
     // TODO: conversion between geometric & geopotential altitudes; do this in Geodetic class?
 
-    tempProfileInd[0] = altitudeMSL;
+    tempProfileInd[0] = altitudeMSL0;
     tempProfileDep[0] = temperature;
 
     // TODO: what if initial altitude is above first temp bin? highly unlikely but possible

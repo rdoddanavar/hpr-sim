@@ -54,6 +54,7 @@ def exec(inputPath, outputPath):
 
     global configInput
     configInput = util_yaml.load(str(configPath / "config_input.yml"))
+    util_yaml.process(configInput)
 
     global configOutput
     configOutput = util_yaml.load(str(configPath / "config_output.yml"))
