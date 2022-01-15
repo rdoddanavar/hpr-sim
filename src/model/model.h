@@ -62,6 +62,7 @@ class Model
         void init_state()
         {
             init_state(new stateMap);
+            // TODO: do I need to "delete" pointer? Or, replace with std::shared_ptr
         }
 
         void init_state(stateMap* stateIn)
@@ -76,6 +77,29 @@ class Model
             }
 
         }
+
+        // TODO: track which state fields are necessary to satisfy model
+
+};
+
+//---------------------------------------------------------------------------//
+
+class Test : public Model
+{
+
+    public:
+        
+        void init(std::vector<std::string> stateFieldsInit);
+        void set_state() override;
+        void update() override;
+
+        void   set_state_data(std::string field, double data);
+        double get_state_data(std::string field);
+
+    private:
+
+        std::vector<std::string> stateFields;
+
 
 };
 
@@ -285,5 +309,7 @@ class Flight : public Model
 
         double flightTime;
         bool   flightTerm = false;
+
+        // TODO: create "phase" structure to capture all flags
 
 };

@@ -297,7 +297,7 @@ Flight::~Flight()
     
     if (isInit)
     {
-        delete state;
+        delete state; // TODO: remove this with shared_ptr usage
         gsl_odeiv2_driver_free(odeSolver.driver);
     }
 

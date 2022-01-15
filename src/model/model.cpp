@@ -13,6 +13,7 @@ namespace py = pybind11;
 // BINDING CODE
 
 // Expose derived classes
+void bind_Test         (py::module_ &);
 void bind_Engine       (py::module_ &);
 void bind_Mass         (py::module_ &);
 void bind_Geodetic     (py::module_ &);
@@ -33,6 +34,7 @@ PYBIND11_MODULE(model, m)
         .def("init_state", static_cast<void (Model::*)()>(&Model::init_state));
 
     // Expose derived classes
+    bind_Test         (m);
     bind_Engine       (m);
     bind_Mass         (m);
     bind_Geodetic     (m);
@@ -40,6 +42,20 @@ PYBIND11_MODULE(model, m)
     bind_Aerodynamics (m);
     bind_EOM          (m);
     bind_Flight       (m);
+
+}
+
+//---------------------------------------------------------------------------//
+
+void bind_Test(py::module_ &m)
+{
+
+    py::class_<Test, Model>(m, "Test")
+        .def(py::init<>())
+        .def("init", &Test::init)
+        .def("update", &Test::update)
+        .def("set_state_data", &Test::set_state_data)
+        .def("get_state_data", &Test::get_state_data);
 
 }
 
