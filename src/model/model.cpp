@@ -31,7 +31,8 @@ PYBIND11_MODULE(model, m)
     // Base methods exposed once, automatically available to dervied in python
     py::class_<Model>(m, "Model")
         .def("add_dep", &Model::add_dep)
-        .def("init_state", static_cast<void (Model::*)()>(&Model::init_state));
+        .def("init_state", static_cast<void (Model::*)()>(&Model::init_state))
+        .def("update", &Model::update);
 
     // Expose derived classes
     bind_Test         (m);
@@ -53,7 +54,6 @@ void bind_Test(py::module_ &m)
     py::class_<Test, Model>(m, "Test")
         .def(py::init<>())
         .def("init", &Test::init)
-        .def("update", &Test::update)
         .def("set_state_data", &Test::set_state_data)
         .def("get_state_data", &Test::get_state_data);
 
@@ -137,7 +137,6 @@ void bind_Flight(py::module_ &m)
         .def_readonly_static("telemFieldsDefault", &Flight::telemFieldsDefault)
         .def("write_telem", &Flight::write_telem)
         .def("write_stats", &Flight::write_stats)
-        .def("update", &Flight::update)
         .def_readwrite("odeSolver", &Flight::odeSolver);
 
     py::class_<OdeSolver>(m, "OdeSolver")

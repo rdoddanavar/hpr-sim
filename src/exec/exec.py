@@ -1,7 +1,6 @@
 # System modules
 import sys
 import os
-import pdb
 import pathlib
 import copy
 import multiprocessing as mp

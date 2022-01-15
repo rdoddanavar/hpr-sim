@@ -9,7 +9,10 @@
 
 void Test::init(std::vector<std::string> stateFieldsInit)
 {
+    
     stateFields = stateFieldsInit;
+    set_state();
+
 }
 
 //---------------------------------------------------------------------------//
