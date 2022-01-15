@@ -35,11 +35,6 @@ class Model
     
     public: 
 
-        // Data
-        bool isInit = false;
-        stateMap* state;
-        std::set<Model*> depModels; // std::set enforces unique elements
-
         // Function(s)
         virtual void set_state() = 0; // Pure virtual
         virtual void update()    = 0; // Pure virtual
@@ -78,6 +73,10 @@ class Model
 
         }
 
+        bool isInit = false;
+        stateMap* state;
+        std::set<Model*> depModels; // std::set enforces unique elements
+
         // TODO: track which state fields are necessary to satisfy model
 
 };
@@ -94,7 +93,7 @@ class Test : public Model
         void update() override;
 
         void   set_state_data(std::string field, double data);
-        double get_state_data(std::string field);
+        double get_state_data(std::string field); // TODO: make getter function const
 
     private:
 
@@ -110,7 +109,6 @@ class Engine : public Model
     
     public:
 
-        // Function(s)
         void init(py::array_t<double> timeInit  , 
                   py::array_t<double> thrustInit, 
                   py::array_t<double> massInit  );
@@ -122,10 +120,11 @@ class Engine : public Model
 
     private:
 
-        // Data
+        // State variables
         double thrust;
         double massEng;
 
+        // Miscellaneous
         gsl_spline *thrustSpline;
         gsl_spline *massSpline;
 
@@ -141,16 +140,17 @@ class Mass : public Model
     
     public:
 
-        // Function(s)
         void init(double massBodyInit);
         void set_state() override;
         void update() override;
 
     private:
 
-        // Data
-        double massBody;
+        // State variables
         double mass;
+
+        // Miscellaneous
+        double massBody;
 
 };
 
@@ -161,24 +161,21 @@ class Geodetic : public Model
 {
     public:
 
-        // Data
-
-        // Function(s)
         void init(double phiInit, double altInit);
         void set_state() override;
         void update() override;
 
     private:
 
-        // Data
+        // Model subroutines
+        double wgs84();
+
+        // State variables
         double phi;
         double altitudeMSL0;
         double altitudeMSL;
         double altitudeAGL;
         double gravity;
-
-        // Function(s)
-        double wgs84();
 
 };
 
@@ -197,20 +194,23 @@ class Atmosphere : public Model
 
     private:
 
+        // Model subroutines
+        void usStd1976_init_temp();
+        void usStd1976(double altitudeMSL);
+
+        // State variables
         double temperature;      // [K]
         double speedSound;       // [m/s]
         double dynamicViscosity; // [-]
         double pressure;         // [Pa]
         double density;          // [kg/m^3]
 
+        // Miscellaneous
         std::vector<double> tempProfileInd; // [m]
         std::vector<double> tempProfileDep; // [K]
 
         gsl_interp*       tempInterp;
         gsl_interp_accel* tempAcc;
-
-        void usStd1976_init_temp();
-        void usStd1976(double altitudeMSL);
 
 };
 
@@ -227,6 +227,7 @@ class Aerodynamics : public Model
 
     private:
 
+        // State variables
         double dynamicPressure; // [N/m^2]
         double mach;            // [-]
         double reynolds;        // [?]
@@ -252,7 +253,7 @@ class EOM : public Model
 
     private:
 
-        // Data
+        // State variables
         Eigen::Vector3d force;  // Force  [N]
         Eigen::Vector3d moment; // Moment [N*m]
 
@@ -299,8 +300,10 @@ class Flight : public Model
 
     private:
 
-        // Data
+        // State variables
         double time;
+
+        // Miscellaneous
         double t0;
         double dt;
         double tf;
