@@ -21,6 +21,11 @@ const double gasConstAir = 8.31432e3/28.9644; // [J/(kg*K)]
 
 const double gammaAir = 1.4;
 
+// Sutherland's Law
+const double viscRef  = 1.716e-5; // [kg/(m*s)]
+const double tempRef  = 273.15;   // [K]
+const double tempSuth = 110.40;   // [K]
+
 //---------------------------------------------------------------------------//
 
 void Atmosphere::init(double tempInit, double pressInit)
@@ -43,7 +48,7 @@ void Atmosphere::set_state()
 
     state->emplace("temperature", &temperature);
     state->emplace("speedSound", &speedSound);
-    //state->emplace("dynamicViscosity", &dynamicViscosity);
+    state->emplace("dynamicViscosity", &dynamicViscosity);
     //state->emplace("pressure", &pressure);
     //state->emplace("density", &density);
 
@@ -58,6 +63,7 @@ void Atmosphere::update()
 
     double altitudeMSL = *state->at("altitudeMSL");
     usStd1976(altitudeMSL);
+    sutherland();
 
 }
 
@@ -103,8 +109,15 @@ void Atmosphere::usStd1976(double altitudeMSL)
     // US Standard Atmosphere 1976
     temperature = interp1d_eval(tempInterp, tempProfileInd.data(), tempProfileDep.data(), altitudeMSL, tempAcc);
 
-    speedSound = sqrt(gammaAir * gasConstAir * temperature); 
+    speedSound = sqrt(gammaAir * gasConstAir * temperature);
 
+}
+
+//---------------------------------------------------------------------------//
+
+void Atmosphere::sutherland()
+{
+    dynamicViscosity = viscRef * pow((temperature/tempRef), 1.5) * (tempRef + tempSuth)/(temperature + tempSuth);
 }
 
 //---------------------------------------------------------------------------//

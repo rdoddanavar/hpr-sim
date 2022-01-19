@@ -202,6 +202,7 @@ class Atmosphere : public Model
         // Model subroutines
         void usStd1976_init(double altitudeMSL0);
         void usStd1976(double altitudeMSL);
+        void sutherland();
 
         // State variables
         double temperature;      // [K]
