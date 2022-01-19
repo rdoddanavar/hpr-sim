@@ -5,7 +5,7 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <cstdio>
+#include <memory>
 
 // External libraries
 #include "pybind11/pybind11.h"
@@ -26,6 +26,7 @@ namespace py = pybind11;
 
 // Type aliases
 using stateMap    = std::map<std::string, double*>;
+using stateMapPtr = std::shared_ptr<stateMap>;
 using stateMapVec = std::map<std::string, std::vector<double>>;
 
 //---------------------------------------------------------------------------//
@@ -56,11 +57,10 @@ class Model
 
         void init_state()
         {
-            init_state(new stateMap);
-            // TODO: do I need to "delete" pointer? Or, replace with std::shared_ptr
+            init_state(stateMapPtr(new stateMap));
         }
 
-        void init_state(stateMap* stateIn)
+        void init_state(stateMapPtr stateIn)
         {
             
             state = stateIn;
@@ -74,7 +74,7 @@ class Model
         }
 
         bool isInit = false;
-        stateMap* state;
+        stateMapPtr state;
         std::set<Model*> depModels; // std::set enforces unique elements
 
         // TODO: track which state fields are necessary to satisfy model
@@ -98,6 +98,7 @@ class Test : public Model
     private:
 
         std::vector<std::string> stateFields;
+        std::vector<double>      stateData;
 
 
 };

@@ -130,8 +130,8 @@ void Flight::update()
 int ode_update(double t, const double y[], double f[], void *params)
 {
     
-    Model*    flight = static_cast<Model*>(params);
-    stateMap* state  = flight->state;
+    Model*      flight = static_cast<Model*>(params);
+    stateMapPtr state  = flight->state;
 
     // Set current state
     *state->at("linPosZ") = y[0];
@@ -297,7 +297,6 @@ Flight::~Flight()
     
     if (isInit)
     {
-        delete state; // TODO: remove this with shared_ptr usage
         gsl_odeiv2_driver_free(odeSolver.driver);
     }
 

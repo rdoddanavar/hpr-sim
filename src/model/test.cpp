@@ -11,6 +11,7 @@ void Test::init(std::vector<std::string> stateFieldsInit)
 {
     
     stateFields = stateFieldsInit;
+    stateData   = std::vector<double>(stateFields.size());
     set_state();
 
 }
@@ -20,12 +21,10 @@ void Test::init(std::vector<std::string> stateFieldsInit)
 void Test::set_state()
 {
 
-    for (const auto& field: stateFields)
+    for (int i = 0; i < stateFields.size(); i++)
     {
-        state->emplace(field, new double); // TODO: do I need to delete this?
+        state->emplace(stateFields[i], &stateData[i]);
     }
-
-    // TODO: problem --> state fields are not known at compile time
 
 }
 
