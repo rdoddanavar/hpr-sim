@@ -19,36 +19,38 @@ import model
 #------------------------------------------------------------------------------#
 
 # Create model instances
-test     = model.Test()
-geodetic = model.Geodetic()
+test       = model.Test()
+atmosphere = model.Atmosphere()
 
 # Set model dependencies
-geodetic.add_dep(test)
+atmosphere.add_dep(test)
 
 # Initialize state from top-level model
-geodetic.init_state()
+atmosphere.init_state()
 
 # Initialize models
 
-stateFields = ["linPosZ"]
+stateFields = ["altitudeMSL"]
 test.init(stateFields)
+test.set_state_data("altitudeMSL", 0.0)
 
-latitude = 0.0
-altitude = 0.0
-geodetic.init(latitude, altitude)
+temp0  = 288.15
+press0 = 101325.0
+atmosphere.init(temp0, press0)
 
-alt  = np.arange(0, 1e5, 1e2)
-grav = np.empty(len(alt))
+alt  = np.arange(0, 80e3, 1e3)
+temp = np.empty(len(alt))
 
 for iAlt in range(len(alt)):
 
-    test.set_state_data("linPosZ", alt[iAlt])
-    geodetic.update()
-    grav[iAlt] = test.get_state_data("gravity")
+    test.set_state_data("altitudeMSL", alt[iAlt])
+    atmosphere.update()
+    temp[iAlt] = test.get_state_data("temperature")
 
 # Visualization
 fig, ax = plt.subplots()
-ax.plot(grav, alt)
+ax.plot(temp, alt)
+ax.grid(True)
 plt.show()
 
 # %%
