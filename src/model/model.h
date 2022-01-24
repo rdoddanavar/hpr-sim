@@ -42,9 +42,15 @@ class Model
 
         void add_dep(Model* dep)
         {
-            // std::set will quietly ignore duplicate elements
-            // Should an exception be raised when insertion is skipped?
             depModels.insert(dep);
+        }
+
+        void add_dep(std::vector<Model*> depList)
+        {
+            for (const auto& dep : depList)
+            {
+                depModels.insert(dep); // Quietly rejects duplicates
+            }
         }
 
         void update_deps()

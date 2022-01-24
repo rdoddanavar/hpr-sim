@@ -96,7 +96,8 @@ def exec(inputPath, outputPath):
         pool  = mp.Pool(numProc)
         iRuns = range(numMC)
 
-        # could probably use functools.partial here to avoid global inputDict
+        # TODO: Could probably use functools.partial here to avoid global inputDict
+        # Current solution is to use starmap_async
         pool.map_async(run_flight_mc, iRuns)
 
         pool.close()
@@ -131,14 +132,10 @@ def run_flight(inputDictRun, iRun):
     flight     = model.Flight()
 
     # Set model dependencies
-    # TODO: allow list of models as argument
     mass.add_dep(engine)
     atmosphere.add_dep(geodetic)
-    eom.add_dep(engine)
-    eom.add_dep(mass)
-    eom.add_dep(geodetic)
-    flight.add_dep(atmosphere)
-    flight.add_dep(eom)
+    eom.add_dep([engine, mass, geodetic])
+    flight.add_dep([atmosphere, eom])
 
     # Initialize state from top-level model
     flight.init_state()
@@ -171,6 +168,9 @@ def run_flight(inputDictRun, iRun):
     flight.update()
     write_output(iRun, inputDictRun, flight)
     #write_summary()
+
+    # TODO: Should I be deleting the flight object here?
+    # How is garbage collection handled by the pool process?
 
 #------------------------------------------------------------------------------#
 
