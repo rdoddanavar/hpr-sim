@@ -182,6 +182,7 @@ class Geodetic : public Model
         double altitudeMSL;
         double altitudeAGL;
         double gravity;
+        double gravity0;
 
         // Miscellaneous
         double phi;
@@ -202,8 +203,6 @@ class Atmosphere : public Model
         void set_state() override;
         void update() override;
 
-        ~Atmosphere(); // Destructor
-
     private:
 
         // Model subroutines
@@ -219,11 +218,11 @@ class Atmosphere : public Model
         double density;          // [kg/m^3]
 
         // Miscellaneous
-        std::vector<double> tempProfileInd; // [m]
-        std::vector<double> tempProfileDep; // [K]
+        double gravity0; 
 
-        gsl_interp*       tempInterp;
-        gsl_interp_accel* tempAcc;
+        std::vector<double> profileAlt;   // [m]
+        std::vector<double> profileTemp;  // [K]
+        std::vector<double> profilePress; // [Pa]
 
 };
 

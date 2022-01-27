@@ -23,12 +23,12 @@ void Geodetic::init(double phiInit, double altInit)
 {
 
     phi = phiInit; // [rad]
+    wgs84_init();
+    gravity0 = gamma;
 
     altitudeMSL0 = altInit;      // [m]
     altitudeMSL  = altitudeMSL0; // [m]
     altitudeAGL  = 0.0;          // [m]
-
-    wgs84_init();
     wgs84();
 
     isInit = true;
@@ -43,6 +43,7 @@ void Geodetic::set_state()
     state->emplace("altitudeMSL", &altitudeMSL);
     state->emplace("altitudeAGL", &altitudeAGL);
     state->emplace("gravity", &gravity);
+    state->emplace("gravity0", &gravity0);
 
 }
 

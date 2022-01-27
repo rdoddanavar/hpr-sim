@@ -15,6 +15,7 @@
 // US Standard Atmosphere 1976: Table 4.
 const std::array<double, 8> lapseRateInd = { 0.0e+3, 11.0e+3, 20.0e+3, 32.0e+3, 47.0e+3, 51.0e+3, 71.0e+3, 84.8520e3}; // [m]
 const std::array<double, 7> lapseRateDep = {-6.5e-3,  0.0e-3,  1.0e-3,  2.8e-3,  0.0e-3, -2.8e-3, -2.0e-3};            // [K/m]
+const double epsilon = 1e-6;
 
 // US Standard Atmosphere 1976: (univ. gas const.) / (molar mass air)
 const double gasConstAir = 8.31432e3/28.9644; // [J/(kg*K)]
@@ -35,6 +36,7 @@ void Atmosphere::init(double tempInit, double pressInit)
     pressure    = pressInit;
 
     double altitudeMSL0 = *state->at("altitudeMSL");
+    gravity0 = *state->at("gravity0");
     usStd1976_init(altitudeMSL0);
 
     isInit = true;
@@ -49,8 +51,8 @@ void Atmosphere::set_state()
     state->emplace("temperature", &temperature);
     state->emplace("speedSound", &speedSound);
     state->emplace("dynamicViscosity", &dynamicViscosity);
-    //state->emplace("pressure", &pressure);
-    //state->emplace("density", &density);
+    state->emplace("pressure", &pressure);
+    state->emplace("density", &density);
 
 }
 
@@ -74,30 +76,30 @@ void Atmosphere::usStd1976_init(double altitudeMSL0)
 
     // Pre-compute temperature profile
 
-    tempProfileInd.resize(lapseRateInd.size());
-    tempProfileDep.resize(lapseRateInd.size());
+    profileAlt = std::vector<double>(lapseRateInd.begin(), lapseRateInd.end());
+    profileTemp.resize(profileAlt.size());
+    profilePress.resize(profileAlt.size());
 
     // TODO: conversion between geometric & geopotential altitudes; do this in Geodetic class?
 
-    tempProfileInd[0] = altitudeMSL0;
-    tempProfileDep[0] = temperature;
+    profileAlt[0]   = altitudeMSL0;
+    profileTemp[0]  = temperature;
+    profilePress[0] = pressure;
 
     // TODO: what if initial altitude is above first temp bin? highly unlikely but possible
-    double tempNext; // [K]
 
-    for (int iAlt = 1; iAlt < tempProfileInd.size(); iAlt++)
+    for (int iAlt = 1; iAlt < profileAlt.size(); iAlt++)
     {
         
-        tempProfileInd[iAlt] = lapseRateInd[iAlt];
+        usStd1976(profileAlt[iAlt]);
 
-        tempNext = tempProfileDep[iAlt-1] + lapseRateDep[iAlt-1] * (tempProfileInd[iAlt] - tempProfileInd[iAlt-1]);
+        profileTemp[iAlt]  = temperature;
+        profilePress[iAlt] = pressure;
 
-        tempProfileDep[iAlt] = tempNext;
+        std::cout << "temp: " << temperature << std::endl;
+        std::cout << "press: " << pressure << std::endl;
 
     }
-
-    // Create interpolant
-    interp1d_init(tempInterp, tempProfileInd.data(), tempProfileDep.data(), tempProfileInd.size(), tempAcc);
 
 }
 
@@ -107,9 +109,35 @@ void Atmosphere::usStd1976(double altitudeMSL)
 {
 
     // US Standard Atmosphere 1976
-    temperature = interp1d_eval(tempInterp, tempProfileInd.data(), tempProfileDep.data(), altitudeMSL, tempAcc);
+    
+    for (int iAlt = 0; iAlt < lapseRateDep.size(); iAlt++)
+    {
+        
+        if ((altitudeMSL >= lapseRateInd[iAlt]) && (altitudeMSL <= lapseRateInd[iAlt+1]))
+        {
+            
+            double dh = altitudeMSL - profileAlt[iAlt];
 
-    speedSound = sqrt(gammaAir * gasConstAir * temperature);
+            temperature = profileTemp[iAlt] + lapseRateDep[iAlt] * dh;
+
+            if (abs(lapseRateDep[iAlt]) < epsilon) // Isothermal region
+            {
+                pressure = profilePress[iAlt] * exp(-(gravity0 / (gasConstAir * profileTemp[iAlt])) * dh);
+            }
+            else // Gradient region
+            {
+                double tempRatio = temperature / profileTemp[iAlt];
+                pressure = profilePress[iAlt] * pow(tempRatio, (-gravity0 / (lapseRateDep[iAlt] * gasConstAir)));
+            }
+
+            break;
+
+        }
+
+    }
+
+    speedSound  = sqrt(gammaAir * gasConstAir * temperature);
+    density     = pressure / (gasConstAir * temperature);
 
 }
 
@@ -118,19 +146,4 @@ void Atmosphere::usStd1976(double altitudeMSL)
 void Atmosphere::sutherland()
 {
     dynamicViscosity = viscRef * pow((temperature/tempRef), 1.5) * (tempRef + tempSuth)/(temperature + tempSuth);
-}
-
-//---------------------------------------------------------------------------//
-
-Atmosphere::~Atmosphere()
-{
-
-    if (isInit)
-    {
-        
-        gsl_interp_free(tempInterp);
-        gsl_interp_accel_free(tempAcc);
-
-    }
-
 }
