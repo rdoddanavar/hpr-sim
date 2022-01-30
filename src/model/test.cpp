@@ -37,12 +37,18 @@ void Test::update()
 
 //---------------------------------------------------------------------------//
 
+// TODO: overload this method to enable setting multiple fields
+// void Test::set_state_data(std::vector<std::string> field, std::vector<double> data)
+
 void Test::set_state_data(std::string field, double data)
 {
     *state->at(field) = data;
 }
 
 //---------------------------------------------------------------------------//
+
+// TODO: overload this method to enable getting multiple fields
+// std::vector<double> Test::set_state_data(std::vector<std::string> field)
 
 double Test::get_state_data(std::string field)
 {

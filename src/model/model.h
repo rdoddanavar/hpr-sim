@@ -9,7 +9,6 @@
 
 // External libraries
 #include "pybind11/pybind11.h"
-#include "pybind11/stl.h" // For std::map; induces overhead, remove if possible
 #include "pybind11/numpy.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
@@ -28,6 +27,9 @@ namespace py = pybind11;
 using stateMap    = std::map<std::string, double*>;
 using stateMapPtr = std::shared_ptr<stateMap>;
 using stateMapVec = std::map<std::string, std::vector<double>>;
+
+// TODO: consider replacing std::map w/ std::unordered_map for performance
+// Performance vs. memory usage?
 
 //---------------------------------------------------------------------------//
 

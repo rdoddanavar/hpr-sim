@@ -96,9 +96,6 @@ void Atmosphere::usStd1976_init(double altitudeMSL0)
         profileTemp[iAlt]  = temperature;
         profilePress[iAlt] = pressure;
 
-        std::cout << "temp: " << temperature << std::endl;
-        std::cout << "press: " << pressure << std::endl;
-
     }
 
 }
