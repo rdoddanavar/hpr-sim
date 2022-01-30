@@ -24,8 +24,8 @@ set(BUILDLIBS "interpolation"
 
 # SOURCE SUBDIRECTORIES
 
-add_subdirectory(lib/pybind11) # Provides CMake helpers for src
-add_subdirectory(lib/gsl)      # Tests disabled
+add_subdirectory(lib/pybind11) # Provides CMake helper functions
+add_subdirectory(lib/gsl)      # Provides math utilities
 add_subdirectory(src)          # CPP modules via pybind11
 
 # lib/eigen is header-only, does not need to be a compilation target
