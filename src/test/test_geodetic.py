@@ -37,18 +37,33 @@ latitude = 0.0
 altitude = 0.0
 geodetic.init(latitude, altitude)
 
-alt  = np.arange(0, 1e5, 1e2)
-grav = np.empty(len(alt))
+alt   = np.arange(0, 1e5, 1e2)
+altGP = np.empty(len(alt))
+grav  = np.empty(len(alt))
 
 for iAlt in range(len(alt)):
 
     test.set_state_data("linPosZ", alt[iAlt])
     geodetic.update()
-    grav[iAlt] = test.get_state_data("gravity")
+    altGP[iAlt] = test.get_state_data("altitudeGP")
+    grav[iAlt]  = test.get_state_data("gravity")
+
+altDiff     = np.zeros(len(alt))
+altDiff[1:] = 100.0*(alt[1:] - altGP[1:])/alt[1:]
 
 # Visualization
 fig, ax = plt.subplots()
+ax.plot(alt, altDiff)
+ax.set_title("Geopotential Altitude Correction")
+ax.set_xlabel("Geometric Altitude [m]")
+ax.set_ylabel("Altitude Correction [%]")
+
+fig, ax = plt.subplots()
 ax.plot(grav, alt)
+ax.set_title("Gravity at Altitude")
+ax.set_xlabel("Geometric Altitude [m]")
+ax.set_ylabel("Gravity [m/s^2]")
+
 plt.show()
 
 # %%

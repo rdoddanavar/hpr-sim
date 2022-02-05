@@ -35,9 +35,9 @@ void Atmosphere::init(double tempInit, double pressInit)
     temperature = tempInit;
     pressure    = pressInit;
 
-    double altitudeMSL0 = *state->at("altitudeMSL");
+    double altitudeGP0 = *state->at("altitudeGP");
     gravity0 = *state->at("gravity0");
-    usStd1976_init(altitudeMSL0);
+    usStd1976_init(altitudeGP0);
 
     isInit = true;
 
@@ -63,15 +63,15 @@ void Atmosphere::update()
 
     update_deps();
 
-    double altitudeMSL = *state->at("altitudeMSL");
-    usStd1976(altitudeMSL);
+    double altitudeGP = *state->at("altitudeGP");
+    usStd1976(altitudeGP);
     sutherland();
 
 }
 
 //---------------------------------------------------------------------------//
 
-void Atmosphere::usStd1976_init(double altitudeMSL0)
+void Atmosphere::usStd1976_init(double altitudeGP0)
 {
 
     // Pre-compute temperature profile
@@ -82,7 +82,7 @@ void Atmosphere::usStd1976_init(double altitudeMSL0)
 
     // TODO: conversion between geometric & geopotential altitudes; do this in Geodetic class?
 
-    profileAlt[0]   = altitudeMSL0;
+    profileAlt[0]   = altitudeGP0;
     profileTemp[0]  = temperature;
     profilePress[0] = pressure;
 
@@ -102,7 +102,7 @@ void Atmosphere::usStd1976_init(double altitudeMSL0)
 
 //---------------------------------------------------------------------------//
 
-void Atmosphere::usStd1976(double altitudeMSL)
+void Atmosphere::usStd1976(double altitudeGP)
 {
 
     // US Standard Atmosphere 1976
@@ -110,10 +110,10 @@ void Atmosphere::usStd1976(double altitudeMSL)
     for (int iAlt = 0; iAlt < lapseRateDep.size(); iAlt++)
     {
         
-        if ((altitudeMSL >= lapseRateInd[iAlt]) && (altitudeMSL <= lapseRateInd[iAlt+1]))
+        if ((altitudeGP >= lapseRateInd[iAlt]) && (altitudeGP <= lapseRateInd[iAlt+1]))
         {
             
-            double dh = altitudeMSL - profileAlt[iAlt];
+            double dh = altitudeGP - profileAlt[iAlt];
 
             temperature = profileTemp[iAlt] + lapseRateDep[iAlt] * dh;
 

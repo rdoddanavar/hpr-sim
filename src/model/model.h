@@ -181,17 +181,20 @@ class Geodetic : public Model
         void wgs84();
 
         // State variables
-        double altitudeMSL;
-        double altitudeAGL;
-        double gravity;
-        double gravity0;
+        double altitudeMSL; // [m]
+        double altitudeAGL; // [m]
+        double altitudeGP;  // [m]
+        double gravity;     // [m/s^2]
+        double gravity0;    // [m/s^2]
 
         // Miscellaneous
-        double phi;
-        double altitudeMSL0;
-        double sin2phi;
-        double gamma;
-
+        double a2;           // [m^2]
+        double phi;          // [rad]
+        double sin2phi;      // [-]
+        double radiusE;      // [m]
+        double altitudeMSL0; // [m]
+        double gamma;        // [m/s^2]
+        
 };
 
 //---------------------------------------------------------------------------//
@@ -220,7 +223,7 @@ class Atmosphere : public Model
         double density;          // [kg/m^3]
 
         // Miscellaneous
-        double gravity0; 
+        double gravity0; // [m/s^2]
 
         std::vector<double> profileAlt;   // [m]
         std::vector<double> profileTemp;  // [K]
