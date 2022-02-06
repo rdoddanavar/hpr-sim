@@ -3,6 +3,7 @@
 # System modules
 import sys
 import pathlib
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -33,7 +34,8 @@ geodetic.init_state()
 stateFields = ["linPosZ"]
 test.init(stateFields)
 
-latitude = 0.0
+latDeg   = 22.5
+latitude = math.radians(latDeg)
 altitude = 0.0
 geodetic.init(latitude, altitude)
 
@@ -52,17 +54,21 @@ altDiff     = np.zeros(len(alt))
 altDiff[1:] = 100.0*(alt[1:] - altGP[1:])/alt[1:]
 
 # Visualization
+plt.rcParams['text.usetex'] = True
+
 fig, ax = plt.subplots()
 ax.plot(alt, altDiff)
 ax.set_title("Geopotential Altitude Correction")
-ax.set_xlabel("Geometric Altitude [m]")
-ax.set_ylabel("Altitude Correction [%]")
+ax.set_xlabel("Geometric Altitude [$m$]")
+ax.set_ylabel("Altitude Correction [$\%$]")
+ax.legend()
 
 fig, ax = plt.subplots()
-ax.plot(grav, alt)
+ax.plot(grav, alt, label="$\phi = " + str(latDeg) + " \deg$")
 ax.set_title("Gravity at Altitude")
-ax.set_xlabel("Geometric Altitude [m]")
-ax.set_ylabel("Gravity [m/s^2]")
+ax.set_xlabel("Gravity [$m/s^2$]")
+ax.set_ylabel("Geometric Altitude [$m$]")
+ax.legend()
 
 plt.show()
 
