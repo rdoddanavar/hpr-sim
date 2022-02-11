@@ -1,0 +1,369 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>hpr-sim &mdash; hpr-sim  documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"processClass": "tex2jax_process|mathjax_process|math|output_area"}})</script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> hpr-sim
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="developer.html">Developer API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">hpr-sim</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+      <li>hpr-sim</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/src/header.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="tex2jax_ignore mathjax_ignore section" id="hpr-sim">
+<h1>hpr-sim<a class="headerlink" href="#hpr-sim" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">High</span> <span class="pre">Power</span> <span class="pre">Rocketry</span> <span class="pre">-</span> <span class="pre">Flight</span> <span class="pre">Simulation</span></code></p>
+<div class="section" id="file-header-format">
+<h2>File Header Format<a class="headerlink" href="#file-header-format" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="block-comment-s">
+<h3>Block comment(s)<a class="headerlink" href="#block-comment-s" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Python (<code class="docutils literal notranslate"><span class="pre">*.py</span></code>)</p>
+<ul>
+<li><p>Docstring style</p></li>
+<li><p>Block start: <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span></code></p></li>
+<li><p>Block end: <code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;</span></code></p></li>
+</ul>
+</li>
+<li><p>C++ (<code class="docutils literal notranslate"><span class="pre">*.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">*.h</span></code>)</p>
+<ul>
+<li><p>Block start: <code class="docutils literal notranslate"><span class="pre">/*</span></code></p></li>
+<li><p>Block end: <code class="docutils literal notranslate"><span class="pre">*/</span></code></p></li>
+</ul>
+</li>
+<li><p>Bash (<code class="docutils literal notranslate"><span class="pre">*.sh</span></code>), Makefile, &amp; YAML (<code class="docutils literal notranslate"><span class="pre">*.yaml</span></code>)</p>
+<ul>
+<li><p>All lines prefixed with <code class="docutils literal notranslate"><span class="pre">#</span></code></p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="description">
+<h3>“Description”<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Give brief outline of file’s purpose w/ regards to overall program</p></li>
+<li><p>Example:</p>
+<ul>
+<li><p>df</p></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="functions">
+<h3>“Functions”<a class="headerlink" href="#functions" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>List any declared functions, include argument &amp; return types</p></li>
+<li><p>Omitted for Bash/Makefile/YAML files</p></li>
+<li><p>Example:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Functions</span><span class="p">:</span>
+    <span class="n">foo1</span><span class="p">()</span>           <span class="o">-&gt;</span> <span class="nb">float</span>
+    <span class="n">foo2</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+    <span class="n">foo3</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>        <span class="o">-&gt;</span> 
+</pre></div>
+</div>
+</div>
+<div class="section" id="classes">
+<h3>“Classes”<a class="headerlink" href="#classes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>List any declared classes, include base class if applicable</p></li>
+<li><p>Omitted for Bash/Makefile/YAML files</p></li>
+<li><p>Example:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Classes</span><span class="p">:</span>
+    <span class="n">Foo</span>
+    <span class="n">FooBar</span><span class="p">(</span><span class="n">Base</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="dependencies">
+<h3>“Dependencies”<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>List any external dependencies, i.e. any files referenced or imported</p></li>
+<li><p>Do not list files dependent on current file</p></li>
+<li><p>Example:</p></li>
+</ul>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Dependencies</span><span class="p">:</span>
+    <span class="n">hpr</span><span class="o">-</span><span class="n">sim</span><span class="o">/</span><span class="n">subdir</span><span class="o">/</span><span class="n">dep1</span><span class="o">.</span><span class="n">py</span>
+                   <span class="n">dep2</span><span class="o">.</span><span class="n">yaml</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="template-python">
+<h3>Template: Python<a class="headerlink" href="#template-python" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">High Power Rocketry - Flight Simulation</span>
+<span class="sd">GNU General Public License v3.0</span>
+<span class="sd">Copyright (C) 2019 Roshan Doddanavar</span>
+<span class="sd">https://rdoddanavar.github.io</span>
+
+<span class="sd">██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗</span>
+<span class="sd">██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║</span>
+<span class="sd">███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║</span>
+<span class="sd">██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║</span>
+<span class="sd">██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║</span>
+<span class="sd">╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝</span>
+
+<span class="sd">Path:</span>
+<span class="sd">    hpr-sim/&lt;dir&gt;/.../&lt;filename&gt;.&lt;ext&gt;</span>
+<span class="sd">Created:</span>
+<span class="sd">    2019-MM-DD</span>
+<span class="sd">Type:</span>
+<span class="sd">    Python3 &lt;module/script&gt;</span>
+<span class="sd">Description:</span>
+<span class="sd">    &lt; &gt;</span>
+<span class="sd">Functions:</span>
+<span class="sd">    &lt; &gt;</span>
+<span class="sd">Classes:</span>
+<span class="sd">    &lt; &gt;</span>
+<span class="sd">Dependencies:</span>
+<span class="sd">    hpr-sim/&lt;dir1&gt;/&lt;dep1&gt;.&lt;ext&gt;</span>
+<span class="sd">                   &lt;dep2&gt;.&lt;ext&gt;</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="template-c">
+<h3>Template: C++<a class="headerlink" href="#template-c" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>/*
+High Power Rocketry - Flight Simulation
+GNU General Public License v3.0
+Copyright (C) 2019 Roshan Doddanavar
+https://rdoddanavar.github.io
+
+██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗
+██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║
+███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║
+██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║
+██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║
+╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝
+
+Path:
+    hpr-sim/&lt;dir&gt;/.../&lt;filename&gt;.&lt;ext&gt;
+Created:
+    2019-MM-DD
+Type:
+    C++11 &lt;header/source&gt;
+Description:
+    &lt; &gt;
+Functions:
+    &lt; &gt;
+Classes:
+    &lt; &gt;
+Dependencies:
+    hpr-sim/&lt;dir1&gt;/&lt;dep1&gt;.&lt;ext&gt;
+                   &lt;dep2&gt;.&lt;ext&gt;
+*/
+</pre></div>
+</div>
+</div>
+<div class="section" id="template-bash-makefile-yaml">
+<h3>Template: Bash/Makefile/YAML<a class="headerlink" href="#template-bash-makefile-yaml" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># High Power Rocketry - Flight Simulation</span>
+<span class="c1"># GNU General Public License v3.0</span>
+<span class="c1"># Copyright (C) 2019 Roshan Doddanavar</span>
+<span class="c1"># https://rdoddanavar.github.io</span>
+<span class="c1"># </span>
+<span class="c1"># ██╗  ██╗██████╗ ██████╗       ███████╗██╗███╗   ███╗</span>
+<span class="c1"># ██║  ██║██╔══██╗██╔══██╗      ██╔════╝██║████╗ ████║</span>
+<span class="c1"># ███████║██████╔╝██████╔╝█████╗███████╗██║██╔████╔██║</span>
+<span class="c1"># ██╔══██║██╔═══╝ ██╔══██╗╚════╝╚════██║██║██║╚██╔╝██║</span>
+<span class="c1"># ██║  ██║██║     ██║  ██║      ███████║██║██║ ╚═╝ ██║</span>
+<span class="c1"># ╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝      ╚══════╝╚═╝╚═╝     ╚═╝</span>
+<span class="c1"># </span>
+<span class="c1"># Path:</span>
+<span class="c1">#     hpr-sim/&lt;dir&gt;/.../&lt;filename&gt;.&lt;ext&gt;</span>
+<span class="c1"># Created:</span>
+<span class="c1">#     2019-MM-DD</span>
+<span class="c1"># Type:</span>
+<span class="c1">#     &lt;Bash/Makefile/YAML&gt; &lt;script/config file&gt;</span>
+<span class="c1"># Description:</span>
+<span class="c1">#     &lt; &gt;</span>
+<span class="c1"># Dependencies:</span>
+<span class="c1">#     hpr-sim/&lt;dir1&gt;/&lt;dep1&gt;.&lt;ext&gt;</span>
+<span class="c1">#                    &lt;dep2&gt;.&lt;ext&gt;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2021, Roshan Doddanavar
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
