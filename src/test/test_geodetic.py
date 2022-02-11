@@ -61,7 +61,6 @@ ax.plot(alt, altDiff)
 ax.set_title("Geopotential Altitude Correction")
 ax.set_xlabel("Geometric Altitude [$m$]")
 ax.set_ylabel("Altitude Correction [$\%$]")
-ax.legend()
 
 fig, ax = plt.subplots()
 ax.plot(grav, alt, label="$\phi = " + str(latDeg) + " \deg$")

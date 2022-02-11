@@ -217,10 +217,10 @@ class Atmosphere : public Model
 
         // State variables
         double temperature;      // [K]
-        double speedSound;       // [m/s]
-        double dynamicViscosity; // [-]
         double pressure;         // [Pa]
         double density;          // [kg/m^3]
+        double speedSound;       // [m/s]
+        double dynamicViscosity; // [-]
 
         // Miscellaneous
         double gravity0; // [m/s^2]

@@ -13,8 +13,8 @@
 // Model Constants
 
 // US Standard Atmosphere 1976: Table 4.
-const std::array<double, 8> lapseRateInd = { 0.0e+3, 11.0e+3, 20.0e+3, 32.0e+3, 47.0e+3, 51.0e+3, 71.0e+3, 84.8520e3}; // [m]
-const std::array<double, 7> lapseRateDep = {-6.5e-3,  0.0e-3,  1.0e-3,  2.8e-3,  0.0e-3, -2.8e-3, -2.0e-3};            // [K/m]
+const std::array<double, 8> tempGradInd = { 0.0e+3, 11.0e+3, 20.0e+3, 32.0e+3, 47.0e+3, 51.0e+3, 71.0e+3, 84.8520e3}; // [m]
+const std::array<double, 7> tempGradDep = {-6.5e-3,  0.0e-3,  1.0e-3,  2.8e-3,  0.0e-3, -2.8e-3, -2.0e-3};            // [K/m]
 const double epsilon = 1e-6;
 
 // US Standard Atmosphere 1976: (univ. gas const.) / (molar mass air)
@@ -49,10 +49,10 @@ void Atmosphere::set_state()
 {
 
     state->emplace("temperature", &temperature);
-    state->emplace("speedSound", &speedSound);
-    state->emplace("dynamicViscosity", &dynamicViscosity);
     state->emplace("pressure", &pressure);
     state->emplace("density", &density);
+    state->emplace("speedSound", &speedSound);
+    state->emplace("dynamicViscosity", &dynamicViscosity);
 
 }
 
@@ -74,13 +74,11 @@ void Atmosphere::update()
 void Atmosphere::usStd1976_init(double altitudeGP0)
 {
 
-    // Pre-compute temperature profile
+    // Pre-compute temperature & pressure profiles
 
-    profileAlt = std::vector<double>(lapseRateInd.begin(), lapseRateInd.end());
+    profileAlt = std::vector<double>(tempGradInd.begin(), tempGradInd.end());
     profileTemp.resize(profileAlt.size());
     profilePress.resize(profileAlt.size());
-
-    // TODO: conversion between geometric & geopotential altitudes; do this in Geodetic class?
 
     profileAlt[0]   = altitudeGP0;
     profileTemp[0]  = temperature;
@@ -107,24 +105,24 @@ void Atmosphere::usStd1976(double altitudeGP)
 
     // US Standard Atmosphere 1976
     
-    for (int iAlt = 0; iAlt < lapseRateDep.size(); iAlt++)
+    for (int iAlt = 0; iAlt < tempGradDep.size(); iAlt++)
     {
         
-        if ((altitudeGP >= lapseRateInd[iAlt]) && (altitudeGP <= lapseRateInd[iAlt+1]))
+        if ((altitudeGP >= tempGradInd[iAlt]) && (altitudeGP <= tempGradInd[iAlt+1]))
         {
             
             double dh = altitudeGP - profileAlt[iAlt];
 
-            temperature = profileTemp[iAlt] + lapseRateDep[iAlt] * dh;
+            temperature = profileTemp[iAlt] + tempGradDep[iAlt] * dh;
 
-            if (abs(lapseRateDep[iAlt]) < epsilon) // Isothermal region
+            if (abs(tempGradDep[iAlt]) < epsilon) // Isothermal region
             {
                 pressure = profilePress[iAlt] * exp(-(gravity0 / (gasConstAir * profileTemp[iAlt])) * dh);
             }
             else // Gradient region
             {
                 double tempRatio = temperature / profileTemp[iAlt];
-                pressure = profilePress[iAlt] * pow(tempRatio, (-gravity0 / (lapseRateDep[iAlt] * gasConstAir)));
+                pressure = profilePress[iAlt] * pow(tempRatio, (-gravity0 / (tempGradDep[iAlt] * gasConstAir)));
             }
 
             break;
@@ -133,8 +131,8 @@ void Atmosphere::usStd1976(double altitudeGP)
 
     }
 
-    speedSound  = sqrt(gammaAir * gasConstAir * temperature);
     density     = pressure / (gasConstAir * temperature);
+    speedSound  = sqrt(gammaAir * gasConstAir * temperature);
 
 }
 
