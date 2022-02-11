@@ -61,6 +61,10 @@ flight:
         unit: s
         min: 0.0
         max: .inf
+engine:
+    inputPath:
+        type: str
+        isPath: true
 mass:
     massBody:
         type: float
@@ -72,11 +76,26 @@ geodetic:
     latitude:
         type: float
         quantity: angle
-        unit: deg
-        min: -90.0
-        max: 90.0
-engine:
-    inputPath:
-        type: str
-        isPath: true
+        unit: rad
+        min: -3.14159265359/2
+        max: 3.14159265359/2
+    altitude:
+        type: float
+        quantity: length
+        unit: m
+        min: 0.0
+        max: .inf
+atmosphere:
+    temperature:
+        type: float
+        quantity: temperature
+        unit: K
+        min: 0.0
+        max: .inf
+    pressure:
+        type: float
+        quantity: pressure
+        unit: Pa
+        min: 0.0
+        max: .inf
 ...

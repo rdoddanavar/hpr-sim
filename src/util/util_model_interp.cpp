@@ -9,21 +9,77 @@
 
 //---------------------------------------------------------------------------//
 
-void interp1d_init(const double      x[]    ,
+// Interpolant initialization - LINEAR
+
+void interp1d_init(gsl_interp*       &interp,
+                   const double      x[]    ,
                    const double      y[]    ,
                    const size_t      n      ,
-                   gsl_spline*       &spline,
                    gsl_interp_accel* &acc   )
 {
     
+    interp = gsl_interp_alloc(gsl_interp_linear, n);
     acc    = gsl_interp_accel_alloc();
+
+    gsl_interp_init(interp, x, y, n);
+
+}
+
+//---------------------------------------------------------------------------//
+
+// Interpolant initialization - SPLINE
+
+void interp1d_init(gsl_spline*       &spline,
+                   const double      x[]    ,
+                   const double      y[]    ,
+                   const size_t      n      ,
+                   gsl_interp_accel* &acc   )
+{
+    
     spline = gsl_spline_alloc(gsl_interp_steffen, n);
+    acc    = gsl_interp_accel_alloc();
 
     gsl_spline_init(spline, x, y, n);
 
 }
 
 //---------------------------------------------------------------------------//
+
+// Interpolant evaluation - LINEAR
+
+double interp1d_eval(gsl_interp*       interp,
+                     const double      x[]   ,
+                     const double      y[]   ,
+                     const double      xq    ,
+                     gsl_interp_accel* acc   )
+{
+
+    double       yq;
+    const double xMin = interp->xmin;
+    const double xMax = interp->xmax;
+
+    size_t n = interp->size;
+
+    if (xq < xMin) // No extrapolation, use min y value
+    {
+        yq = y[0];
+    }
+    else if (xq > xMax) // No extrapolation, use max y value
+    {
+        yq = y[n-1];
+    }
+    else // Evaluate on valid interval
+    {
+        yq = gsl_interp_eval(interp, x, y, xq, acc);
+    }
+    
+    return yq;
+
+}
+
+//---------------------------------------------------------------------------//
+
+// Interpolant evaluation - SPLINE
 
 double interp1d_eval(gsl_spline*       spline,
                      const double      xq    ,

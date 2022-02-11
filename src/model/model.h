@@ -5,11 +5,10 @@
 #include <vector>
 #include <set>
 #include <map>
-#include <cstdio>
+#include <memory>
 
 // External libraries
 #include "pybind11/pybind11.h"
-#include "pybind11/stl.h" // For std::map; induces overhead, remove if possible
 #include "pybind11/numpy.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
@@ -19,11 +18,18 @@
 // Project headers
 #include "util_model.h"
 
+//---------------------------------------------------------------------------//
+
+// Namespaces
 namespace py = pybind11;
 
 // Type aliases
 using stateMap    = std::map<std::string, double*>;
+using stateMapPtr = std::shared_ptr<stateMap>;
 using stateMapVec = std::map<std::string, std::vector<double>>;
+
+// TODO: consider replacing std::map w/ std::unordered_map for performance
+// Performance vs. memory usage?
 
 //---------------------------------------------------------------------------//
 
@@ -32,20 +38,21 @@ class Model
     
     public: 
 
-        // Data
-        bool isInit = false;
-        stateMap* state;
-        std::set<Model*> depModels; // std::set enforces unique elements
-
         // Function(s)
-        virtual void update()    = 0; // Pure virtual
         virtual void set_state() = 0; // Pure virtual
+        virtual void update()    = 0; // Pure virtual
 
         void add_dep(Model* dep)
         {
-            // std::set will quietly ignore duplicate elements
-            // Should an exception be raised when insertion is skipped?
             depModels.insert(dep);
+        }
+
+        void add_dep(std::vector<Model*> depList)
+        {
+            for (const auto& dep : depList)
+            {
+                depModels.insert(dep); // Quietly rejects duplicates
+            }
         }
 
         void update_deps()
@@ -56,7 +63,12 @@ class Model
             }
         }
 
-        void init_state(stateMap* stateIn)
+        void init_state()
+        {
+            init_state(stateMapPtr(new stateMap));
+        }
+
+        void init_state(stateMapPtr stateIn)
         {
             
             state = stateIn;
@@ -69,6 +81,34 @@ class Model
 
         }
 
+        bool isInit = false;
+        stateMapPtr state;
+        std::set<Model*> depModels; // std::set enforces unique elements
+
+        // TODO: track which state fields are necessary to satisfy model
+
+};
+
+//---------------------------------------------------------------------------//
+
+class Test : public Model
+{
+
+    public:
+        
+        void init(std::vector<std::string> stateFieldsInit);
+        void set_state() override;
+        void update() override;
+
+        void   set_state_data(std::string field, double data);
+        double get_state_data(std::string field); // TODO: make getter function const
+
+    private:
+
+        std::vector<std::string> stateFields;
+        std::vector<double>      stateData;
+
+
 };
 
 //---------------------------------------------------------------------------//
@@ -78,24 +118,27 @@ class Engine : public Model
     
     public:
 
-        // Function(s)
         void init(py::array_t<double> timeInit  , 
                   py::array_t<double> thrustInit, 
                   py::array_t<double> massInit  );
 
-        void update() override;
         void set_state() override;
+        void update() override;
 
         ~Engine(); // Destructor
 
     private:
 
-        // Data
+        // State variables
         double thrust;
         double massEng;
 
-        gsl_spline       *thrustSpline, *massSpline;
-        gsl_interp_accel *thrustAcc   , *massAcc   ;
+        // Miscellaneous
+        gsl_spline *thrustSpline;
+        gsl_spline *massSpline;
+
+        gsl_interp_accel* thrustAcc;
+        gsl_interp_accel* massAcc;
 
 };
 
@@ -106,17 +149,17 @@ class Mass : public Model
     
     public:
 
-        // Function(s)
         void init(double massBodyInit);
-
-        void update() override;
         void set_state() override;
+        void update() override;
 
     private:
 
-        // Data
-        double massBody;
+        // State variables
         double mass;
+
+        // Miscellaneous
+        double massBody;
 
 };
 
@@ -127,28 +170,90 @@ class Geodetic : public Model
 {
     public:
 
-        // Data
-
-        // Function(s)
-        void init(double phiInit);
-        void update() override;
+        void init(double phiInit, double altInit);
         void set_state() override;
+        void update() override;
 
     private:
 
-        // Data
-        double gravity;
+        // Model subroutines
+        void wgs84_init();
+        void wgs84();
 
-        double phi;
-        double gamE;
-        double k;
-        double e;
-        double a;
-        double f;
-        double m;
+        // State variables
+        double altitudeMSL; // [m]
+        double altitudeAGL; // [m]
+        double altitudeGP;  // [m]
+        double gravity;     // [m/s^2]
+        double gravity0;    // [m/s^2]
 
-        // Function(s)
-        double wgs84(double h);
+        // Miscellaneous
+        double a2;           // [m^2]
+        double phi;          // [rad]
+        double sin2phi;      // [-]
+        double radiusE;      // [m]
+        double altitudeMSL0; // [m]
+        double gamma;        // [m/s^2]
+        
+};
+
+//---------------------------------------------------------------------------//
+
+class Atmosphere : public Model
+{
+
+    public:
+        
+        void init(double tempInit, double pressInit);
+        void set_state() override;
+        void update() override;
+
+    private:
+
+        // Model subroutines
+        void usStd1976_init(double altitudeMSL0);
+        void usStd1976(double altitudeMSL);
+        void sutherland();
+
+        // State variables
+        double temperature;      // [K]
+        double pressure;         // [Pa]
+        double density;          // [kg/m^3]
+        double speedSound;       // [m/s]
+        double dynamicViscosity; // [-]
+
+        // Miscellaneous
+        double gravity0; // [m/s^2]
+
+        std::vector<double> profileAlt;   // [m]
+        std::vector<double> profileTemp;  // [K]
+        std::vector<double> profilePress; // [Pa]
+
+};
+
+//---------------------------------------------------------------------------//
+
+class Aerodynamics : public Model
+{
+    
+    public:
+        
+        void init();
+        void set_state() override;
+        void update() override;
+
+    private:
+
+        // State variables
+        double dynamicPressure; // [N/m^2]
+        double mach;            // [-]
+        double reynolds;        // [?]
+
+        // double cpX;    // Axial center of pressure [m]
+        // double alphaT; // Total angle-of-attack [rad]
+
+        // Eigen::Vector3d forceAero;  // Force  [N]
+        // Eigen::Vector3d momentAero; // Moment [N*m]
 
 };
 
@@ -160,12 +265,12 @@ class EOM : public Model
     public:
 
         void init();
-        void update() override;
         void set_state() override;
+        void update() override;
 
     private:
 
-        // Data
+        // State variables
         Eigen::Vector3d force;  // Force  [N]
         Eigen::Vector3d moment; // Moment [N*m]
 
@@ -191,13 +296,15 @@ class Flight : public Model
     public:
 
         void init(double tfInit, double dtInit, double t0Init);
-        void update() override;
         void set_state() override;
+        void update() override;
 
         void write_telem(std::string fileOut);
         void write_stats(std::string fileOut);
 
         static void set_telem(std::vector<std::string> telemFieldsInit);
+
+        ~Flight(); // Destructor
 
         static std::vector<std::string> telemFieldsDefault;
         static std::vector<std::string> telemUnitsDefault;
@@ -205,15 +312,15 @@ class Flight : public Model
         static std::vector<std::string> telemFields;
         static std::vector<std::string> telemUnits;
 
-        stateMapVec stateTelem;
-        OdeSolver   odeSolver; // ODE solver settings & driver
-
-        ~Flight(); // Destructor
+        OdeSolver odeSolver; // ODE solver settings & driver
 
     private:
 
-        // Data
+        // State variables
+        stateMapVec stateTelem;
         double time;
+
+        // Miscellaneous
         double t0;
         double dt;
         double tf;
@@ -222,5 +329,7 @@ class Flight : public Model
 
         double flightTime;
         bool   flightTerm = false;
+
+        // TODO: create "phase" structure to capture all flags
 
 };

@@ -46,7 +46,8 @@ def config():
 
         configPath = pathlib.Path(__file__).parent / configPathRel
         configPath = str(configPath.resolve())
-        configUnit   = util_yaml.load(configPath)
+        configUnit = util_yaml.load(configPath)
+        util_yaml.process(configUnit)
 
 #------------------------------------------------------------------------------#
 
@@ -75,9 +76,6 @@ def convert(*args):
             
             # TODO: Need error handling here for bad key
             factorA = configUnit[quantity][unitA]
-            
-            # Evaluate arithmetic operations, if necessary
-            factorA = util_yaml.math_eval(str(factorA))
 
             value *= factorA
 
@@ -96,10 +94,6 @@ def convert(*args):
             # TODO: Need error handling here for bad key
             factorA = configUnit[quantity][unitA]
             factorB = configUnit[quantity][unitB]
-
-            # Evaluate arithmetic operations, if necessary
-            factorA = util_yaml.math_eval(str(factorA))
-            factorB = util_yaml.math_eval(str(factorB))
 
             factorC = factorA/factorB
             value  *= factorC
@@ -125,6 +119,7 @@ def convert_temp(*args):
     factorA = configUnit[quantity][unitA][0]
     offsetA = configUnit[quantity][unitA][1]
 
+    # Necessary b/c util_yaml.process() does not simplify temperature factors
     factorA = util_yaml.math_eval(str(factorA))
     offsetA = util_yaml.math_eval(str(offsetA))
     
@@ -137,6 +132,7 @@ def convert_temp(*args):
         factorB = configUnit[quantity][unitB][0]
         offsetB = configUnit[quantity][unitB][1]
 
+        # Necessary b/c util_yaml.process() does not simplify temperature factors
         factorB = util_yaml.math_eval(str(factorB))
         offsetB = util_yaml.math_eval(str(offsetB))
 
