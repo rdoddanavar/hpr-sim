@@ -2,9 +2,9 @@
 // <none>
 
 // External libraries
+#include "pybind11/numpy.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
-#include "pybind11/numpy.h"
 
 // Project headers
 #include "model.h"
@@ -27,8 +27,8 @@ void Engine::init(py::array_t<double> timeInit  ,
 
     const size_t n = timeBuff.size;
 
-    interp1d_init(timeData, thrustData, n, thrustSpline, thrustAcc);
-    interp1d_init(timeData, massData  , n, massSpline  , massAcc  );
+    interp1d_init(thrustSpline, timeData, thrustData, n, thrustAcc);
+    interp1d_init(massSpline  , timeData, massData  , n, massAcc  );
 
     thrust  = interp1d_eval(thrustSpline, 0.0, thrustAcc);
     massEng = interp1d_eval(massSpline  , 0.0, massAcc  );

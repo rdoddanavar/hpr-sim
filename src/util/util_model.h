@@ -14,11 +14,27 @@
 
 //---------------------------------------------------------------------------//
 
-void interp1d_init(const double      x[]    ,
+void interp1d_init(gsl_interp*       &interp,
+                   const double      x[]    ,
                    const double      y[]    ,
                    const size_t      n      ,
-                   gsl_spline*       &spline,
                    gsl_interp_accel* &acc   );
+
+//---------------------------------------------------------------------------//
+
+void interp1d_init(gsl_spline*       &spline,
+                   const double      x[]    ,
+                   const double      y[]    ,
+                   const size_t      n      ,
+                   gsl_interp_accel* &acc   );
+
+//---------------------------------------------------------------------------//
+
+double interp1d_eval(gsl_interp*       interp,
+                     const double      x[]   ,
+                     const double      y[]   ,
+                     const double      xq    ,
+                     gsl_interp_accel* acc   );
 
 //---------------------------------------------------------------------------//
 

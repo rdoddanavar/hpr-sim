@@ -6,6 +6,9 @@ telem:
  - massEng
  - mass
  - gravity
+ - temperature
+ - pressure
+ - density
  - forceZ
  - linAccZ
  - linVelZ

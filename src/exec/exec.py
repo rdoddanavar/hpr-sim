@@ -1,7 +1,6 @@
 # System modules
 import sys
 import os
-import pdb
 import pathlib
 import copy
 import multiprocessing as mp
@@ -54,6 +53,7 @@ def exec(inputPath, outputPath):
 
     global configInput
     configInput = util_yaml.load(str(configPath / "config_input.yml"))
+    util_yaml.process(configInput)
 
     global configOutput
     configOutput = util_yaml.load(str(configPath / "config_output.yml"))
@@ -96,7 +96,8 @@ def exec(inputPath, outputPath):
         pool  = mp.Pool(numProc)
         iRuns = range(numMC)
 
-        # could probably use functools.partial here to avoid global inputDict
+        # TODO: Could probably use functools.partial here to avoid global inputDict
+        # Current solution is to use starmap_async
         pool.map_async(run_flight_mc, iRuns)
 
         pool.close()
@@ -122,47 +123,54 @@ def run_flight_mc(iRun):
 
 def run_flight(inputDictRun, iRun):
 
-    # Initialize model - engine
+    # Create model instances
+    engine     = model.Engine()
+    mass       = model.Mass()
+    geodetic   = model.Geodetic()
+    atmosphere = model.Atmosphere()
+    eom        = model.EOM()
+    flight     = model.Flight()
+
+    # Set model dependencies
+    mass.add_dep(engine)
+    atmosphere.add_dep(geodetic)
+    eom.add_dep([engine, mass, geodetic])
+    flight.add_dep([atmosphere, eom])
+
+    # Initialize state from top-level model
+    flight.init_state()
+
+    # Initialize models
+
     enginePath = inputDictRun["engine"]["inputPath"]["value"]
     timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
-
-    engine = model.Engine()
     engine.init(timeEng, thrustEng, massEng)
 
-    # Initialize model - mass
-    mass     = model.Mass()
     massBody = inputDictRun["mass"]["massBody"]["value"]
-
-    mass.add_dep(engine)
     mass.init(massBody)
 
-    # Initialize model - geodetic
-    geodetic = model.Geodetic()
     latitude = inputDictRun["geodetic"]["latitude"]["value"]
+    altitude = inputDictRun["geodetic"]["altitude"]["value"]
+    geodetic.init(latitude, altitude)
 
-    geodetic.init(latitude)
+    temperature = inputDictRun["atmosphere"]["temperature"]["value"]
+    pressure    = inputDictRun["atmosphere"]["pressure"]["value"]
+    atmosphere.init(temperature, pressure)
 
-    # Initialize model - EOM
-    eom = model.EOM()
-
-    eom.add_dep(engine)
-    eom.add_dep(mass)
-    eom.add_dep(geodetic)
     eom.init()
-
-    # Initialize model - flight
-    flight = model.Flight()
-    flight.add_dep(eom)
 
     t0 = 0.0
     dt = inputDictRun["flight"]["timeStep"]["value"]
     tf = inputDictRun["flight"]["timeFlight"]["value"]
-
     flight.init(t0, dt, tf)
 
-    flight.update() # Execute flight
+    # Execute flight
+    flight.update()
     write_output(iRun, inputDictRun, flight)
     #write_summary()
+
+    # TODO: Should I be deleting the flight object here?
+    # How is garbage collection handled by the pool process?
 
 #------------------------------------------------------------------------------#
 
@@ -183,17 +191,17 @@ def write_output(iRun, inputDictRun, flight):
 
             props = inputDictRun[group][param].keys()
 
-        if "unit" in props:
-            
-            value    = inputDictRun[group][param]["value"]
-            quantity = configInput[group][param]["quantity"]
-            unit     = inputDictRun[group][param]["unit"]
+            if "unit" in props:
+                
+                value    = inputDictRun[group][param]["value"]
+                quantity = configInput[group][param]["quantity"]
+                unit     = inputDictRun[group][param]["unit"]
 
-            # Convert values back to original units specified by user
+                # Convert values back to original units specified by user
 
-            if quantity:
-                value = util_unit.convert(value, quantity, "default", unit)
-                inputDictRun[group][param]["value"] = value
+                if quantity:
+                    value = util_unit.convert(value, quantity, "default", unit)
+                    inputDictRun[group][param]["value"] = value
 
     outputYml = outputPath3 / "input.yml"
 

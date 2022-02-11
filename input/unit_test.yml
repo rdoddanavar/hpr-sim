@@ -13,6 +13,8 @@ exec:
 flight:
     timeFlight: 50.0
     timeStep: 0.01
+engine:
+    inputPath: ./input/engine/AeroTech_J450DM.eng
 mass:
     massBody:
         value: 5.0
@@ -24,6 +26,10 @@ geodetic:
     latitude:
         value: 32.269798 # SARA launch site: (32.269798, -111.274751)
         unit: deg
-engine:
-    inputPath: ./input/engine/AeroTech_J450DM.eng
+    altitude: 0.0
+atmosphere:
+    temperature: 288.15
+    pressure:
+        value: 1.0
+        unit: atm
 ...

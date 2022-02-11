@@ -12,6 +12,9 @@ flight:
         value: 50.0
     timeStep:
         value: 0.01
+engine:
+    inputPath:
+        value: ./input/engine/AeroTech_J450DM.eng
 mass:
     massBody:
         value: 5.3774548339920685
@@ -25,6 +28,11 @@ geodetic:
     latitude:
         value: 32.269798
         unit: deg
-engine:
-    inputPath:
-        value: ./input/engine/AeroTech_J450DM.eng
+    altitude:
+        value: 0.0
+atmosphere:
+    temperature:
+        value: 288.15
+    pressure:
+        value: 1.0
+        unit: atm

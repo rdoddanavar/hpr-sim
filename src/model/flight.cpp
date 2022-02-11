@@ -27,9 +27,6 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
     dt   = dtInit;
     tf   = tfInit;
 
-    state = new stateMap;
-    init_state(state);
-
     // Solver setup
     odeSolver.sys.function  = &ode_update;
     odeSolver.sys.jacobian  = nullptr;
@@ -133,8 +130,8 @@ void Flight::update()
 int ode_update(double t, const double y[], double f[], void *params)
 {
     
-    Model*    flight = static_cast<Model*>(params);
-    stateMap* state  = flight->state;
+    Model*      flight = static_cast<Model*>(params);
+    stateMapPtr state  = flight->state;
 
     // Set current state
     *state->at("linPosZ") = y[0];
@@ -152,25 +149,31 @@ int ode_update(double t, const double y[], double f[], void *params)
 
 //---------------------------------------------------------------------------//
 
-std::vector<std::string> Flight::telemFieldsDefault = {"time"   ,
-                                                       "thrust" ,
-                                                       "massEng",
-                                                       "mass"   ,
-                                                       "gravity",
-                                                       "forceZ" ,
-                                                       "linAccZ",
-                                                       "linVelZ",
-                                                       "linPosZ"};
+std::vector<std::string> Flight::telemFieldsDefault = {"time"       ,
+                                                       "thrust"     ,
+                                                       "massEng"    ,
+                                                       "mass"       ,
+                                                       "gravity"    ,
+                                                       "temperature",
+                                                       "pressure"   ,
+                                                       "density"    ,
+                                                       "forceZ"     ,
+                                                       "linAccZ"    ,
+                                                       "linVelZ"    ,
+                                                       "linPosZ"    };
 
-std::vector<std::string> Flight::telemUnitsDefault = {"s"    ,
-                                                      "N"    ,
-                                                      "kg"   ,
-                                                      "kg"   ,
-                                                      "m/s^2",
-                                                      "N"    ,
-                                                      "m/s^2",
-                                                      "m/s"  ,
-                                                      "m"    };
+std::vector<std::string> Flight::telemUnitsDefault = {"s"     ,
+                                                      "N"     ,
+                                                      "kg"    ,
+                                                      "kg"    ,
+                                                      "m/s^2" ,
+                                                      "K"     ,
+                                                      "Pa"    ,
+                                                      "kg/m^3",
+                                                      "N"     ,
+                                                      "m/s^2" ,
+                                                      "m/s"   ,
+                                                      "m"     };
 
 std::vector<std::string> Flight::telemFields;
 std::vector<std::string> Flight::telemUnits;
@@ -298,7 +301,6 @@ Flight::~Flight()
     
     if (isInit)
     {
-        delete state;
         gsl_odeiv2_driver_free(odeSolver.driver);
     }
 

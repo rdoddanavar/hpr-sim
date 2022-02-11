@@ -3,6 +3,9 @@
 (MAX) massEng: 1.223
 (MAX) mass: 3.618
 (MAX) gravity: 9.795
+(MAX) temperature: 288.150
+(MAX) pressure: 101325.000
+(MAX) density: 1.225
 (MAX) forceZ: 508.150
 (MAX) linAccZ: 152.365
 (MAX) linVelZ: 294.060

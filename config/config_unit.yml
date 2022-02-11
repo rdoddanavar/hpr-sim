@@ -34,8 +34,8 @@ default:
     pressure: Pa
     energy: J
     angle: rad
-    angular-veclocity: rad/s
-    angular-aceleration: rad/s^2
+    angular-velocity: rad/s
+    angular-acceleration: rad/s^2
     temperature: K
 time: 
     ms: 1.0e-3
@@ -126,7 +126,7 @@ energy:
     ft*lbf: 1.3558179483
 angle:
     s: 3.14159265359/180/(60*60)
-    m: 3.14159265359/180/60
+    min: 3.14159265359/180/60
     deg: 3.14159265359/180
     rad: 1.0
 angular-velocity:
