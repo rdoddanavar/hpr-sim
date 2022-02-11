@@ -155,21 +155,25 @@ std::vector<std::string> Flight::telemFieldsDefault = {"time"       ,
                                                        "mass"       ,
                                                        "gravity"    ,
                                                        "temperature",
+                                                       "pressure"   ,
+                                                       "density"    ,
                                                        "forceZ"     ,
                                                        "linAccZ"    ,
                                                        "linVelZ"    ,
                                                        "linPosZ"    };
 
-std::vector<std::string> Flight::telemUnitsDefault = {"s"    ,
-                                                      "N"    ,
-                                                      "kg"   ,
-                                                      "kg"   ,
-                                                      "m/s^2",
-                                                      "K"    ,
-                                                      "N"    ,
-                                                      "m/s^2",
-                                                      "m/s"  ,
-                                                      "m"    };
+std::vector<std::string> Flight::telemUnitsDefault = {"s"     ,
+                                                      "N"     ,
+                                                      "kg"    ,
+                                                      "kg"    ,
+                                                      "m/s^2" ,
+                                                      "K"     ,
+                                                      "Pa"    ,
+                                                      "kg/m^3",
+                                                      "N"     ,
+                                                      "m/s^2" ,
+                                                      "m/s"   ,
+                                                      "m"     };
 
 std::vector<std::string> Flight::telemFields;
 std::vector<std::string> Flight::telemUnits;
