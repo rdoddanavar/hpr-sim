@@ -220,6 +220,8 @@ void Flight::write_telem(std::string fileOut) // TODO: maybe return bool for suc
     std::ostringstream oss;
     const char* delim = ",";
 
+    // TODO: consider replace std::endl w/ "\n" for performance
+
     std::copy(telemFields.begin(), telemFields.end() - 1, std::ostream_iterator<std::string>(oss, delim));
     oss << telemFields.back() << std::endl;
 
