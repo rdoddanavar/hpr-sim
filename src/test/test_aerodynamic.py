@@ -14,12 +14,19 @@ for item in paths:
     sys.path.append(str(addPath.resolve()))
 
 # Project modules
-import preproc_aero
+import preproc_aerodynamic
 
 #------------------------------------------------------------------------------#
 
 inputPath = "/home/roshan/Documents/hpr-sim/patriot/CDDataFile/"
-(machData, alphaData, cpData, clDataPowerOff, cdDataPowerOff, clDataPowerOn, cdDataPowerOn) = preproc_aero.load(inputPath)
+(machData, alphaData, aeroData) = preproc_aerodynamic.load(inputPath)
 
 fig, ax = plt.subplots()
-ax.plot(alphaData, cdDataPowerOff[0])
+ax.plot(machData, aeroData["cdPowerOff"][:, [0]])
+
+fig, ax = plt.subplots()
+ax.plot(alphaData, aeroData["cdPowerOff"][0])
+
+plt.show()
+
+# %%

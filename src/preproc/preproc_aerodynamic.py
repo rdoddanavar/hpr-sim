@@ -36,21 +36,23 @@ def load(inputPath):
     blockCount = 0
 
     # Setup data dimensions
-    machData  = np.arange(0.01, 25.01, 0.01)
     alphaData = np.zeros(len(filePaths))
+    machData  = np.arange(0.01, 25.01, 0.01)
 
-    nMach  = len(machData)
     nAlpha = len(alphaData)
+    nMach  = len(machData)
 
     # Initialize data
-    cpData         = np.zeros((nMach, nAlpha))
-    cdDataPowerOff = np.zeros((nMach, nAlpha))
-    cdDataPowerOn  = np.zeros((nMach, nAlpha))
-    clDataPowerOff = np.zeros((nMach, nAlpha))
-    clDataPowerOn  = np.zeros((nMach, nAlpha))
+    aeroData = {}
 
-    iMach  = 0
+    aeroData["cpTotal"]    = np.zeros((nAlpha, nMach))
+    aeroData["clPowerOff"] = np.zeros((nAlpha, nMach))
+    aeroData["cdPowerOff"] = np.zeros((nAlpha, nMach))
+    aeroData["clPowerOn"]  = np.zeros((nAlpha, nMach))
+    aeroData["cdPowerOn"]  = np.zeros((nAlpha, nMach))
+    
     iAlpha = 0
+    iMach  = 0
 
     for filePath in filePaths:
         with open(filePath, 'r') as file:
@@ -76,18 +78,19 @@ def load(inputPath):
                         continue
                     elif blockCount == 4:
                         
-                        alphaData[iAlpha]     = float(words[1])
-                        cpData[iMach][iAlpha] = float(words[3]) 
+                        alphaData[iAlpha] = float(words[1])
+                        
+                        aeroData["cpTotal"][iAlpha][iMach] = float(words[3]) 
 
                     elif blockCount == 5:
 
-                        clDataPowerOff[iMach][iAlpha] = float(words[2])
-                        cdDataPowerOff[iMach][iAlpha] = float(words[3])
+                        aeroData["clPowerOff"][iAlpha][iMach] = float(words[2])
+                        aeroData["cdPowerOff"][iAlpha][iMach] = float(words[3])
 
                     elif blockCount == 6:
 
-                        clDataPowerOn[iMach][iAlpha] = float(words[2])
-                        cdDataPowerOn[iMach][iAlpha] = float(words[3])
+                        aeroData["clPowerOn"][iAlpha][iMach] = float(words[2])
+                        aeroData["cdPowerOn"][iAlpha][iMach] = float(words[3])
 
                         # Block finished, increment mach no.
                         iMach += 1
@@ -96,16 +99,18 @@ def load(inputPath):
                     # Contains alpha characters, ignore
                     continue
         
-        # File finished, reset mach no., increment alpha
-        iMach   = 0
+        # File finished, increment alpha, reset mach no. 
         iAlpha += 1
+        iMach   = 0
 
     # TODO: alpha data is not sorted! File order is arbitrary atm
+    iAlphaSort = np.argsort(alphaData)
+    alphaData  = np.deg2rad(alphaData[iAlphaSort])
 
-    # Convert alpha
-    np.deg2rad(alphaData)
+    for key in aeroData.keys():
+        aeroData[key] = np.transpose(aeroData[key][iAlphaSort])
 
-    return (machData, alphaData, cpData, clDataPowerOff, cdDataPowerOff, clDataPowerOn, cdDataPowerOn)
+    return (machData, alphaData, aeroData)
 
 #------------------------------------------------------------------------------#
 
