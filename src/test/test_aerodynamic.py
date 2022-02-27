@@ -22,7 +22,9 @@ inputPath = "/home/roshan/Documents/hpr-sim/patriot/CDDataFile/"
 (machData, alphaData, aeroData) = preproc_aerodynamic.load(inputPath)
 
 fig, ax = plt.subplots()
-ax.plot(machData, aeroData["cdPowerOff"][:, [0]])
+ax.plot(machData, aeroData["cdPowerOff"][:, [0]], label="PowerOff")
+ax.plot(machData, aeroData["cdPowerOn"][:, [0]], label="PowerOn")
+ax.legend()
 
 fig, ax = plt.subplots()
 ax.plot(alphaData, aeroData["cdPowerOff"][0])

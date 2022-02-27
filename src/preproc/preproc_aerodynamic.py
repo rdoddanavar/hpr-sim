@@ -96,6 +96,7 @@ def load(inputPath):
                         iMach += 1
 
                 else:
+                    
                     # Contains alpha characters, ignore
                     continue
         
@@ -103,19 +104,14 @@ def load(inputPath):
         iAlpha += 1
         iMach   = 0
 
-    # TODO: alpha data is not sorted! File order is arbitrary atm
+    # Sort and convert angle-of-attack
     iAlphaSort = np.argsort(alphaData)
     alphaData  = np.deg2rad(alphaData[iAlphaSort])
 
     for key in aeroData.keys():
+
+        # Sort data to match order of alphaData (increasing)
+        # Swap dimensions: data[iAlpha, iMach) -> data[iMach, iAlpha]
         aeroData[key] = np.transpose(aeroData[key][iAlphaSort])
 
     return (machData, alphaData, aeroData)
-
-#------------------------------------------------------------------------------#
-
-if __name__ == "__main__":
-
-    #inputPath = sys.argv[1]
-    inputPath = "/home/roshan/Documents/hpr-sim/patriot/CDDataFile/"
-    load(inputPath)
