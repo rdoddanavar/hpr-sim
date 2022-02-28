@@ -12,8 +12,9 @@
 #include "pybind11/numpy.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
-#include "eigen/Eigen/Core"
+#include "gsl/interpolation/gsl_spline2d.h"
 #include "gsl/ode-initval2/gsl_odeiv2.h"
+#include "eigen/Eigen/Core"
 
 // Project headers
 #include "util_model.h"
@@ -134,8 +135,8 @@ class Engine : public Model
         double massEng;
 
         // Miscellaneous
-        gsl_spline *thrustSpline;
-        gsl_spline *massSpline;
+        gsl_spline* thrustSpline;
+        gsl_spline* massSpline;
 
         gsl_interp_accel* thrustAcc;
         gsl_interp_accel* massAcc;
@@ -242,15 +243,33 @@ class Aerodynamics : public Model
         void set_state() override;
         void update() override;
 
+        ~Aerodynamics(); // Destructor
+
     private:
 
         // State variables
         double dynamicPressure; // [N/m^2]
         double mach;            // [-]
-        double reynolds;        // [?]
+        double reynolds;        // [-]
+        double alpha;           // [rad]
+        double dragCoeff;       // [-]
+        double liftCoeff;       // [-]
+        double centerPressure;  // [m]
 
-        // double cpX;    // Axial center of pressure [m]
-        // double alphaT; // Total angle-of-attack [rad]
+        // Miscellaneous
+        double refArea; // [m^2]
+        
+        gsl_spline2d* cdPowerOffSpline;
+        gsl_spline2d* cdPowerOnSpline;
+        gsl_spline2d* clPowerOffSpline;
+        gsl_spline2d* clPowerOnSpline;
+        gsl_spline2d* cpSpline;
+
+        gsl_interp_accel* cdPowerOffAcc;
+        gsl_interp_accel* cdPowerOnAcc;
+        gsl_interp_accel* clPowerOffAcc;
+        gsl_interp_accel* clPowerOnAcc;
+        gsl_interp_accel* cpAcc;
 
         // Eigen::Vector3d forceAero;  // Force  [N]
         // Eigen::Vector3d momentAero; // Moment [N*m]

@@ -45,6 +45,12 @@ void interp1d_init(gsl_spline*       &spline,
 
 //---------------------------------------------------------------------------//
 
+// 2-D interpolant initialization - BILINEAR
+
+void interp2d_init(gsl_spline2d* &spline)
+
+//---------------------------------------------------------------------------//
+
 // Interpolant evaluation - LINEAR
 
 double interp1d_eval(gsl_interp*       interp,
@@ -108,16 +114,3 @@ double interp1d_eval(gsl_spline*       spline,
     return yq;
 
 }
-
-/*
-LINEAR INTERP
-
-gsl_interp *linear = gsl_interp_alloc(gsl_interp_linear, n);
-gsl_interp_init(linear, xArr, yArr, n);
-gsl_interp_accel *acc = gsl_interp_accel_alloc ();
-
-double yq = gsl_interp_eval(linear, xArr, yArr, xq, acc);
-
-gsl_interp_free(gsl_interp * interp)
-gsl_interp_accel_free(gsl_interp_accel *acc)
-*/

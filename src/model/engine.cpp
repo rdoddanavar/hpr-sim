@@ -17,6 +17,8 @@ void Engine::init(py::array_t<double> timeInit  ,
                   py::array_t<double> massInit  ) 
 {
 
+    // TODO: Clean this up
+    
     auto timeBuff   = timeInit.request();
     auto thrustBuff = thrustInit.request();
     auto massBuff   = massInit.request();
