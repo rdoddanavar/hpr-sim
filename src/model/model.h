@@ -138,8 +138,7 @@ class Engine : public Model
         gsl_spline* thrustSpline;
         gsl_spline* massSpline;
 
-        gsl_interp_accel* thrustAcc;
-        gsl_interp_accel* massAcc;
+        gsl_interp_accel* timeAcc;
 
 };
 

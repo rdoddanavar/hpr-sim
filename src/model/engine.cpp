@@ -29,11 +29,11 @@ void Engine::init(py::array_t<double> timeInit  ,
 
     const size_t n = timeBuff.size;
 
-    interp1d_init(thrustSpline, timeData, thrustData, n, thrustAcc);
-    interp1d_init(massSpline  , timeData, massData  , n, massAcc  );
+    interp1d_init(thrustSpline, timeData, thrustData, n, timeAcc);
+    interp1d_init(massSpline  , timeData, massData  , n, timeAcc);
 
-    thrust  = interp1d_eval(thrustSpline, 0.0, thrustAcc);
-    massEng = interp1d_eval(massSpline  , 0.0, massAcc  );
+    thrust  = interp1d_eval(thrustSpline, 0.0, timeAcc);
+    massEng = interp1d_eval(massSpline  , 0.0, timeAcc);
 
     isInit = true;
 
@@ -58,8 +58,8 @@ void Engine::update()
 
     double time = *state->at("time");
 
-    thrust  = interp1d_eval(thrustSpline, time, thrustAcc);
-    massEng = interp1d_eval(massSpline  , time, massAcc  );
+    thrust  = interp1d_eval(thrustSpline, time, timeAcc);
+    massEng = interp1d_eval(massSpline  , time, timeAcc);
 
 }
 
@@ -74,8 +74,7 @@ Engine::~Engine()
         gsl_spline_free(thrustSpline);
         gsl_spline_free(massSpline);
 
-        gsl_interp_accel_free(thrustAcc);
-        gsl_interp_accel_free(massAcc);
+        gsl_interp_accel_free(timeAcc);
 
     }
 
