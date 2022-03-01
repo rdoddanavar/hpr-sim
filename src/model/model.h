@@ -264,11 +264,8 @@ class Aerodynamics : public Model
         gsl_spline2d* clPowerOnSpline;
         gsl_spline2d* cpSpline;
 
-        gsl_interp_accel* cdPowerOffAcc;
-        gsl_interp_accel* cdPowerOnAcc;
-        gsl_interp_accel* clPowerOffAcc;
-        gsl_interp_accel* clPowerOnAcc;
-        gsl_interp_accel* cpAcc;
+        gsl_interp_accel* machAcc;
+        gsl_interp_accel* alphaAcc;
 
         // Eigen::Vector3d forceAero;  // Force  [N]
         // Eigen::Vector3d momentAero; // Moment [N*m]

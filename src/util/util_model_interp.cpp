@@ -11,7 +11,11 @@
 
 //---------------------------------------------------------------------------//
 
-// Interpolant initialization - LINEAR
+// TODO: enforce correct data array sizes during interp/spline initialization
+
+//---------------------------------------------------------------------------//
+
+// 1-D interpolant initialization - LINEAR
 
 void interp1d_init(gsl_interp*       &interp,
                    const double      x[]    ,
@@ -29,7 +33,7 @@ void interp1d_init(gsl_interp*       &interp,
 
 //---------------------------------------------------------------------------//
 
-// Interpolant initialization - SPLINE
+// 1-D interpolant initialization - SPLINE (STEFFEN)
 
 void interp1d_init(gsl_spline*       &spline,
                    const double      x[]    ,
@@ -67,7 +71,7 @@ void interp2d_init(gsl_spline2d*     &spline,
 
 //---------------------------------------------------------------------------//
 
-// Interpolant evaluation - LINEAR
+// 1-D interpolant evaluation - LINEAR
 
 double interp1d_eval(gsl_interp*       interp,
                      const double      x[]   ,
@@ -77,16 +81,16 @@ double interp1d_eval(gsl_interp*       interp,
 {
 
     double       yq;
-    const double xMin = interp->xmin;
-    const double xMax = interp->xmax;
+    const double xmin = interp->xmin;
+    const double xmax = interp->xmax;
 
     size_t n = interp->size;
 
-    if (xq < xMin) // No extrapolation, use min y value
+    if (xq < xmin) // No extrapolation, use min y value
     {
         yq = y[0];
     }
-    else if (xq > xMax) // No extrapolation, use max y value
+    else if (xq > xmax) // No extrapolation, use max y value
     {
         yq = y[n-1];
     }
@@ -101,7 +105,7 @@ double interp1d_eval(gsl_interp*       interp,
 
 //---------------------------------------------------------------------------//
 
-// Interpolant evaluation - SPLINE
+// 1-D interpolant evaluation - SPLINE
 
 double interp1d_eval(gsl_spline*       spline,
                      const double      xq    ,
@@ -109,16 +113,16 @@ double interp1d_eval(gsl_spline*       spline,
 {
 
     double       yq;
-    const double xMin = spline->interp->xmin;
-    const double xMax = spline->interp->xmax;
+    const double xmin = spline->interp->xmin;
+    const double xmax = spline->interp->xmax;
 
     size_t n = spline->size;
 
-    if (xq < xMin) // No extrapolation, use min y value
+    if (xq < xmin) // No extrapolation, use min y value
     {
         yq = spline->y[0];
     }
-    else if (xq > xMax) // No extrapolation, use max y value
+    else if (xq > xmax) // No extrapolation, use max y value
     {
         yq = spline->y[n-1];
     }
@@ -128,5 +132,36 @@ double interp1d_eval(gsl_spline*       spline,
     }
 
     return yq;
+
+}
+
+//---------------------------------------------------------------------------//
+
+// 2-D interpolant evaluation
+
+double interp2d_eval(gsl_spline2d*     spline,
+                     double            xq    ,
+                     double            yq    ,
+                     gsl_interp_accel* xacc  ,
+                     gsl_interp_accel* yacc  )
+{
+
+    double zq;
+    const double xmin = spline->interp_object.xmin;
+    const double xmax = spline->interp_object.xmax;
+    const double ymin = spline->interp_object.ymin;
+    const double ymax = spline->interp_object.ymax;
+
+    // No extrapolation; enforce limits on (x,y) domain
+
+    xq = (xq < xmin) ? xmin : xq;
+    xq = (xq > xmax) ? xmax : xq;
+
+    yq = (yq < ymin) ? ymin : yq;
+    yq = (yq > ymax) ? ymax : yq;
+
+    zq = gsl_spline2d_eval(spline, xq, yq, xacc, yacc);
+
+    return zq;
 
 }

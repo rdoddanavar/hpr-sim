@@ -60,11 +60,8 @@ Aerodynamics::~Aerodynamics()
         gsl_spline2d_free(clPowerOnSpline);
         gsl_spline2d_free(cpSpline);
 
-        gsl_interp_accel_free(cdPowerOffAcc);
-        gsl_interp_accel_free(cdPowerOnAcc);
-        gsl_interp_accel_free(clPowerOffAcc);
-        gsl_interp_accel_free(clPowerOnAcc);
-        gsl_interp_accel_free(cpAcc);
+        gsl_interp_accel_free(machAcc);
+        gsl_interp_accel_free(alphaAcc);
 
     }
 

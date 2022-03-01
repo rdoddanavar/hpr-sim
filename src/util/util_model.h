@@ -56,6 +56,14 @@ double interp1d_eval(gsl_spline*       spline,
 
 //---------------------------------------------------------------------------//
 
+double interp2d_eval(gsl_spline2d*     spline,
+                     const double      xq    ,
+                     const double      yq    ,
+                     gsl_interp_accel* xacc  ,
+                     gsl_interp_accel* yacc  );
+
+//---------------------------------------------------------------------------//
+
 const std::map<std::string, const gsl_odeiv2_step_type*> odeMethods = 
 {
     
