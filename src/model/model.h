@@ -251,7 +251,7 @@ class Aerodynamics : public Model
         double dynamicPressure; // [N/m^2]
         double mach;            // [-]
         double reynolds;        // [-]
-        double alpha;           // [rad]
+        double angleAttack;     // [rad]
         double dragCoeff;       // [-]
         double liftCoeff;       // [-]
         double centerPressure;  // [m]

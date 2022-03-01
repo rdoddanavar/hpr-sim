@@ -6,7 +6,9 @@
 
 // External libraries
 #include "gsl/interpolation/gsl_interp.h"
+#include "gsl/interpolation/gsl_interp2d.h"
 #include "gsl/interpolation/gsl_spline.h"
+#include "gsl/interpolation/gsl_spline2d.h"
 #include "gsl/ode-initval2/gsl_odeiv2.h"
 
 // Project headers
@@ -26,6 +28,16 @@ void interp1d_init(gsl_spline*       &spline,
                    const double      x[]    ,
                    const double      y[]    ,
                    const size_t      n      ,
+                   gsl_interp_accel* &acc   );
+
+//---------------------------------------------------------------------------//
+
+void interp2d_init(gsl_spline2d*     &spline,
+                   const double      x[]    ,
+                   const double      y[]    ,
+                   const double      z[]    ,
+                   const size_t      nx     ,
+                   const size_t      ny     ,
                    gsl_interp_accel* &acc   );
 
 //---------------------------------------------------------------------------//

@@ -2,7 +2,9 @@
 
 // External libraries
 #include "gsl/interpolation/gsl_interp.h"
+#include "gsl/interpolation/gsl_interp2d.h"
 #include "gsl/interpolation/gsl_spline.h"
+#include "gsl/interpolation/gsl_spline2d.h"
 
 // Project headers
 #include "util_model.h"
@@ -47,7 +49,21 @@ void interp1d_init(gsl_spline*       &spline,
 
 // 2-D interpolant initialization - BILINEAR
 
-void interp2d_init(gsl_spline2d* &spline)
+void interp2d_init(gsl_spline2d*     &spline,
+                   const double      x[]    ,
+                   const double      y[]    ,
+                   const double      z[]    ,
+                   const size_t      nx     ,
+                   const size_t      ny     ,
+                   gsl_interp_accel* &acc   )
+{
+
+    spline = gsl_spline2d_alloc(gsl_interp2d_bilinear, nx, ny);
+    acc    = gsl_interp_accel_alloc();
+
+    gsl_spline2d_init(spline, x, y, z, nx, ny);
+
+}
 
 //---------------------------------------------------------------------------//
 

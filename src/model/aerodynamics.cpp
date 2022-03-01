@@ -30,7 +30,10 @@ void Aerodynamics::set_state()
     state->emplace("dynamicPressure", &dynamicPressure);
     state->emplace("mach", &mach);
     state->emplace("reynolds", &reynolds);
-    state->emplace()
+    state->emplace("angleAttack", &angleAttack);
+    state->emplace("dragCoeff", &dragCoeff);
+    state->emplace("liftCoeff", &liftCoeff);
+    state->emplace("centerPressure", &centerPressure);
 
 }
 
