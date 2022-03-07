@@ -12,22 +12,30 @@
 
 //---------------------------------------------------------------------------//
 
-void Engine::init(py::array_t<double> timeInit  , 
-                  py::array_t<double> thrustInit, 
-                  py::array_t<double> massInit  ) 
+void Engine::init(py::array_t<double>& timeInit  , 
+                  py::array_t<double>& thrustInit, 
+                  py::array_t<double>& massInit  ) 
 {
-
-    // TODO: Clean this up
     
-    auto timeBuff   = timeInit.request();
-    auto thrustBuff = thrustInit.request();
-    auto massBuff   = massInit.request();
+    py::buffer_info timeBuff   = timeInit.request();
+    py::buffer_info thrustBuff = thrustInit.request();
+    py::buffer_info massBuff   = massInit.request();
+
+    const size_t n = timeBuff.size;
+
+    if (timeBuff.ndim != 1 || thrustBuff.ndim != 1 || massBuff.ndim != 1)
+    {
+        throw std::runtime_error("Input arrays must be 1-D");
+    }
+
+    if (thrustBuff.size != n || massBuff.size != n)
+    {
+        throw std::runtime_error("Input arrays must have identical lengths");
+    }
 
     double* timeData   = (double*) timeBuff.ptr;
     double* thrustData = (double*) thrustBuff.ptr;
     double* massData   = (double*) massBuff.ptr;
-
-    const size_t n = timeBuff.size;
 
     interp1d_init(thrustSpline, timeData, thrustData, n, timeAcc);
     interp1d_init(massSpline  , timeData, massData  , n, timeAcc);

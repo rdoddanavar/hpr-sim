@@ -119,9 +119,9 @@ class Engine : public Model
     
     public:
 
-        void init(py::array_t<double> timeInit  , 
-                  py::array_t<double> thrustInit, 
-                  py::array_t<double> massInit  );
+        void init(py::array_t<double>& timeInit  , 
+                  py::array_t<double>& thrustInit, 
+                  py::array_t<double>& massInit  );
 
         void set_state() override;
         void update() override;
@@ -238,7 +238,7 @@ class Aerodynamics : public Model
     
     public:
         
-        void init();
+        void init(py::array_t<double> test);
         void set_state() override;
         void update() override;
 
