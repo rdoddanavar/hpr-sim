@@ -69,6 +69,8 @@ void interp2d_init(gsl_spline2d*     &spline,
 
 }
 
+// TODO: overload this function to prevent repeating acc alloc
+
 //---------------------------------------------------------------------------//
 
 // 1-D interpolant evaluation - LINEAR

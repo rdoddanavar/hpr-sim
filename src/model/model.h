@@ -238,7 +238,15 @@ class Aerodynamics : public Model
     
     public:
         
-        void init(py::array_t<double> test);
+        void Aerodynamics::init(double               refAreaInit   ,
+                                py::array_t<double>& machInit      , 
+                                py::array_t<double>& alphaInit     ,
+                                py::array_t<double>& cdPowerOffInit,
+                                py::array_t<double>& cdPowerOnInit ,
+                                py::array_t<double>& clPowerOffInit,
+                                py::array_t<double>& clPowerOnInit ,
+                                py::array_t<double>& cpInit        );
+
         void set_state() override;
         void update() override;
 

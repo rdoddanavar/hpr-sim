@@ -12,32 +12,48 @@
 
 //---------------------------------------------------------------------------//
 
-// void Aerodynamics::init(py::array_t<double> machInit      , 
-//                         py::array_t<double> alphaInit     ,
-//                         py::array_t<double> cdPowerOffInit,
-//                         py::array_t<double> cdPowerOnInit ,
-//                         py::array_t<double> clPowerOffInit,
-//                         py::array_t<double> clPowerOnInit ,
-//                         double              refAreaInit   )
-void Aerodynamics::init(py::array_t<double> test) 
+void Aerodynamics::init(double               refAreaInit   ,
+                        py::array_t<double>& machInit      , 
+                        py::array_t<double>& alphaInit     ,
+                        py::array_t<double>& cdPowerOffInit,
+                        py::array_t<double>& cdPowerOnInit ,
+                        py::array_t<double>& clPowerOffInit,
+                        py::array_t<double>& clPowerOnInit ,
+                        py::array_t<double>& cpInit        );
 {
 
-// TODO: Runtime checks on input array dimensions, length
+    py::buffer_info machBuff       = machInit.request();
+    py::buffer_info alphaBuff      = alphaInit.request();
+    py::buffer_info cdPowerOffBuff = cdPowerOffInit.request();
+    py::buffer_info cdPowerOnBuff  = cdPowerOnInit.request();
+    py::buffer_info clPowerOffBuff = clPowerOffInit.request();
+    py::buffer_info clPowerOnBuff  = clPowerOnInit.request();
+    py::buffer_info cpBuff         = cpInit.request();
 
-    py::buffer_info buff = test.request();
-
-    double* ptr = (double*) buff.ptr;
-
-    std::cout << "Dim 1: " << buff.shape[0] << std::endl;
-    std::cout << "Dim 2: " << buff.shape[1] << std::endl;
-
-    for (int i = 0; i < buff.shape[0]; i++)
+    if (machBuff.ndim != 1 || alphaBuff.ndim != 1)
     {
-        for (int j = 0; j < buff.shape[1]; j++)
-        {
-            std::cout << "test: " << ptr[i*buff.shape[1] + j] << std::endl;
-        }
+        throw std::runtime_error("Input arrays must be 1-D: mach, alpha");
     }
+
+    if (cdPowerOffBuff.ndim != 2 || cdPowerOnBuff.ndim != 2 ||
+        clPowerOffBuff.ndim != 2 || clPowerOnBuff.ndim != 2 ||
+        cpBuff.ndim         != 2)
+    {
+        throw std::runtime_error("Input arrays must be 2-D: cdPowerOff, cdPowerOn, clPowerOff, clPowerOn, cp");
+    }
+
+    double* machData       = (double*) machBuff.ptr;
+    double* alphaData      = (double*) alphaBuff.ptr;
+    double* cdPowerOffData = (double*) cdPowerOffBuff.ptr;
+    double* cdPowerOnData  = (double*) cdPowerOnBuff.ptr;
+    double* clPowerOffData = (double*) clPowerOffBuff.ptr;
+    double* clPowerOnData  = (double*) clPowerOnBuff.ptr;
+    double* cpData         = (double*) cpBuff.ptr;
+
+    const size_t nMach  = machBuff.size;
+    const size_t nAlpha = alphaBuff.size;
+
+    interp2d_init(cdPowerOffSpline, machData, alphaData, cdPowerOffData, nMach, nAlpha, 
 
     isInit = true;
 
