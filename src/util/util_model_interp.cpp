@@ -58,18 +58,36 @@ void interp2d_init(gsl_spline2d*     &spline,
                    const double      y[]    ,
                    const double      z[]    ,
                    const size_t      nx     ,
-                   const size_t      ny     ,
-                   gsl_interp_accel* &acc   )
+                   const size_t      ny     )
 {
 
     spline = gsl_spline2d_alloc(gsl_interp2d_bilinear, nx, ny);
-    acc    = gsl_interp_accel_alloc();
 
     gsl_spline2d_init(spline, x, y, z, nx, ny);
 
 }
 
-// TODO: overload this function to prevent repeating acc alloc
+//---------------------------------------------------------------------------//
+
+// 2-D interpolant initialization - BILINEAR
+
+void interp2d_init(gsl_spline2d*     &spline,
+                   const double      x[]    ,
+                   const double      y[]    ,
+                   const double      z[]    ,
+                   const size_t      nx     ,
+                   const size_t      ny     ,
+                   gsl_interp_accel* &xacc  ,
+                   gsl_interp_accel* &yacc  )
+{
+
+    spline = gsl_spline2d_alloc(gsl_interp2d_bilinear, nx, ny);
+    xacc   = gsl_interp_accel_alloc();
+    yacc   = gsl_interp_accel_alloc();
+
+    gsl_spline2d_init(spline, x, y, z, nx, ny);
+
+}
 
 //---------------------------------------------------------------------------//
 

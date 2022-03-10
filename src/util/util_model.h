@@ -37,8 +37,18 @@ void interp2d_init(gsl_spline2d*     &spline,
                    const double      y[]    ,
                    const double      z[]    ,
                    const size_t      nx     ,
+                   const size_t      ny     );
+
+//---------------------------------------------------------------------------//
+
+void interp2d_init(gsl_spline2d*     &spline,
+                   const double      x[]    ,
+                   const double      y[]    ,
+                   const double      z[]    ,
+                   const size_t      nx     ,
                    const size_t      ny     ,
-                   gsl_interp_accel* &acc   );
+                   gsl_interp_accel* &xacc  ,
+                   gsl_interp_accel* &yacc  );
 
 //---------------------------------------------------------------------------//
 
