@@ -1,5 +1,5 @@
 // System libraries
-#include <iostream>
+#include <cmath>
 
 // External libraries
 #include "pybind11/numpy.h"
@@ -19,7 +19,7 @@ void Aerodynamics::init(double               refAreaInit   ,
                         py::array_t<double>& cdPowerOnInit ,
                         py::array_t<double>& clPowerOffInit,
                         py::array_t<double>& clPowerOnInit ,
-                        py::array_t<double>& cpInit        );
+                        py::array_t<double>& cpInit        )
 {
 
     py::buffer_info machBuff       = machInit.request();
@@ -42,6 +42,17 @@ void Aerodynamics::init(double               refAreaInit   ,
         throw std::runtime_error("Input arrays must be 2-D: cdPowerOff, cdPowerOn, clPowerOff, clPowerOn, cp");
     }
 
+    const size_t nMach  = machBuff.size;
+    const size_t nAlpha = alphaBuff.size;
+    const size_t nData  = nMach*nAlpha;
+
+    if (cdPowerOffBuff.size != nData || cdPowerOnBuff.size != nData ||
+        clPowerOffBuff.size != nData || clPowerOnBuff.size != nData ||
+        cpBuff.size         != nData)
+    {
+        throw std::runtime_error("Input arrays must have a compatible number of elements: cdPowerOff, cdPowerOn, clPowerOff, clPowerOn, cp");
+    }
+
     double* machData       = (double*) machBuff.ptr;
     double* alphaData      = (double*) alphaBuff.ptr;
     double* cdPowerOffData = (double*) cdPowerOffBuff.ptr;
@@ -50,10 +61,14 @@ void Aerodynamics::init(double               refAreaInit   ,
     double* clPowerOnData  = (double*) clPowerOnBuff.ptr;
     double* cpData         = (double*) cpBuff.ptr;
 
-    const size_t nMach  = machBuff.size;
-    const size_t nAlpha = alphaBuff.size;
+    machAcc  = gsl_interp_accel_alloc();
+    alphaAcc = gsl_interp_accel_alloc();
 
-    interp2d_init(cdPowerOffSpline, machData, alphaData, cdPowerOffData, nMach, nAlpha, 
+    interp2d_init(cdPowerOffSpline, machData, alphaData, cdPowerOffData, nMach, nAlpha);
+    interp2d_init(cdPowerOnSpline,  machData, alphaData, cdPowerOnData,  nMach, nAlpha);
+    interp2d_init(clPowerOffSpline, machData, alphaData, clPowerOffData, nMach, nAlpha);
+    interp2d_init(clPowerOnSpline,  machData, alphaData, clPowerOnData,  nMach, nAlpha);
+    interp2d_init(cpSpline,         machData, alphaData, cpData,         nMach, nAlpha);
 
     isInit = true;
 
@@ -80,6 +95,11 @@ void Aerodynamics::update()
 {
 
     update_deps();
+
+    mach        = *state->at("mach");
+    angleAttack = *state->at("alpha");
+
+    dragCoeff = interp2d_eval(cdPowerOffSpline, mach, angleAttack, machAcc, alphaAcc);
 
 }
 

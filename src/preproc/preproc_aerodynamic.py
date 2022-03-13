@@ -114,4 +114,5 @@ def load(inputPath):
         # Swap dimensions: data[iAlpha, iMach) -> data[iMach, iAlpha]
         aeroData[key] = np.transpose(aeroData[key][iAlphaSort])
 
+    # TODO: output structure like object
     return (machData, alphaData, aeroData)
