@@ -133,12 +133,15 @@ class Engine : public Model
         // State variables
         double thrust;
         double massEng;
+        bool   isBurnout;
 
         // Miscellaneous
         gsl_spline* thrustSpline;
         gsl_spline* massSpline;
 
         gsl_interp_accel* timeAcc;
+        
+        double timeMax; 
 
 };
 
@@ -258,8 +261,9 @@ class Aerodynamics : public Model
         double dynamicPressure; // [N/m^2]
         double mach;            // [-]
         double reynolds;        // [-]
-        double angleAttack;     // [rad]
+        double alphaT;          // [rad]
         double dragCoeff;       // [-]
+        double dragForce;       // [N]
         double liftCoeff;       // [-]
         double centerPressure;  // [m]
 

@@ -82,7 +82,7 @@ void Aerodynamics::set_state()
     state->emplace("dynamicPressure", &dynamicPressure);
     state->emplace("mach", &mach);
     state->emplace("reynolds", &reynolds);
-    state->emplace("angleAttack", &angleAttack);
+    state->emplace("alphaT", &alphaT);
     state->emplace("dragCoeff", &dragCoeff);
     state->emplace("liftCoeff", &liftCoeff);
     state->emplace("centerPressure", &centerPressure);
@@ -96,10 +96,31 @@ void Aerodynamics::update()
 
     update_deps();
 
-    mach        = *state->at("mach");
-    angleAttack = *state->at("alpha");
+    // Get state data
+    double u   = *state->at("linVelX");
+    double v   = *state->at("linVelY");
+    double w   = *state->at("linVelZ");
+    double a   = *state->at("speedSound");
+    double rho = *state->at("density");
 
-    dragCoeff = interp2d_eval(cdPowerOffSpline, mach, angleAttack, machAcc, alphaAcc);
+    // Perform table lookups
+    double velT = sqrt(pow(u, 2.0) + pow(v, 2.0) + pow(w, 2.0));
+
+    mach   = velT/a;
+    alphaT = acos(u/v);
+    
+    if (*state->at("isBurnout"))
+    {
+        dragCoeff = interp2d_eval(cdPowerOffSpline, mach, alphaT, machAcc, alphaAcc);
+    }
+    else
+    {
+        dragCoeff = interp2d_eval(cdPowerOnSpline, mach, alphaT, machAcc, alphaAcc);
+    }
+    
+    // Calculate aerodynamic quantities
+    dynamicPressure = 0.5*rho*(velT, 2.0);
+    dragForce       = dynamicPressure*dragCoeff*refArea;
 
 }
 

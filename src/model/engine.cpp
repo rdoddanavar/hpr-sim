@@ -43,6 +43,9 @@ void Engine::init(py::array_t<double>& timeInit  ,
     thrust  = interp1d_eval(thrustSpline, 0.0, timeAcc);
     massEng = interp1d_eval(massSpline  , 0.0, timeAcc);
 
+    timeMax   = timeData[nTime-1];
+    isBurnout = false;
+
     isInit = true;
 
 }
@@ -66,8 +69,22 @@ void Engine::update()
 
     double time = *state->at("time");
 
-    thrust  = interp1d_eval(thrustSpline, time, timeAcc);
-    massEng = interp1d_eval(massSpline  , time, timeAcc);
+    if (!isBurnout)
+    {
+        
+        thrust  = interp1d_eval(thrustSpline, time, timeAcc);
+        massEng = interp1d_eval(massSpline  , time, timeAcc);
+
+        if (time >= timeMax)
+        {
+            isBurnout = true;
+        }
+
+    }
+    else
+    {
+        thrust = 0.0;
+    }
 
 }
 
