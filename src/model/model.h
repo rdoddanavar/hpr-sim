@@ -133,7 +133,7 @@ class Engine : public Model
         // State variables
         double thrust;
         double massEng;
-        bool   isBurnout;
+        double isBurnout;
 
         // Miscellaneous
         gsl_spline* thrustSpline;

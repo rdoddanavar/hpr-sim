@@ -32,4 +32,9 @@ atmosphere:
     pressure:
         value: 1.0
         unit: atm
+aerodynamics:
+    inputPath: /home/roshan/Documents/hpr-sim/patriot/CDDataFile/
+    refArea:
+        value: 12.566
+        unit: in^2
 ...

@@ -98,4 +98,14 @@ atmosphere:
         unit: Pa
         min: 0.0
         max: .inf
+aerodynamics:
+    inputPath:
+        type: str
+        isPath: true
+    refArea:
+        type: float
+        quantity: area
+        unit: m^2
+        min: 0.0
+        max: .inf
 ...

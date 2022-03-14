@@ -38,7 +38,11 @@ void EOM::set_state()
     state->emplace("forceZ", &force[2]);
 
     state->emplace("linAccZ", &linAcc[2]);
+
+    state->emplace("linVelX", &linVel[0]);   
+    state->emplace("linVelY", &linVel[1]);
     state->emplace("linVelZ", &linVel[2]);
+
     state->emplace("linPosZ", &linPos[2]);
 
 }
