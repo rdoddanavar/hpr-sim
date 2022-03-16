@@ -14,7 +14,7 @@ for item in paths:
 
 # Project modules
 import exec
-import postproc_flight
+#import postproc_flight
 
 #------------------------------------------------------------------------------#
 
@@ -23,5 +23,5 @@ outputPath = "./output"
 
 if inputPath is not None:
     exec.exec(inputPath, outputPath)
-else:
-    postproc_flight.postproc(outputPath)
+#else:
+#    postproc_flight.postproc(outputPath)

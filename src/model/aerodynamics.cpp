@@ -80,12 +80,14 @@ void Aerodynamics::set_state()
 {
 
     state->emplace("dynamicPressure", &dynamicPressure);
-    state->emplace("mach", &mach);
-    state->emplace("reynolds", &reynolds);
-    state->emplace("alphaT", &alphaT);
-    state->emplace("dragCoeff", &dragCoeff);
-    state->emplace("liftCoeff", &liftCoeff);
-    state->emplace("centerPressure", &centerPressure);
+    state->emplace("mach"           , &mach           );
+    state->emplace("reynolds"       , &reynolds       );
+    state->emplace("alphaT"         , &alphaT         );
+    state->emplace("dragCoeff"      , &dragCoeff      );
+    state->emplace("liftCoeff"      , &liftCoeff      );
+    state->emplace("centerPressure" , &centerPressure );
+    state->emplace("dragForce"      , &dragForce      );
+    state->emplace("liftForce"      , &liftForce      );
 
 }
 
@@ -97,9 +99,9 @@ void Aerodynamics::update()
     update_deps();
 
     // Get state data
-    double u   = *state->at("linVelX");
+    double u   = *state->at("linVelZ");
     double v   = *state->at("linVelY");
-    double w   = *state->at("linVelZ");
+    double w   = *state->at("linVelX");
     double a   = *state->at("speedSound");
     double rho = *state->at("density");
 
@@ -107,20 +109,23 @@ void Aerodynamics::update()
     double velT = sqrt(pow(u, 2.0) + pow(v, 2.0) + pow(w, 2.0));
 
     mach   = velT/a;
-    alphaT = acos(u/v);
+    alphaT = acos(u/velT);
     
     if (*state->at("isBurnout"))
     {
         dragCoeff = interp2d_eval(cdPowerOffSpline, mach, alphaT, machAcc, alphaAcc);
+        liftCoeff = interp2d_eval(clPowerOffSpline, mach, alphaT, machAcc, alphaAcc);
     }
     else
     {
         dragCoeff = interp2d_eval(cdPowerOnSpline, mach, alphaT, machAcc, alphaAcc);
+        liftCoeff = interp2d_eval(clPowerOnSpline, mach, alphaT, machAcc, alphaAcc);
     }
     
     // Calculate aerodynamic quantities
-    dynamicPressure = 0.5*rho*(velT, 2.0);
+    dynamicPressure = 0.5*rho*pow(velT, 2.0);
     dragForce       = dynamicPressure*dragCoeff*refArea;
+    liftForce       = dynamicPressure*liftCoeff*refArea;
 
 }
 

@@ -47,9 +47,10 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
     
     // Telemetry setup
     nStep = static_cast<int>(tf/dt);
-    nPrec = 3; // Telemetry output precision
+    nPrec = 4;
+    // TODO: Make nPrec an input parameter?
 
-    // TODO: initialize telemFields to default if user-defined fields not available
+    // TODO: Initialize telemFields to default if user-defined fields not available
 
     for (const auto& field : telemFields)
     {
@@ -157,6 +158,12 @@ std::vector<std::string> Flight::telemFieldsDefault = {"time"       ,
                                                        "temperature",
                                                        "pressure"   ,
                                                        "density"    ,
+                                                       "dynamicPressure",
+                                                       "mach"       ,
+                                                       "alphaT"     ,
+                                                       "dragCoeff",
+                                                       "dragForce"  ,
+                                                       "liftForce"  ,
                                                        "forceZ"     ,
                                                        "linAccZ"    ,
                                                        "linVelZ"    ,
@@ -170,6 +177,12 @@ std::vector<std::string> Flight::telemUnitsDefault = {"s"     ,
                                                       "K"     ,
                                                       "Pa"    ,
                                                       "kg/m^3",
+                                                      "Pa",
+                                                      ""      ,
+                                                      "rad"   ,
+                                                      "",
+                                                      "N"     ,
+                                                      "N"     ,
                                                       "N"     ,
                                                       "m/s^2" ,
                                                       "m/s"   ,

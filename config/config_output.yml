@@ -9,6 +9,12 @@ telem:
  - temperature
  - pressure
  - density
+ - dynamicPressure
+ - mach
+ - alphaT
+ - dragCoeff
+ - dragForce
+ - liftForce
  - forceZ
  - linAccZ
  - linVelZ

@@ -263,9 +263,10 @@ class Aerodynamics : public Model
         double reynolds;        // [-]
         double alphaT;          // [rad]
         double dragCoeff;       // [-]
-        double dragForce;       // [N]
         double liftCoeff;       // [-]
         double centerPressure;  // [m]
+        double dragForce;       // [N]
+        double liftForce;       // [N]
 
         // Miscellaneous
         double refArea; // [m^2]
