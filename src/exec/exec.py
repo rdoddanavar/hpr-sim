@@ -20,7 +20,7 @@ import util_yaml
 import util_unit
 import preproc_input
 import preproc_engine
-import preproc_aerodynamic
+import preproc_aerodynamics
 import model
 
 #------------------------------------------------------------------------------#
