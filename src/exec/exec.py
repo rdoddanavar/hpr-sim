@@ -20,16 +20,22 @@ import util_yaml
 import util_unit
 import preproc_input
 import preproc_engine
+import preproc_aerodynamics
 import model
 
 #------------------------------------------------------------------------------#
 
 # Module variables
+# TODO: find alternatives to globals? Mutables like list or dict?
 configPathRel = "../../config"
 configInput   = None
 configOutput  = None
 inputDict     = None
 outputPath2   = None
+
+machData  = None
+alphaData = None
+aeroData  = None
 
 #------------------------------------------------------------------------------#
 
@@ -83,6 +89,10 @@ def exec(inputPath, outputPath):
     # TODO: if issues with config_ouput.yml, resort to default fields
     # Also, populate output stats fields
 
+    # Aeromodel data
+    global machData, alphaData, aeroData
+    (machData, alphaData, aeroData) = preproc_aerodynamics.load(inputDict["aerodynamics"]["inputPath"]["value"])
+
     # Sim execution
     mode    = inputDict["exec"]["mode"]["value"]
     numProc = inputDict["exec"]["numProc"]["value"]
@@ -124,18 +134,20 @@ def run_flight_mc(iRun):
 def run_flight(inputDictRun, iRun):
 
     # Create model instances
-    engine     = model.Engine()
-    mass       = model.Mass()
-    geodetic   = model.Geodetic()
-    atmosphere = model.Atmosphere()
-    eom        = model.EOM()
-    flight     = model.Flight()
+    engine       = model.Engine()
+    mass         = model.Mass()
+    geodetic     = model.Geodetic()
+    atmosphere   = model.Atmosphere()
+    aerodynamics = model.Aerodynamics()
+    eom          = model.EOM()
+    flight       = model.Flight()
 
     # Set model dependencies
     mass.add_dep(engine)
     atmosphere.add_dep(geodetic)
-    eom.add_dep([engine, mass, geodetic])
-    flight.add_dep([atmosphere, eom])
+    aerodynamics.add_dep([engine, atmosphere])
+    eom.add_dep([engine, mass, geodetic, aerodynamics])
+    flight.add_dep(eom)
 
     # Initialize state from top-level model
     flight.init_state()
@@ -156,6 +168,9 @@ def run_flight(inputDictRun, iRun):
     temperature = inputDictRun["atmosphere"]["temperature"]["value"]
     pressure    = inputDictRun["atmosphere"]["pressure"]["value"]
     atmosphere.init(temperature, pressure)
+
+    refArea = inputDictRun["aerodynamics"]["refArea"]["value"]
+    aerodynamics.init(refArea, machData, alphaData, aeroData["cdPowerOff"], aeroData["cdPowerOn"], aeroData["clPowerOff"], aeroData["clPowerOn"], aeroData["cpTotal"])
 
     eom.init()
 

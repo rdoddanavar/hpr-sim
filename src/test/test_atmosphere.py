@@ -32,7 +32,6 @@ atmosphere.add_dep(test)
 atmosphere.init_state()
 
 # Initialize models
-
 stateFields = ["altitudeGP", "gravity0"]
 test.init(stateFields)
 test.set_state_data("altitudeGP", 0.0)
@@ -42,6 +41,7 @@ temp0  = 288.15
 press0 = 101325.0
 atmosphere.init(temp0, press0)
 
+# Test model
 alt     = np.arange(0, 80e3, 1e3)
 temp    = np.empty(len(alt))
 press   = np.empty(len(alt))

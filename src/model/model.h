@@ -12,8 +12,9 @@
 #include "pybind11/numpy.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
-#include "eigen/Eigen/Core"
+#include "gsl/interpolation/gsl_spline2d.h"
 #include "gsl/ode-initval2/gsl_odeiv2.h"
+#include "eigen/Eigen/Core"
 
 // Project headers
 #include "util_model.h"
@@ -118,9 +119,9 @@ class Engine : public Model
     
     public:
 
-        void init(py::array_t<double> timeInit  , 
-                  py::array_t<double> thrustInit, 
-                  py::array_t<double> massInit  );
+        void init(py::array_t<double>& timeInit  , 
+                  py::array_t<double>& thrustInit, 
+                  py::array_t<double>& massInit  );
 
         void set_state() override;
         void update() override;
@@ -132,13 +133,15 @@ class Engine : public Model
         // State variables
         double thrust;
         double massEng;
+        double isBurnout;
 
         // Miscellaneous
-        gsl_spline *thrustSpline;
-        gsl_spline *massSpline;
+        gsl_spline* thrustSpline;
+        gsl_spline* massSpline;
 
-        gsl_interp_accel* thrustAcc;
-        gsl_interp_accel* massAcc;
+        gsl_interp_accel* timeAcc;
+        
+        double timeMax; 
 
 };
 
@@ -238,19 +241,44 @@ class Aerodynamics : public Model
     
     public:
         
-        void init();
+        void init(double               refAreaInit   ,
+                  py::array_t<double>& machInit      , 
+                  py::array_t<double>& alphaInit     ,
+                  py::array_t<double>& cdPowerOffInit,
+                  py::array_t<double>& cdPowerOnInit ,
+                  py::array_t<double>& clPowerOffInit,
+                  py::array_t<double>& clPowerOnInit ,
+                  py::array_t<double>& cpInit        );
+
         void set_state() override;
         void update() override;
+
+        ~Aerodynamics(); // Destructor
 
     private:
 
         // State variables
         double dynamicPressure; // [N/m^2]
         double mach;            // [-]
-        double reynolds;        // [?]
+        double reynolds;        // [-]
+        double alphaT;          // [rad]
+        double dragCoeff;       // [-]
+        double liftCoeff;       // [-]
+        double centerPressure;  // [m]
+        double dragForce;       // [N]
+        double liftForce;       // [N]
 
-        // double cpX;    // Axial center of pressure [m]
-        // double alphaT; // Total angle-of-attack [rad]
+        // Miscellaneous
+        double refArea; // [m^2]
+        
+        gsl_spline2d* cdPowerOffSpline;
+        gsl_spline2d* cdPowerOnSpline;
+        gsl_spline2d* clPowerOffSpline;
+        gsl_spline2d* clPowerOnSpline;
+        gsl_spline2d* cpSpline;
+
+        gsl_interp_accel* machAcc;
+        gsl_interp_accel* alphaAcc;
 
         // Eigen::Vector3d forceAero;  // Force  [N]
         // Eigen::Vector3d momentAero; // Moment [N*m]
