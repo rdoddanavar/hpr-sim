@@ -22,6 +22,8 @@ void Aerodynamics::init(double               refAreaInit   ,
                         py::array_t<double>& cpInit        )
 {
 
+    refArea = refAreaInit;
+
     py::buffer_info machBuff       = machInit.request();
     py::buffer_info alphaBuff      = alphaInit.request();
     py::buffer_info cdPowerOffBuff = cdPowerOffInit.request();
@@ -109,7 +111,7 @@ void Aerodynamics::update()
     double velT = sqrt(pow(u, 2.0) + pow(v, 2.0) + pow(w, 2.0));
 
     mach   = velT/a;
-    alphaT = acos(u/velT);
+    alphaT = acos(abs(u)/velT);
     
     if (*state->at("isBurnout"))
     {
