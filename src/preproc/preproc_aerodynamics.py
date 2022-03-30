@@ -4,9 +4,16 @@ import sys
 import glob
 import numpy as np
 
+#-----------#
+
+#def load_csv():
+#    return (machData, alphaData, aeroData)
+
 #------------------------------------------------------------------------------#
 
 # See RASAero II User Manual pg. 90-93 for CDDataFile.txt format
+
+#def load_rasaero(inputPath):
 
 def load(inputPath):
 
@@ -93,5 +100,27 @@ def load(inputPath):
         # Swap dimensions: data[iAlpha, iMach) -> data[iMach, iAlpha]
         aeroData[key] = np.transpose(aeroData[key][iAlphaSort])
 
-    # TODO: output structure like object
-    return (machData, alphaData, aeroData)
+    # Build output array for CSV archive
+    nRow = nMach*nAlpha
+    nCol = 2 + len(aeroData.keys())
+    outData = np.zeros((nRow, nCol))
+
+    for iMach in range(nMach):
+        for iAlpha in range(nAlpha):
+
+            iData = iMach*nAlpha + iAlpha
+
+            outData[iData][0] = machData[iMach]
+            outData[iData][1] = alphaData[iAlpha]
+
+            outData[iData][2] = aeroData["cpTotal"][iMach][iAlpha]
+            outData[iData][3] = aeroData["clPowerOff"][iMach][iAlpha]
+            outData[iData][4] = aeroData["cdPowerOff"][iMach][iAlpha]
+            outData[iData][5] = aeroData["clPowerOn"][iMach][iAlpha]
+            outData[iData][6] = aeroData["cdPowerOn"][iMach][iAlpha]
+
+    np.savetxt("test.csv", outData, fmt='%.3e', delimiter=', ')
+
+print("done")
+
+    
