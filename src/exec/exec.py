@@ -91,7 +91,9 @@ def exec(inputPath, outputPath):
 
     # Aeromodel data
     global machData, alphaData, aeroData
-    (machData, alphaData, aeroData) = preproc_aerodynamics.load(inputDict["aerodynamics"]["inputPath"]["value"])
+    inputPath = inputDict["aerodynamics"]["inputPath"]["value"]
+    machMax   = 5.0
+    (machData, alphaData, aeroData) = preproc_aerodynamics.load(inputPath, machMax)
 
     # Sim execution
     mode    = inputDict["exec"]["mode"]["value"]
