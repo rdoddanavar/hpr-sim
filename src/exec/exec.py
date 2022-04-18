@@ -91,7 +91,9 @@ def exec(inputPath, outputPath):
 
     # Aeromodel data
     global machData, alphaData, aeroData
-    (machData, alphaData, aeroData) = preproc_aerodynamics.load(inputDict["aerodynamics"]["inputPath"]["value"])
+    inputPath = inputDict["aerodynamics"]["inputPath"]["value"]
+    machMax   = 5.0
+    (machData, alphaData, aeroData) = preproc_aerodynamics.load_csv(inputPath)
 
     # Sim execution
     mode    = inputDict["exec"]["mode"]["value"]
@@ -170,14 +172,15 @@ def run_flight(inputDictRun, iRun):
     atmosphere.init(temperature, pressure)
 
     refArea = inputDictRun["aerodynamics"]["refArea"]["value"]
-    aerodynamics.init(refArea, machData, alphaData, aeroData["cdPowerOff"], aeroData["cdPowerOn"], aeroData["clPowerOff"], aeroData["clPowerOn"], aeroData["cpTotal"])
+    aerodynamics.init(refArea, machData, alphaData, aeroData["cpTotal"], aeroData["clPowerOff"], aeroData["cdPowerOff"], aeroData["clPowerOn"], aeroData["cdPowerOn"])
 
     eom.init()
 
-    t0 = 0.0
-    dt = inputDictRun["flight"]["timeStep"]["value"]
-    tf = inputDictRun["flight"]["timeFlight"]["value"]
-    flight.init(t0, dt, tf)
+    t0    = 0.0
+    dt    = inputDictRun["flight"]["timeStep"]["value"]
+    tf    = inputDictRun["flight"]["timeFlight"]["value"]
+    nPrec = inputDictRun["flight"]["precision"]["value"]
+    flight.init(t0, dt, tf, nPrec)
 
     # Execute flight
     flight.update()

@@ -19,6 +19,7 @@ telem:
  - linAccZ
  - linVelZ
  - linPosZ
+ - isBurnout
 # stats
 # time: max
 # etc.

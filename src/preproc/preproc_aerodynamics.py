@@ -1,4 +1,3 @@
-
 # System modules
 import sys
 import glob
@@ -6,9 +5,28 @@ import numpy as np
 
 #------------------------------------------------------------------------------#
 
+def load_csv(inputPath):
+    
+    inData = np.loadtxt(inputPath, delimiter=', ', skiprows=1)
+
+    machData  = inData[:, 0]
+    alphaData = inData[:, 1]
+    
+    aeroData = {}
+
+    aeroData["cpTotal"]    = inData[:, 2]
+    aeroData["clPowerOff"] = inData[:, 3]
+    aeroData["cdPowerOff"] = inData[:, 4]
+    aeroData["clPowerOn"]  = inData[:, 5]
+    aeroData["cdPowerOn"]  = inData[:, 6]
+
+    return machData, alphaData, aeroData
+
+#------------------------------------------------------------------------------#
+
 # See RASAero II User Manual pg. 90-93 for CDDataFile.txt format
 
-def load(inputPath):
+def load_rasaero(inputPath, outputPath, machMax):
 
     # Collect data files
     filePaths  = glob.glob(inputPath + "CDDataFile*.txt")
@@ -16,7 +34,8 @@ def load(inputPath):
 
     # Setup data dimensions
     alphaData = np.zeros(len(filePaths))
-    machData  = np.arange(0.01, 25.01, 0.01)
+    dMach     = 0.01
+    machData  = np.arange(dMach, machMax+dMach, dMach)
 
     nAlpha = len(alphaData)
     nMach  = len(machData)
@@ -50,7 +69,10 @@ def load(inputPath):
 
                     # TODO: replace if-elif w/ match from python 3.10
                     if blockCount == 1:
-                        continue
+
+                        if float(words[0]) > machMax:
+                            break
+
                     elif blockCount == 2:
                         continue
                     elif blockCount == 3:
@@ -93,5 +115,24 @@ def load(inputPath):
         # Swap dimensions: data[iAlpha, iMach) -> data[iMach, iAlpha]
         aeroData[key] = np.transpose(aeroData[key][iAlphaSort])
 
-    # TODO: output structure like object
-    return (machData, alphaData, aeroData)
+    # Build output array for CSV archive
+    nRow = nMach*nAlpha
+    nCol = 2 + len(aeroData.keys())
+    outData = np.zeros((nRow, nCol))
+
+    for iMach in range(nMach):
+        for iAlpha in range(nAlpha):
+
+            iData = iMach*nAlpha + iAlpha
+
+            outData[iData][0] = machData[iMach]
+            outData[iData][1] = alphaData[iAlpha]
+
+            outData[iData][2] = aeroData["cpTotal"][iMach][iAlpha]
+            outData[iData][3] = aeroData["clPowerOff"][iMach][iAlpha]
+            outData[iData][4] = aeroData["cdPowerOff"][iMach][iAlpha]
+            outData[iData][5] = aeroData["clPowerOn"][iMach][iAlpha]
+            outData[iData][6] = aeroData["cdPowerOn"][iMach][iAlpha]
+
+    headerStr = ", ".join(["mach", 'alpha', "cpTotal", "clPowerOff", "cdPowerOff", "clPowerOn", "cdPowerOn"])
+    np.savetxt(outputPath, outData, fmt="%.3e", delimiter=", ", header=headerStr, comments='')

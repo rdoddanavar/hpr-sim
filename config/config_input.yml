@@ -61,6 +61,12 @@ flight:
         unit: s
         min: 0.0
         max: .inf
+    precision:
+        type: int
+        quantity: null
+        unit: null
+        min: 0
+        max: .inf
 engine:
     inputPath:
         type: str
