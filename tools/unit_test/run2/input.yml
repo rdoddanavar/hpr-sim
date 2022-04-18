@@ -12,9 +12,11 @@ flight:
         value: 50.0
     timeStep:
         value: 0.01
+    precision:
+        value: 3
 engine:
     inputPath:
-        value: ./input/engine/AeroTech_J450DM.eng
+        value: ./input/AeroTech_J450DM.eng
 mass:
     massBody:
         value: 4.466468913532913
@@ -36,3 +38,9 @@ atmosphere:
     pressure:
         value: 1.0
         unit: atm
+aerodynamics:
+    inputPath:
+        value: ./input/patriot_aerodynamics.csv
+    refArea:
+        value: 12.566
+        unit: in^2

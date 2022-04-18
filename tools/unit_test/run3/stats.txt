@@ -6,7 +6,14 @@
 (MAX) temperature: 288.150
 (MAX) pressure: 101325.000
 (MAX) density: 1.225
+(MAX) dynamicPressure: 49896.941
+(MAX) mach: 0.855
+(MAX) alphaT: 0.000
+(MAX) dragCoeff: 0.519
+(MAX) dragForce: 209.201
+(MAX) liftForce: 0.000
 (MAX) forceZ: 507.720
 (MAX) linAccZ: 150.247
 (MAX) linVelZ: 289.972
 (MAX) linPosZ: 4630.395
+(MAX) isBurnout: 1.000
