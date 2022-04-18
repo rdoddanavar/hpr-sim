@@ -1,4 +1,3 @@
-
 # System modules
 import sys
 import glob
@@ -13,14 +12,15 @@ def load_csv(inputPath):
     machData  = inData[:, 0]
     alphaData = inData[:, 1]
     
-    aeroData["cpTotal"]    = indata[:, 2]
-    aeroData["clPowerOff"] = indata[:, 3]
-    aeroData["cdPowerOff"] = indata[:, 4]
-    aeroData["clPowerOn"]  = indata[:, 5]
-    aeroData["cdPowerOn"]  = indata[:, 6]
+    aeroData = {}
+
+    aeroData["cpTotal"]    = inData[:, 2]
+    aeroData["clPowerOff"] = inData[:, 3]
+    aeroData["cdPowerOff"] = inData[:, 4]
+    aeroData["clPowerOn"]  = inData[:, 5]
+    aeroData["cdPowerOn"]  = inData[:, 6]
 
     return machData, alphaData, aeroData
-
 
 #------------------------------------------------------------------------------#
 
@@ -135,4 +135,4 @@ def load_rasaero(inputPath, outputPath, machMax):
             outData[iData][6] = aeroData["cdPowerOn"][iMach][iAlpha]
 
     headerStr = ", ".join(["mach", 'alpha', "cpTotal", "clPowerOff", "cdPowerOff", "clPowerOn", "cdPowerOn"])
-    np.savetxt("test.csv", outData, fmt="%.3e", delimiter=", ", header=headerStr, comments='')
+    np.savetxt(outputPath, outData, fmt="%.3e", delimiter=", ", header=headerStr, comments='')

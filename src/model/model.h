@@ -28,6 +28,7 @@ namespace py = pybind11;
 using stateMap    = std::map<std::string, double*>;
 using stateMapPtr = std::shared_ptr<stateMap>;
 using stateMapVec = std::map<std::string, std::vector<double>>;
+using numpyArray  = py::array_t<double, py::array::c_style | py::array::forcecast>;
 
 // TODO: consider replacing std::map w/ std::unordered_map for performance
 // Performance vs. memory usage?
@@ -119,9 +120,9 @@ class Engine : public Model
     
     public:
 
-        void init(py::array_t<double>& timeInit  , 
-                  py::array_t<double>& thrustInit, 
-                  py::array_t<double>& massInit  );
+        void init(numpyArray& timeInit  , 
+                  numpyArray& thrustInit, 
+                  numpyArray& massInit  );
 
         void set_state() override;
         void update() override;
@@ -241,14 +242,14 @@ class Aerodynamics : public Model
     
     public:
         
-        void init(double               refAreaInit   ,
-                  py::array_t<double>& machInit      , 
-                  py::array_t<double>& alphaInit     ,
-                  py::array_t<double>& cdPowerOffInit,
-                  py::array_t<double>& cdPowerOnInit ,
-                  py::array_t<double>& clPowerOffInit,
-                  py::array_t<double>& clPowerOnInit ,
-                  py::array_t<double>& cpInit        );
+        void init(double      refAreaInit   ,
+                  numpyArray& machInit      , 
+                  numpyArray& alphaInit     ,
+                  numpyArray& cpTotalInit   ,
+                  numpyArray& clPowerOffInit,
+                  numpyArray& cdPowerOffInit,
+                  numpyArray& clPowerOnInit ,
+                  numpyArray& cdPowerOnInit );
 
         void set_state() override;
         void update() override;
@@ -271,11 +272,11 @@ class Aerodynamics : public Model
         // Miscellaneous
         double refArea; // [m^2]
         
-        gsl_spline2d* cdPowerOffSpline;
-        gsl_spline2d* cdPowerOnSpline;
+        gsl_spline2d* cpTotalSpline;
         gsl_spline2d* clPowerOffSpline;
+        gsl_spline2d* cdPowerOffSpline;
         gsl_spline2d* clPowerOnSpline;
-        gsl_spline2d* cpSpline;
+        gsl_spline2d* cdPowerOnSpline;
 
         gsl_interp_accel* machAcc;
         gsl_interp_accel* alphaAcc;
@@ -323,7 +324,7 @@ class Flight : public Model
 
     public:
 
-        void init(double tfInit, double dtInit, double t0Init);
+        void init(double tfInit, double dtInit, double t0Init, int nPrecInit);
         void set_state() override;
         void update() override;
 

@@ -3,6 +3,7 @@
 # System modules
 import sys
 import pathlib
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -14,7 +15,7 @@ for item in paths:
     sys.path.append(str(addPath.resolve()))
 
 # Project modules
-import preproc_aerodynamic
+import preproc_aerodynamics
 import model
 
 #------------------------------------------------------------------------------#
@@ -30,38 +31,76 @@ aero.add_dep(test)
 aero.init_state()
 
 # Initialize models
-stateFields = ["mach", "alpha"]
+stateFields = ["linVelZ", "linVelY", "linVelX", "speedSound", "density", "isBurnout"]
 test.init(stateFields)
 
-inputPath = "/home/roshan/Documents/hpr-sim/patriot/CDDataFile/"
-(machData, alphaData, aeroData) = preproc_aerodynamic.load(inputPath)
+inputPathRel = "../../input/patriot_aerodynamics.csv"
+inputPath    = pathlib.Path(__file__).parent / inputPathRel
+inputPath    = inputPath.resolve()
+(machData, alphaData, aeroData) = preproc_aerodynamics.load_csv(inputPath)
 
 refArea = 12.566/144.0 # ft^2
-aero.init(refArea, machData, alphaData, aeroData["cdPowerOff"], aeroData["cdPowerOn"], aeroData["clPowerOff"], aeroData["clPowerOn"], aeroData["cpTotal"])
+aero.init(refArea, machData, alphaData, aeroData["cpTotal"], aeroData["clPowerOff"], aeroData["cdPowerOff"], aeroData["clPowerOn"], aeroData["cdPowerOn"])
 
-# Test model
-cd = np.empty(len(alphaData))
-iMach = 0
+# Test model - alpha sweep
+alphaRng = np.deg2rad(np.arange(0, 15.25, 0.25))
+mach = 0.01
+speedSound = 343
+density = 1.225
+cd = np.empty(len(alphaRng))
 
-for iAlpha in range(len(alphaData)):
+for iAlpha in range(len(alphaRng)):
 
-    test.set_state_data("mach", machData[iMach])
-    test.set_state_data("alpha", alphaData[iAlpha])
+    linVel  = mach*speedSound
+    linVelZ = linVel*math.cos(alphaRng[iAlpha])
+    linVelY = 0.0
+    linVelX = linVel*math.sin(alphaRng[iAlpha])
+
+    test.set_state_data("linVelZ", linVelZ)
+    test.set_state_data("linVelY", linVelY)
+    test.set_state_data("linVelX", linVelX)
+    test.set_state_data("speedSound", speedSound)
+    test.set_state_data("density", density)
+    test.set_state_data("isBurnout", 1.0)
+
     aero.update()
 
     cd[iAlpha] = test.get_state_data("dragCoeff")
 
+fig, ax = plt.subplots()
+ax.plot(np.arange(0,16,1), aeroData["cdPowerOff"][0:16], 'o')
+ax.plot(np.rad2deg(alphaRng), cd)
+ax.set_title("Model Data Interpolation")
+
 #------------------------------------------------------------------------------#
 
-fig, ax = plt.subplots()
-ax.plot(machData, aeroData["cdPowerOff"][:, [0]], label="PowerOff")
-ax.plot(machData, aeroData["cdPowerOn"][:, [0]], label="PowerOn")
-ax.set_title("RASAero Raw Data")
-ax.legend()
+# Test model - mach sweep
+machRng = np.arange(0, 5, 0.01)
+alpha = 0.0
+speedSound = 343
+density = 1.225
+cd = np.empty(len(machRng))
+
+for iMach in range(len(machRng)):
+
+    linVel  = machRng[iMach]*speedSound
+    linVelZ = linVel*math.cos(alpha)
+    linVelY = 0.0
+    linVelX = linVel*math.sin(alpha)
+
+    test.set_state_data("linVelZ", linVelZ)
+    test.set_state_data("linVelY", linVelY)
+    test.set_state_data("linVelX", linVelX)
+    test.set_state_data("speedSound", speedSound)
+    test.set_state_data("density", density)
+    test.set_state_data("isBurnout", 1.0)
+
+    aero.update()
+
+    cd[iMach] = test.get_state_data("dragCoeff")
 
 fig, ax = plt.subplots()
-ax.plot(alphaData, aeroData["cdPowerOff"][0], 'o')
-ax.plot(alphaData, cd)
+ax.plot(machRng, cd)
 ax.set_title("Model Data Interpolation")
 
 plt.show()

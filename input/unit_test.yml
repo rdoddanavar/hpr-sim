@@ -13,8 +13,9 @@ exec:
 flight:
     timeFlight: 50.0
     timeStep: 0.01
+    precision: 3
 engine:
-    inputPath: ./input/engine/AeroTech_J450DM.eng
+    inputPath: ./input/AeroTech_J450DM.eng
 mass:
     massBody:
         value: 5.0
@@ -33,7 +34,7 @@ atmosphere:
         value: 1.0
         unit: atm
 aerodynamics:
-    inputPath: /home/roshan/Documents/hpr-sim/patriot/CDDataFile/
+    inputPath: ./input/patriot_aerodynamics.csv
     refArea:
         value: 12.566
         unit: in^2

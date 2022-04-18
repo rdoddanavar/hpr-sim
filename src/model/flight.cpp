@@ -19,7 +19,7 @@
 
 //---------------------------------------------------------------------------//
 
-void Flight::init(double t0Init, double dtInit, double tfInit)
+void Flight::init(double t0Init, double dtInit, double tfInit, int nPrecInit)
 {
     
     // Basic setup
@@ -47,7 +47,7 @@ void Flight::init(double t0Init, double dtInit, double tfInit)
     
     // Telemetry setup
     nStep = static_cast<int>(tf/dt);
-    nPrec = 4;
+    nPrec = nPrecInit;
     // TODO: Make nPrec an input parameter?
 
     // TODO: Initialize telemFields to default if user-defined fields not available
@@ -167,7 +167,8 @@ std::vector<std::string> Flight::telemFieldsDefault = {"time"       ,
                                                        "forceZ"     ,
                                                        "linAccZ"    ,
                                                        "linVelZ"    ,
-                                                       "linPosZ"    };
+                                                       "linPosZ"    ,
+                                                       "isBurnout"  };
 
 std::vector<std::string> Flight::telemUnitsDefault = {"s"     ,
                                                       "N"     ,
@@ -186,7 +187,8 @@ std::vector<std::string> Flight::telemUnitsDefault = {"s"     ,
                                                       "N"     ,
                                                       "m/s^2" ,
                                                       "m/s"   ,
-                                                      "m"     };
+                                                      "m"     ,
+                                                      ""      };
 
 std::vector<std::string> Flight::telemFields;
 std::vector<std::string> Flight::telemUnits;
