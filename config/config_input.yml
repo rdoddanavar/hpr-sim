@@ -78,13 +78,19 @@ mass:
         unit: kg
         min: 0.0
         max: .inf
+    centerGravX:
+        type: float
+        quantity: length
+        unit: m
+        min: -.inf
+        max: 0.0
 geodetic:
     latitude:
         type: float
         quantity: angle
         unit: rad
-        min: -3.14159265359/2
-        max: 3.14159265359/2
+        min: -3.14159/2
+        max:  3.14159/2
     altitude:
         type: float
         quantity: length
@@ -114,4 +120,17 @@ aerodynamics:
         unit: m^2
         min: 0.0
         max: .inf
+eom:
+    launchAz:
+        type: float
+        quantity: angle
+        unit: rad
+        min: 0.0
+        max: 2*3.14159
+    launchEl:
+        type: float
+        quantity: angle
+        unit: rad
+        min: 0.0
+        max: 3.14159/2
 ...

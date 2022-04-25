@@ -30,7 +30,7 @@ void Flight::init(double t0Init, double dtInit, double tfInit, int nPrecInit)
     // Solver setup
     odeSolver.sys.function  = &ode_update;
     odeSolver.sys.jacobian  = nullptr;
-    odeSolver.sys.dimension = 2;
+    odeSolver.sys.dimension = 12;
     odeSolver.sys.params    = this;
 
     odeSolver.hStart = 1e-6;
@@ -72,11 +72,22 @@ void Flight::set_state()
 
 void Flight::update()
 {
-
+    
     int nStep = static_cast<int>(tf/dt);
 
-    double y[] = {*state->at("linPosZ"),
-                  *state->at("linVelZ")};
+    // Initialize ODE integration state vector
+    double y[] = {*state->at("x"),
+                  *state->at("y"),
+                  *state->at("z"),
+                  *state->at("phi"),
+                  *state->at("theta"),
+                  *state->at("psi"),
+                  *state->at("u"),
+                  *state->at("v"),
+                  *state->at("w"),
+                  *state->at("p"),
+                  *state->at("q"),
+                  *state->at("r")};
 
     // Save initial state
     update_deps();
@@ -85,12 +96,12 @@ void Flight::update()
     {
         stateTelem[field][0] = *state->at(field);
     }
-    
+
     // Solve ODE system
 
     for (int iStep = 1; iStep <= nStep; iStep++)
     {
-        
+
         double ti = iStep*dt;
 
         int status = gsl_odeiv2_driver_apply(odeSolver.driver, &time, ti, y);
@@ -102,23 +113,22 @@ void Flight::update()
             stateTelem[field][iStep] = *state->at(field);
         }
 
-        if (y[0] <= 0.0)
+        if (y[2] <= 0.0)
         {
             
             //flightTerm = true;
             flightTime = time;
 
             break; // TODO: could include more complex logic with an "apogeeFlag"
+
         }
 
-        /*
-        TODO
         if (status != GSL_SUCCESS)
         {
-          printf ("error, return value=%d\n", status);
+          std::cout << "error, return value=" << status << "\n";
           break;
         }
-        */
+        
     }
 
     flightTerm = true; // TODO: better handling for flight termination
@@ -135,14 +145,35 @@ int ode_update(double t, const double y[], double f[], void *params)
     stateMapPtr state  = flight->state;
 
     // Set current state
-    *state->at("linPosZ") = y[0];
-    *state->at("linVelZ") = y[1];
+    *state->at("x")     = y[0];
+    *state->at("y")     = y[1];
+    *state->at("z")     = y[2];
+    *state->at("phi")   = y[3];
+    *state->at("theta") = y[4]; 
+    *state->at("psi")   = y[5];
+    *state->at("u")     = y[6];
+    *state->at("v")     = y[7];
+    *state->at("w")     = y[8];
+    *state->at("p")     = y[9];
+    *state->at("q")     = y[10];
+    *state->at("r")     = y[11];
 
+    // Run models
     flight->update_deps();
 
     // Set state derivatives for solver
-    f[0] = y[1];
-    f[1] = *state->at("linAccZ");
+    f[0]  = *state->at("xDot");
+    f[1]  = *state->at("yDot");
+    f[2]  = *state->at("zDot");
+    f[3]  = *state->at("phiDot");
+    f[4]  = *state->at("thetaDot");
+    f[5]  = *state->at("psiDot");
+    f[6]  = *state->at("uDot");
+    f[7]  = *state->at("vDot");
+    f[8]  = *state->at("wDot");
+    f[9]  = *state->at("pDot");
+    f[10] = *state->at("qDot");
+    f[11] = *state->at("rDot");
 
     return GSL_SUCCESS;
 
@@ -152,6 +183,7 @@ int ode_update(double t, const double y[], double f[], void *params)
 
 std::vector<std::string> Flight::telemFieldsDefault = {"time"       ,
                                                        "thrust"     ,
+                                                       "isBurnout"  ,
                                                        "massEng"    ,
                                                        "mass"       ,
                                                        "gravity"    ,
@@ -164,14 +196,14 @@ std::vector<std::string> Flight::telemFieldsDefault = {"time"       ,
                                                        "dragCoeff",
                                                        "dragForce"  ,
                                                        "liftForce"  ,
-                                                       "forceZ"     ,
-                                                       "linAccZ"    ,
-                                                       "linVelZ"    ,
-                                                       "linPosZ"    ,
-                                                       "isBurnout"  };
+                                                       "forceZB"    ,
+                                                       "x",
+                                                       "y",
+                                                       "z"};
 
 std::vector<std::string> Flight::telemUnitsDefault = {"s"     ,
                                                       "N"     ,
+                                                      ""      ,
                                                       "kg"    ,
                                                       "kg"    ,
                                                       "m/s^2" ,
@@ -181,14 +213,13 @@ std::vector<std::string> Flight::telemUnitsDefault = {"s"     ,
                                                       "Pa",
                                                       ""      ,
                                                       "rad"   ,
-                                                      "",
+                                                      ""      ,
                                                       "N"     ,
                                                       "N"     ,
                                                       "N"     ,
-                                                      "m/s^2" ,
-                                                      "m/s"   ,
                                                       "m"     ,
-                                                      ""      };
+                                                      "m"     ,
+                                                      "m"     };
 
 std::vector<std::string> Flight::telemFields;
 std::vector<std::string> Flight::telemUnits;

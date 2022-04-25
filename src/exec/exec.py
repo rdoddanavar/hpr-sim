@@ -174,7 +174,9 @@ def run_flight(inputDictRun, iRun):
     refArea = inputDictRun["aerodynamics"]["refArea"]["value"]
     aerodynamics.init(refArea, machData, alphaData, aeroData["cpTotal"], aeroData["clPowerOff"], aeroData["cdPowerOff"], aeroData["clPowerOn"], aeroData["cdPowerOn"])
 
-    eom.init()
+    launchAz = inputDictRun["eom"]["launchAz"]["value"]
+    launchEl = inputDictRun["eom"]["launchEl"]["value"]
+    eom.init(launchAz, launchEl)
 
     t0    = 0.0
     dt    = inputDictRun["flight"]["timeStep"]["value"]

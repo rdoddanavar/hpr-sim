@@ -293,23 +293,28 @@ class EOM : public Model
 
     public:
 
-        void init();
+        void init(double launchAzInit, double launchElInit);
         void set_state() override;
         void update() override;
 
     private:
 
         // State variables
-        Eigen::Vector3d force;  // Force  [N]
-        Eigen::Vector3d moment; // Moment [N*m]
+        Eigen::Vector3d forceB;  // Force                BODY  [N]
+        Eigen::Vector3d linAccB; // Linear acceleration  BODY  [m/s^2]
+        Eigen::Vector3d linVelB; // Linear velocity      BODY  [m/s]
+        Eigen::Vector3d linVelE; // Linear velocity      EARTH [m/s]
+        Eigen::Vector3d linPosE; // Linear position      EARTH [m]
 
-        Eigen::Vector3d linAcc; // Linear acceleration [m/s^2]
-        Eigen::Vector3d linVel; // Linear velocity     [m/s]
-        Eigen::Vector3d linPos; // Linear position     [m]
+        Eigen::Vector3d momentB; // Moment               BODY  [N*m]
+        Eigen::Vector3d angAccB; // Angular acceleration BODY  [rad/s^2]
+        Eigen::Vector3d angVelB; // Angular velocity     BODY  [rad/s]
+        Eigen::Vector3d angVelE; // Angular velocity     EARTH [rad/s]
+        Eigen::Vector3d angPosE; // Angular position     EARTH [rad]
 
-        Eigen::Vector3d angAcc; // Angular acceleration [rad/s^2]
-        Eigen::Vector3d angVel; // Angular velocity     [rad/s]
-        Eigen::Vector3d angPos; // Angular position     [rad]
+        // Miscellanenous
+        double launchAz; // Launch rail azimuth   [rad]
+        double launchEl; // Launch rail elevation [rad]
 
         bool launchFlag = false;
 

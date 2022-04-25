@@ -3,6 +3,7 @@
 telem:
  - time
  - thrust
+ - isBurnout
  - massEng
  - mass
  - gravity
@@ -15,11 +16,10 @@ telem:
  - dragCoeff
  - dragForce
  - liftForce
- - forceZ
- - linAccZ
- - linVelZ
- - linPosZ
- - isBurnout
+ - forceZB
+ - x
+ - y
+ - z
 # stats
 # time: max
 # etc.
