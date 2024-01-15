@@ -12,9 +12,9 @@
 
 //---------------------------------------------------------------------------//
 
-void Engine::init(numpyArray& timeInit  , 
-                  numpyArray& thrustInit, 
-                  numpyArray& massInit  ) 
+void Engine::init(numpyArray& timeInit  ,
+                  numpyArray& thrustInit,
+                  numpyArray& massInit  )
 {
     
     py::buffer_info timeBuff   = timeInit.request();

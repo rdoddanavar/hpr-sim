@@ -37,8 +37,8 @@ using numpyArray  = py::array_t<double, py::array::c_style | py::array::forcecas
 
 class Model
 {
-    
-    public: 
+
+    public:
 
         // Function(s)
         virtual void set_state() = 0; // Pure virtual
@@ -72,7 +72,7 @@ class Model
 
         void init_state(stateMapPtr stateIn)
         {
-            
+
             state = stateIn;
             set_state();
 
@@ -97,7 +97,7 @@ class Test : public Model
 {
 
     public:
-        
+
         void init(std::vector<std::string> stateFieldsInit);
         void set_state() override;
         void update() override;
@@ -117,7 +117,7 @@ class Test : public Model
 
 class Engine : public Model
 {
-    
+
     public:
 
         void init(numpyArray& timeInit  , 
@@ -150,7 +150,7 @@ class Engine : public Model
 
 class Mass : public Model
 {
-    
+
     public:
 
         void init(double massBodyInit);
@@ -198,7 +198,7 @@ class Geodetic : public Model
         double radiusE;      // [m]
         double altitudeMSL0; // [m]
         double gamma;        // [m/s^2]
-        
+
 };
 
 //---------------------------------------------------------------------------//
@@ -207,7 +207,7 @@ class Atmosphere : public Model
 {
 
     public:
-        
+
         void init(double tempInit, double pressInit);
         void set_state() override;
         void update() override;

@@ -16,9 +16,9 @@
 //---------------------------------------------------------------------------//
 
 void Aerodynamics::init(double      refAreaInit   ,
-                        numpyArray& machInit      , 
+                        numpyArray& machInit      ,
                         numpyArray& alphaInit     ,
-                        numpyArray& cpTotalInit   , 
+                        numpyArray& cpTotalInit   ,
                         numpyArray& clPowerOffInit,
                         numpyArray& cdPowerOffInit,
                         numpyArray& clPowerOnInit ,

@@ -25,7 +25,7 @@ void bind_Flight       (py::module_ &);
 
 PYBIND11_MODULE(model, m)
 {
-    
+
     m.doc() = "Simulation Model Classes"; // Optional module docstring
 
     // Exposing base class necessary for derived construction

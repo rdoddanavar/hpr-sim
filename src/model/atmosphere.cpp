@@ -104,13 +104,13 @@ void Atmosphere::usStd1976(double altitudeGP)
 {
 
     // US Standard Atmosphere 1976
-    
+
     for (int iAlt = 0; iAlt < tempGradDep.size(); iAlt++)
     {
-        
+
         if ((altitudeGP >= tempGradInd[iAlt]) && (altitudeGP <= tempGradInd[iAlt+1]))
         {
-            
+
             double dh = altitudeGP - profileAlt[iAlt];
 
             temperature = profileTemp[iAlt] + tempGradDep[iAlt] * dh;
