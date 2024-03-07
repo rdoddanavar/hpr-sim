@@ -108,7 +108,7 @@ void EOM::update()
 
     double forceGrav  = mass*gravity;
     double flightPath;
-    
+
     if (linVelE[0] == 0.0)
     {
         flightPath = M_PI;
