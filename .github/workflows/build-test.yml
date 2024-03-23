@@ -1,5 +1,6 @@
 name: build-test
 on:
+    workflow_dispatch:
     push:
         branches: [master]
     pull_request:
