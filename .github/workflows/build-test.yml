@@ -33,6 +33,11 @@ jobs:
         with:
           path: build # Absolute path
           key: build-ubuntu
+      - name: Setup python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+        run: pip install -r requirements.txt
       - name: Test
         run: pwd; ls -la; ./hpr-sim.py -i input/unit_test.yml output/
     
