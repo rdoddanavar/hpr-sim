@@ -27,6 +27,8 @@ jobs:
       run:
         working-directory: build
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Test
         run: pwd; ls -la
     
