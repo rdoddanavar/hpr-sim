@@ -20,6 +20,11 @@ jobs:
         run: cmake ../
       - name: Execute build
         run: make
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: build # Absolute path
+          key: build-ubuntu
   test-ubuntu:
     runs-on: ubuntu-22.04
     needs: build-ubuntu
@@ -29,6 +34,11 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Retrieve build artifacts
+        uses: actions/cache@v4
+        with:
+          path: build # Absolute path
+          key: build-ubuntu
       - name: Test
         run: pwd; ls -la
     
