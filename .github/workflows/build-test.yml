@@ -8,16 +8,13 @@ on:
 jobs:
   build-ubuntu:
     runs-on: ubuntu-22.04
-    defaults:
-      run:
-        working-directory: build
     steps:
       - name: Checkout repository and submodules
         uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Configure build
-        run: cmake ../
+        run: cd build && cmake ../
       - name: Execute build
         run: make
       - name: Cache build artifacts
@@ -28,9 +25,6 @@ jobs:
   test-ubuntu:
     runs-on: ubuntu-22.04
     needs: build-ubuntu
-    defaults:
-      run:
-        working-directory: build
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
