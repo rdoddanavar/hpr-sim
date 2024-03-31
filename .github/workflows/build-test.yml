@@ -1,22 +1,31 @@
 name: build-test
 on:
-    workflow_dispatch:
-    push:
-        branches: [master]
-    pull_request:
-        branches: [master]
+  workflow_dispatch:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
 jobs:
-    build-ubuntu:
-        runs-on: ubuntu-20.04
-        defaults:
-            run:
-                working-directory: ./build
-        steps:
-            - name: Checkout repository and submodules
-              uses: actions/checkout@v2
-              with:
-                submodules: recursive
-            - name: Configure build
-              run: cmake ../
-            - name: Execute build
-              run: make
+  build-ubuntu:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./build
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Configure build
+        run: cmake ../
+      - name: Execute build
+        run: make
+  test-ubuntu:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: ./build
+    steps:
+      - name: Test
+        run: pwd; ls -la
+    
