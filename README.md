@@ -1,6 +1,5 @@
 # hpr-sim
 
-![](https://img.shields.io/badge/platform-linux--64-lightgrey.svg)
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-sim.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-sim.svg)
 
@@ -19,17 +18,11 @@ The goal of this project is to build a robust, extensible flight simulation pack
 
 The intent is to lean on the respective strengths of python and C++ to create a modern, efficient simulation package. Python is used for pre-processing, post-processing, and data visualization, while C++ constitutes the bulk of the numerical routines. Pybind11 is used as a binding library to interface between the two sets of source code. 
 
-Current efforts are focused on a build for Ubuntu-based linux systems (x64). 
+Current efforts are focused on builds for these platforms:
 
-## System Dependencies
-
-Must be present on user's machine to build & run simulation:
-
-|          | Version   | Purpose              | Link                                   |
-|----------|-----------|--------------------- |--------------------------------------- |
-| gcc      | `4.8+`    | C/C++ compiler       |                                        |
-| Anaconda | `3.7+`    | Python distribution  | https://www.anaconda.com/distribution/ |
-| CMake    | `3.10.2+` | Build system manager | https://cmake.org/install/             |
+| Platform  | Runner OS      | Test(s)                                                                                     
+| --------- |----------------|---------------------------------------------------------------------------------------------
+| Linux x64 | `ubuntu-22.04` | ![](https://github.com/rdoddanavar/hpr-sim/actions/workflows/unit-test-ubuntu.yml/badge.svg)
 
 ## External Libraries
 
@@ -53,14 +46,11 @@ Managed through `git submodule`; included with repository by default:
  - `tools/` - Misc. utilities & test scripts 
 
 ```
-.
+./
 ├── build/
 ├── config/
 ├── doc/
 ├── input/
-│   ├── aero/
-│   ├── engine/
-│   └── unit_test.yml
 ├── lib/
 │   ├── eigen/
 │   ├── gsl/
@@ -71,13 +61,16 @@ Managed through `git submodule`; included with repository by default:
 │   ├── model/
 │   ├── postproc/
 │   ├── preproc/
+│   ├── test/
 │   ├── util/
 │   └── CMakeLists.txt
 ├── tools/
 ├── CMakeLists.txt
-├── hpr-sim.py*
-├── license
-└── readme.md
+├── COPYING
+├── hpr-sim.py
+├── LICENSE
+├── README.md
+└── requirements.txt
 
-21 directories, 17 files
+22 directories, 22 files
 ```

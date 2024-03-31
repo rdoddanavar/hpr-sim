@@ -29,8 +29,7 @@
 #     hpr-sim/README.md
 #------------------------------------------------------------#
 
-target="/home/${USER}/Git/hpr-sim/"
-file="/home/${USER}/Git/hpr-sim/readme.md"
+file="README.md"
 blk='```'
 lvl=$1 # No. lvl in tree
 
@@ -39,6 +38,5 @@ sed "1,/$blk/!d" $file > temp
 mv temp $file
 
 # Generate new index, append to file
-cd $target
 tree -F -L $lvl --dirsfirst >> $file
 echo "$blk" >> $file
