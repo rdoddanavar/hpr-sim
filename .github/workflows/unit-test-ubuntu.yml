@@ -1,0 +1,44 @@
+name: unit-test-ubuntu
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Configure build
+        run: cd build && cmake ../
+      - name: Execute build
+        run: cd build && make
+      - name: Cache build artifacts
+        uses: actions/cache@v4
+        with:
+          path: build # Absolute path
+          key: build-ubuntu
+  test-ubuntu:
+    runs-on: ubuntu-22.04
+    needs: build-ubuntu
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Retrieve build artifacts
+        uses: actions/cache@v4
+        with:
+          path: build # Absolute path
+          key: build-ubuntu
+      - name: Setup python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install python packages
+        run: pip install -r requirements.txt
+      - name: Run unit test
+        run: ./hpr-sim.py -i input/unit_test.yml output/ && ls -l output/*/*
+    
