@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-22.04
     defaults:
       run:
-        working-directory: ./build
+        working-directory: build
     steps:
       - name: Checkout repository and submodules
         uses: actions/checkout@v4
@@ -22,9 +22,10 @@ jobs:
         run: make
   test-ubuntu:
     runs-on: ubuntu-22.04
+    needs: build-ubuntu
     defaults:
       run:
-        working-directory: ./build
+        working-directory: build
     steps:
       - name: Test
         run: pwd; ls -la
