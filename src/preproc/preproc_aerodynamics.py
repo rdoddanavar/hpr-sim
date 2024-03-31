@@ -7,7 +7,7 @@ import numpy as np
 
 def load_csv(inputPath):
     
-    inData = np.loadtxt(inputPath, delimiter=', ', skiprows=1)
+    inData = np.loadtxt(inputPath, delimiter=',', skiprows=1)
 
     machData  = inData[:, 0]
     alphaData = inData[:, 1]

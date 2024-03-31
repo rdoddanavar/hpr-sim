@@ -40,5 +40,5 @@ jobs:
           path: build # Absolute path
           key: build-ubuntu
       - name: Test
-        run: pwd; ls -la
+        run: pwd; ls -la; ./hpr-sim.py -i input/unit_test.yml output/
     
