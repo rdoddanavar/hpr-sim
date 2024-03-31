@@ -1,4 +1,4 @@
-name: build-test
+name: unit-test-ubuntu
 on:
   workflow_dispatch:
   push:
