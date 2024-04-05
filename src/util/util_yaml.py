@@ -46,8 +46,8 @@ def load(filePath):
     Output(s): yamlDict (dict)
     """
 
-    stream   = open(filePath, 'r')
-    yamlDict = yaml.safe_load(stream)
+    with open(filePath, 'r', encoding="utf8") as stream:
+        yamlDict = yaml.safe_load(stream)
 
     return yamlDict
 

@@ -14,6 +14,9 @@ for item in paths:
     addPath = pathlib.Path(__file__).parent / item
     sys.path.append(str(addPath.resolve()))
 
+if os.name == "nt":
+    os.add_dll_directory(r"C:\Users\roshan\AppData\Local\Programs\mingw64\bin")
+
 # Project modules
 import exec_rand
 import util_yaml
