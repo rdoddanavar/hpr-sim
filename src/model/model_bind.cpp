@@ -25,7 +25,7 @@ void bind_Flight       (py::module_ &);
 
 PYBIND11_MODULE(model, m)
 {
-    
+
     m.doc() = "Simulation Model Classes"; // Optional module docstring
 
     // Exposing base class necessary for derived construction
@@ -135,8 +135,9 @@ void bind_Flight(py::module_ &m)
     py::class_<Flight, Model>(m, "Flight")
         .def(py::init<>())
         .def("init", &Flight::init)
-        .def_static("set_telem", &Flight::set_telem)
         .def_readonly_static("telemFieldsDefault", &Flight::telemFieldsDefault)
+        .def_readonly_static("telemUnitsDefault", &Flight::telemUnitsDefault)
+        .def("set_telem", &Flight::set_telem)
         .def("write_telem", &Flight::write_telem)
         .def("write_stats", &Flight::write_stats)
         .def_readwrite("odeSolver", &Flight::odeSolver);

@@ -123,6 +123,7 @@ void Flight::update()
 
     flightTerm = true; // TODO: better handling for flight termination
     // TODO: Add additional while loop to keep integrating if flightTerm = false
+    std::cout << "flight.update() done!\n";
 
 }
 
@@ -190,29 +191,15 @@ std::vector<std::string> Flight::telemUnitsDefault = {"s"     ,
                                                       "m"     ,
                                                       ""      };
 
-std::vector<std::string> Flight::telemFields;
-std::vector<std::string> Flight::telemUnits;
-
-void Flight::set_telem(std::vector<std::string> telemFieldsInit)
-{
-
-    telemFields = telemFieldsInit;
-
-    for (const auto& field : telemFields)
-    {
-        
-        auto it  = std::find(telemFieldsDefault.begin(), telemFieldsDefault.end(), field);
-        int  idx = std::distance(telemFieldsDefault.begin(), it);
-
-        telemUnits.push_back(telemUnitsDefault[idx]);
-
-    }
-
-}
-
 //---------------------------------------------------------------------------//
 
-void Flight::write_telem(std::string fileOut) // TODO: maybe return bool for success/error status?
+void Flight::set_telem(const std::vector<std::string> &telemFieldsInit, const std::vector<std::string> &telemUnitsInit)
+{
+    telemFields = telemFieldsInit;
+    telemUnits  = telemUnitsInit;
+}
+
+void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool for success/error status?
 {
 
     if (!flightTerm)
@@ -272,7 +259,7 @@ void Flight::write_telem(std::string fileOut) // TODO: maybe return bool for suc
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_stats(std::string fileOut) // TODO: maybe return bool for success/error status?
+void Flight::write_stats(const std::string &fileOut) // TODO: maybe return bool for success/error status?
 {
 
     if (!flightTerm)

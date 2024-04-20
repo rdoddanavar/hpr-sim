@@ -328,18 +328,17 @@ class Flight : public Model
         void set_state() override;
         void update() override;
 
-        void write_telem(std::string fileOut);
-        void write_stats(std::string fileOut);
-
-        static void set_telem(std::vector<std::string> telemFieldsInit);
+        void set_telem(const std::vector<std::string> &telemFieldsInit, const std::vector<std::string> &telemUnitsInit);
+        void write_telem(const std::string &fileOut);
+        void write_stats(const std::string &fileOut);
 
         ~Flight(); // Destructor
 
         static std::vector<std::string> telemFieldsDefault;
         static std::vector<std::string> telemUnitsDefault;
 
-        static std::vector<std::string> telemFields;
-        static std::vector<std::string> telemUnits;
+        std::vector<std::string> telemFields;
+        std::vector<std::string> telemUnits;
 
         OdeSolver odeSolver; // ODE solver settings & driver
 
