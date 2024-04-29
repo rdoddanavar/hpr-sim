@@ -54,7 +54,7 @@ void Flight::init(double t0Init, double dtInit, double tfInit, int nPrecInit)
 
     for (const auto& field : telemFields)
     {
-        stateTelem[field] = std::vector<double>(nStep, 0.0);
+        stateTelem[field] = std::vector<float>(nStep, 0.0f);
     }
 
     isInit = true;
@@ -83,7 +83,7 @@ void Flight::update()
     
     for (const auto& field : telemFields)
     {
-        stateTelem[field][0] = *state->at(field);
+        stateTelem[field][0] = static_cast<float>(*state->at(field));
     }
     
     // Solve ODE system
@@ -99,7 +99,7 @@ void Flight::update()
 
         for (const auto& field : telemFields)
         {
-            stateTelem[field][iStep] = *state->at(field);
+           stateTelem[field][iStep] = static_cast<float>(*state->at(field));
         }
 
         if (y[0] <= 0.0)
@@ -124,6 +124,19 @@ void Flight::update()
     flightTerm = true; // TODO: better handling for flight termination
     // TODO: Add additional while loop to keep integrating if flightTerm = false
     std::cout << "flight.update() done!\n";
+
+    int total = 0;
+
+    for (const auto& field : telemFields)
+    {
+        total += static_cast<int>(stateTelem[field].size() * sizeof(float));
+    }
+
+    std::cout << "Memory usage: " << total << " byte\n";
+
+    //stateTelem.clear();
+    //state->clear();
+    //std::cout << "flight.update() memory cleared!\n";
 
 }
 
@@ -209,7 +222,7 @@ void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool 
     }
 
     std::ofstream ofs;
-    ofs.open(fileOut);
+    ofs.open(fileOut, std::ofstream::trunc);
 
     /*
     if (!ofs.is_open())
@@ -225,10 +238,10 @@ void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool 
     // TODO: consider replace std::endl w/ "\n" for performance
 
     std::copy(telemFields.begin(), telemFields.end() - 1, std::ostream_iterator<std::string>(oss, delim));
-    oss << telemFields.back() << std::endl;
+    oss << telemFields.back() << "\n";
 
     std::copy(telemUnits.begin(), telemUnits.end() - 1, std::ostream_iterator<std::string>(oss, delim));
-    oss << telemUnits.back() << std::endl;
+    oss << telemUnits.back() << "\n";
 
     ofs << oss.str();
 
@@ -249,7 +262,7 @@ void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool 
         strOut = oss.str();
         strOut.pop_back();
 
-        ofs << strOut << std::endl;
+        ofs << strOut << "\n";
 
     }
 
@@ -269,7 +282,7 @@ void Flight::write_stats(const std::string &fileOut) // TODO: maybe return bool 
     }
 
     std::ofstream ofs;
-    ofs.open(fileOut);
+    ofs.open(fileOut, std::ofstream::trunc);
 
     /*
     if (!ofs.is_open())
@@ -279,10 +292,10 @@ void Flight::write_stats(const std::string &fileOut) // TODO: maybe return bool 
     */
 
     // Flight Time
-    //ofs << "Flight Time: " << std::fixed << std::setprecision(nPrec) << flightTime << std::endl;
+    //ofs << "Flight Time: " << std::fixed << std::setprecision(nPrec) << flightTime << "\n";
 
     // Max values
-    double maxValue;
+    float maxValue;
 
     for (const auto& field : telemFields)
     {
@@ -290,19 +303,19 @@ void Flight::write_stats(const std::string &fileOut) // TODO: maybe return bool 
         maxValue = *std::max_element(stateTelem[field].begin(), stateTelem[field].end());
         
         ofs << "(MAX) " << field << ": ";
-        ofs << std::fixed << std::setprecision(nPrec) << maxValue << std::endl;
+        ofs << std::fixed << std::setprecision(nPrec) << maxValue << "\n";
 
     }
 
     ofs.close();
- 
+
 }
 
 //---------------------------------------------------------------------------//
 
 Flight::~Flight()
 {
-    
+
     if (isInit)
     {
         gsl_odeiv2_driver_free(odeSolver.driver);

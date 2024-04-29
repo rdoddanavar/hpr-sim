@@ -27,7 +27,7 @@ namespace py = pybind11;
 // Type aliases
 using stateMap    = std::map<std::string, double*>;
 using stateMapPtr = std::shared_ptr<stateMap>;
-using stateMapVec = std::map<std::string, std::vector<double>>;
+using stateMapVec = std::map<std::string, std::vector<float>>;
 using numpyArray  = py::array_t<double, py::array::c_style | py::array::forcecast>;
 
 // TODO: consider replacing std::map w/ std::unordered_map for performance
@@ -72,7 +72,7 @@ class Model
 
         void init_state(stateMapPtr stateIn)
         {
-            
+
             state = stateIn;
             set_state();
 
@@ -242,14 +242,14 @@ class Aerodynamics : public Model
     
     public:
         
-        void init(double      refAreaInit   ,
-                  numpyArray& machInit      , 
-                  numpyArray& alphaInit     ,
-                  numpyArray& cpTotalInit   ,
-                  numpyArray& clPowerOffInit,
-                  numpyArray& cdPowerOffInit,
-                  numpyArray& clPowerOnInit ,
-                  numpyArray& cdPowerOnInit );
+        void init(const double&      refAreaInit  ,
+                  const numpyArray& machInit      ,
+                  const numpyArray& alphaInit     ,
+                  const numpyArray& cpTotalInit   ,
+                  const numpyArray& clPowerOffInit,
+                  const numpyArray& cdPowerOffInit,
+                  const numpyArray& clPowerOnInit ,
+                  const numpyArray& cdPowerOnInit );
 
         void set_state() override;
         void update() override;

@@ -8,6 +8,7 @@ import numpy as np
 import yaml
 from dataclasses import dataclass
 import functools
+import gc
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
@@ -100,7 +101,6 @@ def exec(inputPath, outputPath):
                 configOutput["telemUnits"].append(model.Flight.telemUnitsDefault[i])
 
     # TEST
-    print("configOutput: ", configOutput)
     simConfig = SimConfig(configInput, configOutput, outputPath2)
     # TEST
     
@@ -123,26 +123,22 @@ def exec(inputPath, outputPath):
     numProc = simInput["exec"]["numProc"]["value"]
     numMC   = simInput["exec"]["numMC"]["value"]
 
-    print("test0")
-
     if mode == "nominal":
         run_sim(simInput, 0)
 
     elif mode == "montecarlo":
 
-        with mp.Pool(numProc) as pool:
+        with mp.Pool(numProc, maxtasksperchild=1) as pool:
 
-            iRuns = range(numMC)
-
-            # TODO: Could probably use functools.partial here to avoid global simInput
-            # Current solution is to use starmap_async
             run_fun = functools.partial(run_sim_mc, simInput, simConfig, simData)
-            results = pool.map_async(run_fun, iRuns)
-            print("test6")
+            iRuns   = range(numMC)
+
+            pool.map_async(run_fun, iRuns)
             pool.close()
-            print("test7")
             pool.join()
-            print("end!")
+            print("join done")
+
+        print("end!")
 
 #------------------------------------------------------------------------------#
 
@@ -152,20 +148,21 @@ def run_sim_mc(simInput, simConfig, simData, iRun):
 
     seedMaster = simInput["exec"]["seed"]["value"]
     seedRun    = seedMaster + iRun
-    
+
     simInputMC["exec"]["seed"]["value"] = seedRun
 
-    print(simInputMC)
-
     exec_rand.mc_draw(simInputMC, simConfig.input)
-    print("test1")
-    run_sim(simInput, simConfig, simData, iRun)
+
+    try:
+        print("run_sim start")
+        run_sim(simInputMC, simConfig, simData, iRun)
+        print("run_sim done")
+    except:
+        print(f"run error: {iRun}")
 
 #------------------------------------------------------------------------------#
 
 def run_sim(simInput, simConfig, simData, iRun):
-
-    print("test2")
 
     # Create model instances
     engine       = model.Engine()
@@ -214,22 +211,9 @@ def run_sim(simInput, simConfig, simData, iRun):
     nPrec = simInput["flight"]["precision"]["value"]
     flight.init(t0, dt, tf, nPrec)
 
-    print("test3")
-
     # Execute flight
     flight.update()
-    print("test4")
-    write_output(simInput, simConfig, iRun, flight)
-    #write_summary()
-    print("test5")
-    #del engine
-    #del mass
-    #del geodetic
-    #del atmosphere
-    #del aerodynamics
-    #del eom
-    #del flight
-    print("test5.5")
+    #write_output(simInput, simConfig, iRun, flight)
 
     # TODO: Should I be deleting the flight object here?
     # How is garbage collection handled by the pool process?
@@ -240,11 +224,9 @@ def write_output(simInput, simConfig, iRun, flight):
 
     # Setup run output folder
     outputPath3 = simConfig.outputPath2 / f"run{iRun}"
-    
+
     if not os.path.exists(outputPath3):
         os.mkdir(outputPath3)
-    
-    print("test4.1")
 
     # Write input *.yml
     # Archives montecarlo draw for run recreation
@@ -267,28 +249,18 @@ def write_output(simInput, simConfig, iRun, flight):
                     value = util_unit.convert(value, quantity, "default", unit)
                     simInput[group][param]["value"] = value
 
-    print("test4.2")
-
     outputYml = outputPath3 / "input.yml"
 
     with open(str(outputYml), 'w') as file:
         yaml.dump(simInput, file, sort_keys=False, indent=4)
 
-    print("test4.3")
-
-    # FAILING HERE!!!!!!!!!
-
     # Write telemetry *.csv
     outputCsv = outputPath3 / "telem.csv"
     flight.write_telem(str(outputCsv))
 
-    print("test4.4")
-
     # Write statistics *.txt
     outputTxt = outputPath3 / "stats.txt"
     flight.write_stats(str(outputTxt))
-
-    print("test4.5")
 
 #------------------------------------------------------------------------------#
 

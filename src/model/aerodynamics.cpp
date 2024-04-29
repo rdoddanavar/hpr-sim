@@ -15,14 +15,14 @@
 
 //---------------------------------------------------------------------------//
 
-void Aerodynamics::init(double      refAreaInit   ,
-                        numpyArray& machInit      , 
-                        numpyArray& alphaInit     ,
-                        numpyArray& cpTotalInit   , 
-                        numpyArray& clPowerOffInit,
-                        numpyArray& cdPowerOffInit,
-                        numpyArray& clPowerOnInit ,
-                        numpyArray& cdPowerOnInit )
+void Aerodynamics::init(const double&      refAreaInit  ,
+                        const numpyArray& machInit      ,
+                        const numpyArray& alphaInit     ,
+                        const numpyArray& cpTotalInit   ,
+                        const numpyArray& clPowerOffInit,
+                        const numpyArray& cdPowerOffInit,
+                        const numpyArray& clPowerOnInit ,
+                        const numpyArray& cdPowerOnInit )
 {
 
     refArea = refAreaInit;
@@ -90,7 +90,7 @@ void Aerodynamics::init(double      refAreaInit   ,
     {
         for (iy = 0; iy < nAlpha; iy++)
         {
-            
+
             izRow = ix*nAlpha + iy; // Row-major index 
             izCol = iy*nMach  + ix; // Column-major index
 
