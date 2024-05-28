@@ -21,7 +21,7 @@
 
 void Flight::init(double t0Init, double dtInit, double tfInit, int nPrecInit)
 {
-    
+
     // Basic setup
     time = t0Init;
     dt   = dtInit;
@@ -44,11 +44,10 @@ void Flight::init(double t0Init, double dtInit, double tfInit, int nPrecInit)
                                                       odeSolver.hStart,
                                                       odeSolver.epsAbs,
                                                       odeSolver.epsRel);
-    
+
     // Telemetry setup
-    nStep = static_cast<int>(tf/dt);
+    nStep = static_cast<int>(tf/dt) + 1; // Include initial step
     nPrec = nPrecInit;
-    // TODO: Make nPrec an input parameter?
 
     // TODO: Initialize telemFields to default if user-defined fields not available
 
@@ -63,7 +62,7 @@ void Flight::init(double t0Init, double dtInit, double tfInit, int nPrecInit)
 
 //---------------------------------------------------------------------------//
 
-void Flight::set_state()
+void Flight::set_state_fields()
 {
     state->emplace("time", &time);
 }
@@ -73,24 +72,22 @@ void Flight::set_state()
 void Flight::update()
 {
 
-    int nStep = static_cast<int>(tf/dt);
-
     double y[] = {*state->at("linPosZ"),
                   *state->at("linVelZ")};
 
     // Save initial state
     update_deps();
-    
+
     for (const auto& field : telemFields)
     {
         stateTelem[field][0] = static_cast<float>(*state->at(field));
     }
-    
+
     // Solve ODE system
 
-    for (int iStep = 1; iStep <= nStep; iStep++)
+    for (int iStep = 1; iStep < nStep; iStep++)
     {
-        
+
         double ti = iStep*dt;
 
         int status = gsl_odeiv2_driver_apply(odeSolver.driver, &time, ti, y);
@@ -104,8 +101,7 @@ void Flight::update()
 
         if (y[0] <= 0.0)
         {
-            
-            //flightTerm = true;
+
             flightTime = time;
 
             break; // TODO: could include more complex logic with an "apogeeFlag"
@@ -119,24 +115,10 @@ void Flight::update()
           break;
         }
         */
+
     }
 
     flightTerm = true; // TODO: better handling for flight termination
-    // TODO: Add additional while loop to keep integrating if flightTerm = false
-    std::cout << "flight.update() done!\n";
-
-    int total = 0;
-
-    for (const auto& field : telemFields)
-    {
-        total += static_cast<int>(stateTelem[field].size() * sizeof(float));
-    }
-
-    std::cout << "Memory usage: " << total << " byte\n";
-
-    //stateTelem.clear();
-    //state->clear();
-    //std::cout << "flight.update() memory cleared!\n";
 
 }
 
@@ -250,7 +232,7 @@ void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool 
 
     for (int iStep = 0; iStep < nStep; iStep++)
     {
-        
+
         oss.str("");
         oss.clear();
 
@@ -299,9 +281,9 @@ void Flight::write_stats(const std::string &fileOut) // TODO: maybe return bool 
 
     for (const auto& field : telemFields)
     {
-        
+
         maxValue = *std::max_element(stateTelem[field].begin(), stateTelem[field].end());
-        
+
         ofs << "(MAX) " << field << ": ";
         ofs << std::fixed << std::setprecision(nPrec) << maxValue << "\n";
 

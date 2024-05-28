@@ -17,7 +17,7 @@ void EOM::init()
     // Initialize vectors
     force  = Eigen::Vector3d::Zero();
     moment = Eigen::Vector3d::Zero();
-    
+
     linAcc = Eigen::Vector3d::Zero();
     linVel = Eigen::Vector3d::Zero();
     linPos = Eigen::Vector3d::Zero();
@@ -25,16 +25,16 @@ void EOM::init()
     angAcc = Eigen::Vector3d::Zero();
     angVel = Eigen::Vector3d::Zero();
     angPos = Eigen::Vector3d::Zero();
-    
+
     isInit = true;
 
 }
 
 //---------------------------------------------------------------------------//
 
-void EOM::set_state()
+void EOM::set_state_fields()
 {
-    
+
     state->emplace("forceZ", &force[2]);
 
     state->emplace("linAccZ", &linAcc[2]);

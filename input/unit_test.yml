@@ -11,7 +11,7 @@ exec:
     numMC: 5
     numProc: 4
 flight:
-    timeFlight: 50.0
+    timeFlight: 75.0
     timeStep: 0.01
     precision: 3
 engine:

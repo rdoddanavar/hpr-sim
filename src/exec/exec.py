@@ -8,7 +8,6 @@ import numpy as np
 import yaml
 from dataclasses import dataclass
 import functools
-import gc
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
@@ -124,11 +123,11 @@ def exec(inputPath, outputPath):
     numMC   = simInput["exec"]["numMC"]["value"]
 
     if mode == "nominal":
-        run_sim(simInput, 0)
+        run_sim(simInput, simConfig, simData, 0)
 
     elif mode == "montecarlo":
 
-        with mp.Pool(numProc, maxtasksperchild=1) as pool:
+        with mp.Pool(numProc) as pool:
 
             run_fun = functools.partial(run_sim_mc, simInput, simConfig, simData)
             iRuns   = range(numMC)
@@ -136,7 +135,6 @@ def exec(inputPath, outputPath):
             pool.map_async(run_fun, iRuns)
             pool.close()
             pool.join()
-            print("join done")
 
         print("end!")
 
@@ -153,12 +151,7 @@ def run_sim_mc(simInput, simConfig, simData, iRun):
 
     exec_rand.mc_draw(simInputMC, simConfig.input)
 
-    try:
-        print("run_sim start")
-        run_sim(simInputMC, simConfig, simData, iRun)
-        print("run_sim done")
-    except:
-        print(f"run error: {iRun}")
+    run_sim(simInputMC, simConfig, simData, iRun)
 
 #------------------------------------------------------------------------------#
 
@@ -174,11 +167,11 @@ def run_sim(simInput, simConfig, simData, iRun):
     flight       = model.Flight()
 
     # Set model dependencies
-    mass.add_dep(engine)
-    atmosphere.add_dep(geodetic)
-    aerodynamics.add_dep([engine, atmosphere])
-    eom.add_dep([engine, mass, geodetic, aerodynamics])
-    flight.add_dep(eom)
+    mass.add_deps([engine])
+    atmosphere.add_deps([geodetic])
+    aerodynamics.add_deps([engine, atmosphere])
+    eom.add_deps([engine, mass, geodetic, aerodynamics])
+    flight.add_deps([eom])
 
     # Initialize state from top-level model
     flight.init_state()
@@ -213,10 +206,7 @@ def run_sim(simInput, simConfig, simData, iRun):
 
     # Execute flight
     flight.update()
-    #write_output(simInput, simConfig, iRun, flight)
-
-    # TODO: Should I be deleting the flight object here?
-    # How is garbage collection handled by the pool process?
+    write_output(simInput, simConfig, iRun, flight)
 
 #------------------------------------------------------------------------------#
 
@@ -272,5 +262,7 @@ if __name__ == "__main__":
 
     inputPath  = sys.argv[1]
     outputPath = sys.argv[2]
+
+    # TODO: mp.freeze_support() # Need this for pyinstaller
 
     exec(inputPath, outputPath)

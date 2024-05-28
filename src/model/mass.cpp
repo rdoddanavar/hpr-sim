@@ -20,7 +20,7 @@ void Mass::init(double massBodyInit)
 
 //---------------------------------------------------------------------------//
 
-void Mass::set_state()
+void Mass::set_state_fields()
 {
     state->emplace("mass" , &mass);
 }

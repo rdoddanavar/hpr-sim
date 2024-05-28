@@ -119,7 +119,7 @@ void Aerodynamics::init(const double&      refAreaInit  ,
 
 //---------------------------------------------------------------------------//
 
-void Aerodynamics::set_state()
+void Aerodynamics::set_state_fields()
 {
 
     state->emplace("dynamicPressure", &dynamicPressure);
@@ -161,7 +161,7 @@ void Aerodynamics::update()
         mach   = 0.0;
         alphaT = 0.0;
     }
-    
+
     if (*state->at("isBurnout"))
     {
         dragCoeff = interp2d_eval(cdPowerOffSpline, mach, alphaT, machAcc, alphaAcc);
@@ -172,7 +172,7 @@ void Aerodynamics::update()
         dragCoeff = interp2d_eval(cdPowerOnSpline, mach, alphaT, machAcc, alphaAcc);
         liftCoeff = interp2d_eval(clPowerOnSpline, mach, alphaT, machAcc, alphaAcc);
     }
-    
+
     // Calculate aerodynamic quantities
     dynamicPressure = 0.5*rho*pow(velT, 2.0);
     dragForce       = dynamicPressure*dragCoeff*refArea;
