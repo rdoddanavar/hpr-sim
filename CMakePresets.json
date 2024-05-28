@@ -1,0 +1,26 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 19,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "ubuntu",
+            "displayname": "Ubuntu 22.04 LTS x64 debug",
+            "generator": "Unix Makefiles",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "windows",
+            "displayname": "Windows 10 x64 debug",
+            "generator": "MinGW Makefiles",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        }
+    ]
+}
