@@ -8,6 +8,9 @@ on:
 jobs:
   build-windows:
     runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout repository and submodules
         uses: actions/checkout@v4
@@ -24,6 +27,9 @@ jobs:
           key: build-windows
   test-windows:
     runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
     needs: build-windows
     steps:
       - name: Checkout repository
