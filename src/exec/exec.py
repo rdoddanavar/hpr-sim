@@ -32,12 +32,10 @@ def get_cmake_cache(field):
 
 compilerPath       = get_cmake_cache("CMAKE_CXX_COMPILER")
 compilerPathParent = str(pathlib.Path(compilerPath).parent)
-print(f"compilerPathParent: {compilerPathParent}")
 
 if os.name == "nt":
     # Explicitly add path to libstdc++
     os.add_dll_directory(compilerPathParent)
-    os.add_dll_directory(r"C:\mingw64\bin")
 
 # Project modules
 import exec_rand
