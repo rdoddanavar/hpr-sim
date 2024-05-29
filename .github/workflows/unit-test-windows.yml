@@ -6,25 +6,25 @@ on:
   pull_request:
     branches: [master]
 jobs:
-  build-ubuntu:
-    runs-on: ubuntu-22.04
+  build-windows:
+    runs-on: windows-2022
     steps:
       - name: Checkout repository and submodules
         uses: actions/checkout@v4
         with:
           submodules: recursive
       - name: Configure build
-        run: cd build && cmake --preset ubuntu ../
+        run: cd build && cmake --preset windows ../
       - name: Execute build
         run: cd build && cmake --build .
       - name: Cache build artifacts
         uses: actions/cache@v4
         with:
           path: build # Absolute path
-          key: build-ubuntu
-  test-ubuntu:
-    runs-on: ubuntu-22.04
-    needs: build-ubuntu
+          key: build-windows
+  test-windows:
+    runs-on: windows-2022
+    needs: build-windows
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build # Absolute path
-          key: build-ubuntu
+          key: build-windows
       - name: Setup python environment
         uses: actions/setup-python@v5
         with:
