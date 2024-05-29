@@ -17,8 +17,25 @@ for item in paths:
     addPath = pathlib.Path(__file__).parent / item
     sys.path.append(str(addPath.resolve()))
 
-if (os.name == "nt") and (not os.getenv("GITHUB_ACTIONS")):
-    os.add_dll_directory(r"C:\Users\roshan\AppData\Local\Programs\mingw64\bin")
+def get_cmake_cache(field):
+
+    filePath = pathlib.Path(__file__).parent / "../../build/CMakeCache.txt"
+
+    with open(filePath, 'r') as cacheFile:
+
+        lines = cacheFile.read().split("\n")
+
+        for line in lines:
+            if field in line:
+                value = line.split('=')[1]
+                return value
+
+compilerPath       = get_cmake_cache("CMAKE_CXX_COMPILER")
+compilerPathParent = str(pathlib.Path(compilerPath).parent)
+
+if os.name == "nt":
+    # Explicitly add path to libstdc++
+    os.add_dll_directory(compilerPathParent)
 
 # Project modules
 import exec_rand
@@ -55,17 +72,7 @@ class SimConfig:
 
 def cli_intro():
 
-    # Get project version
-    filePath = pathlib.Path(__file__).parent / "../../build/CMakeCache.txt"
-
-    with open(filePath, 'r') as cacheFile:
-
-        lines = cacheFile.read().split("\n")
-
-        for line in lines:
-            if "CMAKE_PROJECT_VERSION:STATIC=" in line:
-                version = line.split('=')[1]
-
+    version = get_cmake_cache("CMAKE_PROJECT_VERSION")
     print(f"hpr-sim v{version}")
     print("https://github.com/rdoddanavar/hpr-sim")
     print()
