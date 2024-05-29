@@ -8,7 +8,7 @@ const:
 exec:
     mode: montecarlo
     seed: 0
-    numMC: 5
+    numMC: 95
     numProc: 4
 flight:
     timeFlight: 75.0

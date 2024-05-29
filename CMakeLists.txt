@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 3.19) # Minumum required to use CMakePresets.json
 
 project(hpr-sim DESCRIPTION "High Power Rocktry - Flight Simulation"
                 LANGUAGES CXX
+                VERSION 0.0.0
                 )
 
 #-----------------------------------------------------------------------------#

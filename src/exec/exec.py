@@ -8,6 +8,7 @@ import numpy as np
 import yaml
 from dataclasses import dataclass
 import functools
+from tqdm import tqdm
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
@@ -52,6 +53,25 @@ class SimConfig:
 
 #------------------------------------------------------------------------------#
 
+def cli_intro():
+
+    # Get project version
+    filePath = pathlib.Path(__file__).parent / "../../build/CMakeCache.txt"
+
+    with open(filePath, 'r') as cacheFile:
+
+        lines = cacheFile.read().split("\n")
+
+        for line in lines:
+            if "CMAKE_PROJECT_VERSION:STATIC=" in line:
+                version = line.split('=')[1]
+
+    print(f"hpr-sim v{version}")
+    print("https://github.com/rdoddanavar/hpr-sim")
+    print()
+
+#------------------------------------------------------------------------------#
+
 def exec(inputPath, outputPath):
 
     """
@@ -64,6 +84,8 @@ def exec(inputPath, outputPath):
     :type outputPath: str
     """
 
+    cli_intro()
+
     # Pre-processing
     util_unit.config()
 
@@ -75,12 +97,14 @@ def exec(inputPath, outputPath):
 
     configOutput = util_yaml.load(str(configPath / "config_output.yml"))
 
+    print(f"Reading input file: {inputPath}")
     simInput = util_yaml.load(inputPath)
     util_yaml.process(simInput)                  # Validate raw input file, resolve references
     preproc_input.process(simInput, configInput) # Validate input parameter values
     exec_rand.check_dist(simInput)               # Validate random distribution choice, parameters
 
     # Output setup
+    print(f"Creating output directory: {outputPath}")
     inputName   = pathlib.Path(inputPath).stem
     outputPath2 = pathlib.Path(outputPath) / inputName
 
@@ -108,11 +132,13 @@ def exec(inputPath, outputPath):
 
     # Motor data
     enginePath = simInput["engine"]["inputPath"]["value"]
+    print(f"Reading propulsion data: {enginePath}")
     timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
 
     # Aeromodel data
-    inputPath = simInput["aerodynamics"]["inputPath"]["value"]
-    (machData, alphaData, aeroData) = preproc_aerodynamics.load_csv(inputPath)
+    aeroPath = simInput["aerodynamics"]["inputPath"]["value"]
+    print(f"Reading aerodynamic data: {aeroPath}")
+    (machData, alphaData, aeroData) = preproc_aerodynamics.load_csv(aeroPath)
 
     # Collect all sim data
     simData = SimData(machData, alphaData, aeroData, timeEng, thrustEng, massEng)
@@ -122,21 +148,35 @@ def exec(inputPath, outputPath):
     numProc = simInput["exec"]["numProc"]["value"]
     numMC   = simInput["exec"]["numMC"]["value"]
 
+    print()
+
     if mode == "nominal":
+
+        print("Executing nominal run")
         run_sim(simInput, simConfig, simData, 0)
 
     elif mode == "montecarlo":
 
         with mp.Pool(numProc) as pool:
 
-            run_fun = functools.partial(run_sim_mc, simInput, simConfig, simData)
-            iRuns   = range(numMC)
+            print("Executing Monte Carlo runs:")
+            
+            # Setup progress bar
+            pBar = tqdm(total=numMC)
+            callback_fun = functools.partial(cli_status, pBar)
 
-            pool.map_async(run_fun, iRuns)
+            # Execute parallel runs
+            for iRun in range(numMC):
+                pool.apply_async(run_sim_mc, (simInput, simConfig, simData, iRun), callback=callback_fun)
+
+            # Pool cleanup
             pool.close()
             pool.join()
 
-        print("end!")
+#------------------------------------------------------------------------------#
+
+def cli_status(pBar, result):
+    pBar.update()
 
 #------------------------------------------------------------------------------#
 
