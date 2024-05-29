@@ -37,7 +37,7 @@ print(f"compilerPathParent: {compilerPathParent}")
 if os.name == "nt":
     # Explicitly add path to libstdc++
     os.add_dll_directory(compilerPathParent)
-    os.add_dll_directory(r"C:\msys64\usr\bin")
+    os.add_dll_directory(r"C:\mingw64\bin")
 
 # Project modules
 import exec_rand
