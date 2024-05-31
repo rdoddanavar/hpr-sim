@@ -13,6 +13,10 @@ jobs:
         uses: actions/checkout@v4
         with:
           submodules: recursive
+      - name: Setup python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
       - name: Configure build
         run: cd build && cmake --preset ubuntu ../
       - name: Execute build
@@ -20,8 +24,8 @@ jobs:
       - name: Cache build artifacts
         uses: actions/cache@v4
         with:
-          path: build # Absolute path
-          key: build-ubuntu
+          path: build
+          key: ${{ github.workflow }}-${{ github.sha }}
   test-ubuntu:
     runs-on: ubuntu-22.04
     needs: build-ubuntu
@@ -31,8 +35,8 @@ jobs:
       - name: Retrieve build artifacts
         uses: actions/cache@v4
         with:
-          path: build # Absolute path
-          key: build-ubuntu
+          path: build
+          key: ${{ github.workflow }}-${{ github.sha }}
       - name: Setup python environment
         uses: actions/setup-python@v5
         with:

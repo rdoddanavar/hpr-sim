@@ -27,8 +27,8 @@ jobs:
       - name: Cache build artifacts
         uses: actions/cache@v4
         with:
-          path: build # Absolute path
-          key: build-windows
+          path: build
+          key: ${{ github.workflow }}-${{ github.sha }}
   test-windows:
     runs-on: windows-2022
     defaults:
@@ -41,8 +41,8 @@ jobs:
       - name: Retrieve build artifacts
         uses: actions/cache@v4
         with:
-          path: build # Absolute path
-          key: build-windows
+          path: build
+          key: ${{ github.workflow }}-${{ github.sha }}
       - name: Setup python environment
         uses: actions/setup-python@v5
         with:
