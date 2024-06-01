@@ -8,7 +8,8 @@ import numpy as np
 import yaml
 from dataclasses import dataclass
 import functools
-from tqdm import tqdm
+import tqdm
+import colorama
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
@@ -17,33 +18,22 @@ for item in paths:
     addPath = pathlib.Path(__file__).parent / item
     sys.path.append(str(addPath.resolve()))
 
-def get_cmake_cache(field):
+# Project modules
+import exec_rand
+import util_yaml
+import util_unit
+import util_misc
+import preproc_input
+import preproc_engine
+import preproc_aerodynamics
 
-    filePath = pathlib.Path(__file__).parent / "../../build/CMakeCache.txt"
-
-    with open(filePath, 'r') as cacheFile:
-
-        lines = cacheFile.read().split("\n")
-
-        for line in lines:
-            if field in line:
-                value = line.split('=')[1]
-                return value
-
-compilerPath       = get_cmake_cache("CMAKE_CXX_COMPILER")
+compilerPath       = util_misc.get_cmake_cache("../../build/CMakeCache.txt", "CMAKE_CXX_COMPILER")
 compilerPathParent = str(pathlib.Path(compilerPath).parent)
 
 if os.name == "nt":
     # Explicitly add path to libstdc++
     os.add_dll_directory(compilerPathParent)
 
-# Project modules
-import exec_rand
-import util_yaml
-import util_unit
-import preproc_input
-import preproc_engine
-import preproc_aerodynamics
 import model
 
 #------------------------------------------------------------------------------#
@@ -72,9 +62,12 @@ class SimConfig:
 
 def cli_intro():
 
-    version = get_cmake_cache("CMAKE_PROJECT_VERSION")
-    print(f"hpr-sim v{version}")
-    print("https://github.com/rdoddanavar/hpr-sim")
+    version = util_misc.get_cmake_cache("../../build/CMakeCache.txt", "CMAKE_PROJECT_VERSION")
+
+    colorama.init()
+
+    print(f"{colorama.Fore.CYAN}hpr-sim v{version}")
+    print(f"https://github.com/rdoddanavar/hpr-sim{colorama.Style.RESET_ALL}")
     print()
 
 #------------------------------------------------------------------------------#
@@ -104,14 +97,13 @@ def exec(inputPath, outputPath):
 
     configOutput = util_yaml.load(str(configPath / "config_output.yml"))
 
-    print(f"Reading input file: {inputPath}")
+    print(f"Reading input file: {colorama.Fore.YELLOW}{inputPath}{colorama.Style.RESET_ALL}")
     simInput = util_yaml.load(inputPath)
     util_yaml.process(simInput)                  # Validate raw input file, resolve references
     preproc_input.process(simInput, configInput) # Validate input parameter values
     exec_rand.check_dist(simInput)               # Validate random distribution choice, parameters
 
     # Output setup
-    print(f"Creating output directory: {outputPath}")
     inputName   = pathlib.Path(inputPath).stem
     outputPath2 = pathlib.Path(outputPath) / inputName
 
@@ -139,12 +131,12 @@ def exec(inputPath, outputPath):
 
     # Motor data
     enginePath = simInput["engine"]["inputPath"]["value"]
-    print(f"Reading propulsion data: {enginePath}")
+    print(f"Reading propulsion data: {colorama.Fore.YELLOW}{enginePath}{colorama.Style.RESET_ALL}")
     timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
 
     # Aeromodel data
     aeroPath = simInput["aerodynamics"]["inputPath"]["value"]
-    print(f"Reading aerodynamic data: {aeroPath}")
+    print(f"Reading aerodynamic data: {colorama.Fore.YELLOW}{aeroPath}{colorama.Style.RESET_ALL}")
     (machData, alphaData, aeroData) = preproc_aerodynamics.load_csv(aeroPath)
 
     # Collect all sim data
@@ -156,6 +148,7 @@ def exec(inputPath, outputPath):
     numMC   = simInput["exec"]["numMC"]["value"]
 
     print()
+    print(f"Simulation output available at: {colorama.Fore.YELLOW}{simConfig.outputPath2}/run*{colorama.Style.RESET_ALL}")
 
     if mode == "nominal":
 
@@ -164,12 +157,15 @@ def exec(inputPath, outputPath):
 
     elif mode == "montecarlo":
 
+        print(f"Monte Carlo summary available at: {colorama.Fore.YELLOW}{simConfig.outputPath2}/summary.yml{colorama.Style.RESET_ALL}")
+        print()
+
         with mp.Pool(numProc) as pool:
 
             print("Executing Monte Carlo runs:")
-            
+
             # Setup progress bar
-            pBar = tqdm(total=numMC)
+            pBar = tqdm.tqdm(total=numMC, unit="run", dynamic_ncols=True, colour="green")
             callback_fun = functools.partial(cli_status, pBar)
 
             # Execute parallel runs
@@ -179,6 +175,9 @@ def exec(inputPath, outputPath):
             # Pool cleanup
             pool.close()
             pool.join()
+
+        # Write summary *.yml
+        write_summary(simConfig.outputPath2 / "summary.yml", simInput["flight"]["precision"]["value"])
 
 #------------------------------------------------------------------------------#
 
@@ -275,7 +274,7 @@ def write_output(simInput, simConfig, iRun, flight):
             props = simInput[group][param].keys()
 
             if "unit" in props:
-                
+
                 value    = simInput[group][param]["value"]
                 quantity = simConfig.input[group][param]["quantity"]
                 unit     = simInput[group][param]["unit"]
@@ -286,22 +285,74 @@ def write_output(simInput, simConfig, iRun, flight):
                     value = util_unit.convert(value, quantity, "default", unit)
                     simInput[group][param]["value"] = value
 
-    outputYml = outputPath3 / "input.yml"
+    outputInput = outputPath3 / "input.yml"
 
-    with open(str(outputYml), 'w') as file:
+    with open(str(outputInput), 'w') as file:
         yaml.dump(simInput, file, sort_keys=False, indent=4)
 
     # Write telemetry *.csv
-    outputCsv = outputPath3 / "telem.csv"
-    flight.write_telem(str(outputCsv))
+    outputTelem = outputPath3 / "telem.csv"
+    flight.write_telem(str(outputTelem))
 
-    # Write statistics *.txt
-    outputTxt = outputPath3 / "stats.txt"
-    flight.write_stats(str(outputTxt))
+    # Write statistics *.yml
+    outputStats = outputPath3 / "stats.yml"
+    flight.write_stats(str(outputStats))
 
 #------------------------------------------------------------------------------#
 
-# def write_summary():
+def write_summary(filePathOut, nPrec):
+
+    dir = pathlib.Path(filePathOut).parent
+    subdirs = [subdir for subdir in dir.iterdir() if subdir.is_dir()]
+    nSubdir = len(subdirs)
+
+    first = True
+
+    for iDir, subdir in enumerate(subdirs):
+
+        filePathIn = subdir / "stats.yml"
+
+        with open(filePathIn, 'r', encoding="utf8") as stream:
+            stats = yaml.safe_load(stream)
+
+        keys = list(stats.keys())
+
+        if first:
+
+            first   = False
+            data    = copy.deepcopy(stats)
+            summary = copy.deepcopy(stats)
+
+            for key in keys:
+                data[key]["Min"] = np.zeros(nSubdir)
+                data[key]["Max"] = np.zeros(nSubdir)
+
+        for key in keys:
+            data[key]["Min"][iDir] = stats[key]["Min"]
+            data[key]["Max"][iDir] = stats[key]["Max"]
+
+    for key in keys:
+
+        summaryMin = {}
+
+        summaryMin["Min"]  = float(data[key]["Min"].min().round(decimals=nPrec))
+        summaryMin["Max"]  = float(data[key]["Min"].max().round(decimals=nPrec))
+        summaryMin["Mean"] = float(data[key]["Min"].mean().round(decimals=nPrec))
+        summaryMin["Std"]  = float(data[key]["Min"].std().round(decimals=nPrec))
+
+        summary[key]["Min"] = summaryMin
+
+        summaryMax = {}
+
+        summaryMax["Min"]  = float(data[key]["Max"].min().round(decimals=nPrec))
+        summaryMax["Max"]  = float(data[key]["Max"].max().round(decimals=nPrec))
+        summaryMax["Mean"] = float(data[key]["Max"].mean().round(decimals=nPrec))
+        summaryMax["Std"]  = float(data[key]["Max"].std().round(decimals=nPrec))
+
+        summary[key]["Max"] = summaryMax
+
+    with open(filePathOut, 'w', encoding="utf8") as stream:
+        yaml.dump(summary, stream, indent=4, explicit_start=True, explicit_end=True, sort_keys=False)
 
 #------------------------------------------------------------------------------#
 

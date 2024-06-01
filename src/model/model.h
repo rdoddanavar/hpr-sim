@@ -62,15 +62,7 @@ class Model
 
         void init_state()
         {
-
-            state = stateMapPtr(new stateMap);
-            set_state_fields();
-
-            for (const auto& dep : depModels)
-            {
-                dep->set_state(state);
-            }
-
+            set_state(stateMapPtr(new stateMap));
         }
 
         void set_state(stateMapPtr stateIn)
@@ -358,8 +350,8 @@ class Flight : public Model
         int    nStep;
         int    nPrec;
 
-        double flightTime;
         bool   flightTerm = false;
+        int    flightTermStep;
 
         // TODO: create "phase" structure to capture all flags
 

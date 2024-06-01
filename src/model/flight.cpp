@@ -102,7 +102,7 @@ void Flight::update()
         if (y[0] <= 0.0)
         {
 
-            flightTime = time;
+            flightTermStep = iStep;
 
             break; // TODO: could include more complex logic with an "apogeeFlag"
         }
@@ -200,6 +200,7 @@ void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool 
     if (!flightTerm)
     {
         // TODO: some kind of error message?
+        std::cout << "Error:write_telem:!flightTerm\n";
         return;
     }
 
@@ -246,6 +247,11 @@ void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool 
 
         ofs << strOut << "\n";
 
+        if (iStep == flightTermStep)
+        {
+            break;
+        }
+
     }
 
     ofs.close();
@@ -276,19 +282,45 @@ void Flight::write_stats(const std::string &fileOut) // TODO: maybe return bool 
     // Flight Time
     //ofs << "Flight Time: " << std::fixed << std::setprecision(nPrec) << flightTime << "\n";
 
-    // Max values
+    // Document start
+    ofs << "---\n";
+
+    std::string tab = "    ";
+
+    float minValue;
     float maxValue;
 
-    for (const auto& field : telemFields)
+    int nTm = telemFields.size();
+    std::string field;
+    std::string units;
+
+    for (int iTm = 0; iTm < nTm; iTm++)
     {
 
-        maxValue = *std::max_element(stateTelem[field].begin(), stateTelem[field].end());
+        field = telemFields[iTm];
 
-        ofs << "(MAX) " << field << ": ";
-        ofs << std::fixed << std::setprecision(nPrec) << maxValue << "\n";
+        auto begin = stateTelem[field].begin();
+        auto end   = begin + (flightTermStep + 1); // +1 for zero index
+
+        minValue = *std::min_element(begin, end);
+        maxValue = *std::max_element(begin, end);
+
+        units = telemUnits[iTm];
+
+        if (units.empty())
+        {
+            units = "null";
+        }
+
+        ofs << field << ":\n";
+        ofs << tab << "Units: " << units << "\n";
+        ofs << tab << "Min: " << std::fixed << std::setprecision(nPrec) << minValue << "\n";
+        ofs << tab << "Max: " << std::fixed << std::setprecision(nPrec) << maxValue << "\n";
 
     }
 
+    // Document end
+    ofs << "...\n";
     ofs.close();
 
 }

@@ -11,11 +11,11 @@ exec:
     numMC: 95
     numProc: 4
 flight:
-    timeFlight: 75.0
+    timeFlight: 100.0
     timeStep: 0.01
     precision: 3
 engine:
-    inputPath: ./input/AeroTech_J450DM.eng
+    inputPath: input/AeroTech_J450DM.eng
 mass:
     massBody:
         value: 5.0
@@ -34,7 +34,7 @@ atmosphere:
         value: 1.0
         unit: atm
 aerodynamics:
-    inputPath: ./input/patriot_aerodynamics.csv
+    inputPath: input/patriot_aerodynamics.csv
     refArea:
         value: 12.566
         unit: in^2

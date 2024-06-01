@@ -18,8 +18,8 @@ if __name__ == "__main__":
 
     #------------------------------------------------------------------------------#
 
-    inputPath  = "./input/unit_test.yml"
-    outputPath = "./output"
+    inputPath  = "input/unit_test.yml"
+    outputPath = "output"
 
     if inputPath is not None:
         exec.exec(inputPath, outputPath)
