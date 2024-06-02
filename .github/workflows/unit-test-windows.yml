@@ -23,7 +23,7 @@ jobs:
       - name: Configure build
         run: cd build && cmake --preset windows ../
       - name: Execute build
-        run: cd build && cmake --build . -j && ls -l
+        run: cd build && cmake --build . -j
       - name: Cache build artifacts
         uses: actions/cache@v4
         with:
@@ -50,4 +50,4 @@ jobs:
       - name: Install python packages
         run: pip install -r requirements.txt
       - name: Run unit test
-        run: ls -l build && ./hpr-sim.py -i input/unit_test.yml output/ && ls -l output/*/*
+        run: ./hpr-sim.py -i input/unit_test.yml output/ && ls -l output/*/*
