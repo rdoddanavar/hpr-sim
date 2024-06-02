@@ -25,15 +25,14 @@ void bind_Flight       (py::module_ &);
 
 PYBIND11_MODULE(model, m)
 {
-    
+
     m.doc() = "Simulation Model Classes"; // Optional module docstring
 
     // Exposing base class necessary for derived construction
     // Base methods exposed once, automatically available to dervied in python
     py::class_<Model>(m, "Model")
-        .def("add_dep", static_cast<void (Model::*)(Model*)>(&Model::add_dep))
-        .def("add_dep", static_cast<void (Model::*)(std::vector<Model*>)>(&Model::add_dep))
-        .def("init_state", static_cast<void (Model::*)()>(&Model::init_state))
+        .def("add_deps", &Model::add_deps)
+        .def("init_state", &Model::init_state)
         .def("update", &Model::update);
 
     // Expose derived classes
@@ -135,17 +134,10 @@ void bind_Flight(py::module_ &m)
     py::class_<Flight, Model>(m, "Flight")
         .def(py::init<>())
         .def("init", &Flight::init)
-        .def_static("set_telem", &Flight::set_telem)
         .def_readonly_static("telemFieldsDefault", &Flight::telemFieldsDefault)
+        .def_readonly_static("telemUnitsDefault", &Flight::telemUnitsDefault)
+        .def("set_telem", &Flight::set_telem)
         .def("write_telem", &Flight::write_telem)
-        .def("write_stats", &Flight::write_stats)
-        .def_readwrite("odeSolver", &Flight::odeSolver);
-
-    py::class_<OdeSolver>(m, "OdeSolver")
-        .def(py::init<>())
-        .def("set_method", &OdeSolver::set_method)
-        .def_readwrite("hStart", &OdeSolver::hStart)
-        .def_readwrite("epsAbs", &OdeSolver::epsAbs)
-        .def_readwrite("epsRel", &OdeSolver::epsRel);
+        .def("write_stats", &Flight::write_stats);
 
 }

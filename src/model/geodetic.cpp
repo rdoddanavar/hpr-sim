@@ -38,7 +38,7 @@ void Geodetic::init(double phiInit, double altInit)
 
 //---------------------------------------------------------------------------//
 
-void Geodetic::set_state()
+void Geodetic::set_state_fields()
 {
 
     state->emplace("altitudeMSL", &altitudeMSL);
@@ -85,7 +85,7 @@ void Geodetic::wgs84_init()
     double e2      = pow(e, 2);
            sin2phi = pow(sin(phi), 2);
     double cos2phi = pow(cos(phi), 2);
-    
+
     gamma = gammaE * (1 + k*sin2phi) / sqrt(1 - e2*sin2phi);
 
     // Geocentric radius (for geopotential)

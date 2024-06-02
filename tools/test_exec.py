@@ -2,7 +2,6 @@
 
 # System modules
 import sys
-import argparse
 import pathlib
 
 # Path modifications
@@ -14,14 +13,16 @@ for item in paths:
 
 # Project modules
 import exec
-#import postproc_flight
+import postproc_flight
 
 #------------------------------------------------------------------------------#
 
-inputPath  = "./input/unit_test.yml"
-outputPath = "./output"
+if __name__ == "__main__":
 
-if inputPath is not None:
-    exec.exec(inputPath, outputPath)
-#else:
-#    postproc_flight.postproc(outputPath)
+    inputPath  = "input/unit_test.yml"
+    outputPath = "output"
+
+    if inputPath is not None:
+        exec.exec(inputPath, outputPath)
+    #else:
+    #    postproc_flight.postproc(outputPath)

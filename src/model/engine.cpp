@@ -16,7 +16,7 @@ void Engine::init(numpyArray& timeInit  ,
                   numpyArray& thrustInit, 
                   numpyArray& massInit  ) 
 {
-    
+
     py::buffer_info timeBuff   = timeInit.request();
     py::buffer_info thrustBuff = thrustInit.request();
     py::buffer_info massBuff   = massInit.request();
@@ -51,7 +51,7 @@ void Engine::init(numpyArray& timeInit  ,
 
 //---------------------------------------------------------------------------//
 
-void Engine::set_state()
+void Engine::set_state_fields()
 {
 
     state->emplace("thrust" , &thrust);
@@ -71,7 +71,7 @@ void Engine::update()
 
     if (!isBurnout)
     {
-        
+
         thrust  = interp1d_eval(thrustSpline, time, timeAcc);
         massEng = interp1d_eval(massSpline  , time, timeAcc);
 
@@ -92,7 +92,7 @@ void Engine::update()
 
 Engine::~Engine()
 {
-    
+
     if (isInit)
     {
         

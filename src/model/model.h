@@ -27,7 +27,7 @@ namespace py = pybind11;
 // Type aliases
 using stateMap    = std::map<std::string, double*>;
 using stateMapPtr = std::shared_ptr<stateMap>;
-using stateMapVec = std::map<std::string, std::vector<double>>;
+using stateMapVec = std::map<std::string, std::vector<float>>;
 using numpyArray  = py::array_t<double, py::array::c_style | py::array::forcecast>;
 
 // TODO: consider replacing std::map w/ std::unordered_map for performance
@@ -37,19 +37,14 @@ using numpyArray  = py::array_t<double, py::array::c_style | py::array::forcecas
 
 class Model
 {
-    
-    public: 
+
+    public:
 
         // Function(s)
-        virtual void set_state() = 0; // Pure virtual
-        virtual void update()    = 0; // Pure virtual
+        virtual void set_state_fields() = 0; // Pure virtual
+        virtual void update()           = 0; // Pure virtual
 
-        void add_dep(Model* dep)
-        {
-            depModels.insert(dep);
-        }
-
-        void add_dep(std::vector<Model*> depList)
+        void add_deps(std::vector<Model*> depList)
         {
             for (const auto& dep : depList)
             {
@@ -67,18 +62,18 @@ class Model
 
         void init_state()
         {
-            init_state(stateMapPtr(new stateMap));
+            set_state(stateMapPtr(new stateMap));
         }
 
-        void init_state(stateMapPtr stateIn)
+        void set_state(stateMapPtr stateIn)
         {
-            
+
             state = stateIn;
-            set_state();
+            set_state_fields();
 
             for (const auto& dep : depModels)
             {
-                dep->init_state(state);
+                dep->set_state(state);
             }
 
         }
@@ -97,9 +92,9 @@ class Test : public Model
 {
 
     public:
-        
+
         void init(std::vector<std::string> stateFieldsInit);
-        void set_state() override;
+        void set_state_fields() override;
         void update() override;
 
         void   set_state_data(std::string field, double data);
@@ -117,14 +112,14 @@ class Test : public Model
 
 class Engine : public Model
 {
-    
+
     public:
 
         void init(numpyArray& timeInit  , 
                   numpyArray& thrustInit, 
                   numpyArray& massInit  );
 
-        void set_state() override;
+        void set_state_fields() override;
         void update() override;
 
         ~Engine(); // Destructor
@@ -141,7 +136,7 @@ class Engine : public Model
         gsl_spline* massSpline;
 
         gsl_interp_accel* timeAcc;
-        
+
         double timeMax; 
 
 };
@@ -150,11 +145,11 @@ class Engine : public Model
 
 class Mass : public Model
 {
-    
+
     public:
 
         void init(double massBodyInit);
-        void set_state() override;
+        void set_state_fields() override;
         void update() override;
 
     private:
@@ -175,7 +170,7 @@ class Geodetic : public Model
     public:
 
         void init(double phiInit, double altInit);
-        void set_state() override;
+        void set_state_fields() override;
         void update() override;
 
     private:
@@ -198,7 +193,7 @@ class Geodetic : public Model
         double radiusE;      // [m]
         double altitudeMSL0; // [m]
         double gamma;        // [m/s^2]
-        
+
 };
 
 //---------------------------------------------------------------------------//
@@ -207,9 +202,9 @@ class Atmosphere : public Model
 {
 
     public:
-        
+
         void init(double tempInit, double pressInit);
-        void set_state() override;
+        void set_state_fields() override;
         void update() override;
 
     private:
@@ -239,19 +234,19 @@ class Atmosphere : public Model
 
 class Aerodynamics : public Model
 {
-    
+
     public:
         
-        void init(double      refAreaInit   ,
-                  numpyArray& machInit      , 
-                  numpyArray& alphaInit     ,
-                  numpyArray& cpTotalInit   ,
-                  numpyArray& clPowerOffInit,
-                  numpyArray& cdPowerOffInit,
-                  numpyArray& clPowerOnInit ,
-                  numpyArray& cdPowerOnInit );
+        void init(const double&      refAreaInit  ,
+                  const numpyArray& machInit      ,
+                  const numpyArray& alphaInit     ,
+                  const numpyArray& cpTotalInit   ,
+                  const numpyArray& clPowerOffInit,
+                  const numpyArray& cdPowerOffInit,
+                  const numpyArray& clPowerOnInit ,
+                  const numpyArray& cdPowerOnInit );
 
-        void set_state() override;
+        void set_state_fields() override;
         void update() override;
 
         ~Aerodynamics(); // Destructor
@@ -271,7 +266,7 @@ class Aerodynamics : public Model
 
         // Miscellaneous
         double refArea; // [m^2]
-        
+
         gsl_spline2d* cpTotalSpline;
         gsl_spline2d* clPowerOffSpline;
         gsl_spline2d* cdPowerOffSpline;
@@ -294,7 +289,7 @@ class EOM : public Model
     public:
 
         void init();
-        void set_state() override;
+        void set_state_fields() override;
         void update() override;
 
     private:
@@ -324,22 +319,21 @@ class Flight : public Model
 
     public:
 
-        void init(double tfInit, double dtInit, double t0Init, int nPrecInit);
-        void set_state() override;
+        void init(double t0Init, double dtInit, double tfInit, int nPrecInit);
+        void set_state_fields() override;
         void update() override;
 
-        void write_telem(std::string fileOut);
-        void write_stats(std::string fileOut);
-
-        static void set_telem(std::vector<std::string> telemFieldsInit);
+        void set_telem(const std::vector<std::string> &telemFieldsInit, const std::vector<std::string> &telemUnitsInit);
+        void write_telem(const std::string &fileOut);
+        void write_stats(const std::string &fileOut);
 
         ~Flight(); // Destructor
 
         static std::vector<std::string> telemFieldsDefault;
         static std::vector<std::string> telemUnitsDefault;
 
-        static std::vector<std::string> telemFields;
-        static std::vector<std::string> telemUnits;
+        std::vector<std::string> telemFields;
+        std::vector<std::string> telemUnits;
 
         OdeSolver odeSolver; // ODE solver settings & driver
 
@@ -356,8 +350,8 @@ class Flight : public Model
         int    nStep;
         int    nPrec;
 
-        double flightTime;
         bool   flightTerm = false;
+        int    flightTermStep;
 
         // TODO: create "phase" structure to capture all flags
 

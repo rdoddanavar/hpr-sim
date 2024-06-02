@@ -18,15 +18,17 @@ import postproc_flight
 
 #------------------------------------------------------------------------------#
 
-parser = argparse.ArgumentParser()
-parser.add_argument('-i', "--input" , type=str, help="Input file path")
-parser.add_argument('output', type=str, help="Output file path")
+if __name__ == "__main__":
 
-args       = parser.parse_args()
-inputPath  = args.input
-outputPath = args.output
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', "--input" , type=str, help="Input file path")
+    parser.add_argument('output', type=str, help="Output file path")
 
-if inputPath is not None:
-    exec.exec(inputPath, outputPath)
-else:
-    postproc_flight.postproc(outputPath)
+    args       = parser.parse_args()
+    inputPath  = args.input
+    outputPath = args.output
+
+    if inputPath is not None:
+        exec.exec(inputPath, outputPath)
+    else:
+        postproc_flight.postproc(outputPath)

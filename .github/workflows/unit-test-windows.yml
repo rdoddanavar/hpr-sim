@@ -1,4 +1,4 @@
-name: unit-test-ubuntu
+name: unit-test-windows
 on:
   workflow_dispatch:
   push:
@@ -6,8 +6,11 @@ on:
   pull_request:
     branches: [master]
 jobs:
-  build-ubuntu:
-    runs-on: ubuntu-22.04
+  build-windows:
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout repository and submodules
         uses: actions/checkout@v4
@@ -18,7 +21,7 @@ jobs:
         with:
           python-version: '3.10'
       - name: Configure build
-        run: cd build && cmake --preset ubuntu ../
+        run: cd build && cmake --preset windows ../
       - name: Execute build
         run: cd build && cmake --build . -j
       - name: Cache build artifacts
@@ -26,9 +29,12 @@ jobs:
         with:
           path: build
           key: ${{ github.workflow }}-${{ github.event.pull_request.head.sha }}
-  test-ubuntu:
-    runs-on: ubuntu-22.04
-    needs: build-ubuntu
+  test-windows:
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
+    needs: build-windows
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
