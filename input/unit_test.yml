@@ -11,8 +11,7 @@ exec:
     numMC: 5
     numProc: 4
 flight:
-    timeFlight: 100.0
-    timeStep: 0.01
+    output: text
     precision: 3
 engine:
     inputPath: input/AeroTech_J450DM.eng

@@ -11,7 +11,8 @@ project(hpr-sim DESCRIPTION "High Power Rocktry - Flight Simulation"
 
 # BUILD SETTINGS
 
-set(CMAKE_POSITION_INDEPENDENT_CODE ON) # For shared libs; delete in future if unnecessary
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # GNU GSL - minimize build
 set(NO_AMPL_BINDINGS  true)

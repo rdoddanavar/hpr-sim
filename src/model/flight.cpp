@@ -19,13 +19,8 @@
 
 //---------------------------------------------------------------------------//
 
-void Flight::init(double t0Init, double dtInit, double tfInit, int nPrecInit)
+void Flight::init(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDir)
 {
-
-    // Basic setup
-    time = t0Init;
-    dt   = dtInit;
-    tf   = tfInit;
 
     // Solver setup
     odeSolver.sys.function  = &ode_update;
@@ -46,14 +41,17 @@ void Flight::init(double t0Init, double dtInit, double tfInit, int nPrecInit)
                                                       odeSolver.epsRel);
 
     // Telemetry setup
-    nStep = static_cast<int>(tf/dt) + 1; // Include initial step
-    nPrec = nPrecInit;
+    telemMode = telemModeIn;
+    nPrec     = nPrecIn;
 
-    // TODO: Initialize telemFields to default if user-defined fields not available
+    init_telem(outputDir);
+
+    telemFields = telemFieldsDefault;
+    telemUnits  = telemUnitsDefault;
 
     for (const auto& field : telemFields)
     {
-        stateTelem[field] = std::vector<float>(nStep, 0.0f);
+        stateTelem[field] = telemArray{0.0f};
     }
 
     isInit = true;
@@ -72,6 +70,10 @@ void Flight::set_state_fields()
 void Flight::update()
 {
 
+    dt = 0.01;
+    int iStep = 0;
+    int iTelem = 0;
+
     double y[] = {*state->at("linPosZ"),
                   *state->at("linVelZ")};
 
@@ -80,12 +82,15 @@ void Flight::update()
 
     for (const auto& field : telemFields)
     {
-        stateTelem[field][0] = static_cast<float>(*state->at(field));
+        stateTelemMin[field]   = *state->at(field);
+        stateTelemMax[field] = *state->at(field);
     }
+
+    iStep += 1;
 
     // Solve ODE system
 
-    for (int iStep = 1; iStep < nStep; iStep++)
+    while (y[0] >= 0.0)
     {
 
         double ti = iStep*dt;
@@ -94,18 +99,22 @@ void Flight::update()
 
         update_deps(); // Reset state to correct time step
 
+        iTelem = iStep % N_TELEM_ARRAY; // Index wraps from [0, N_TELEM_ARRAY]
+
+        if (iTelem == 0)
+        {
+            write_telem(iTelem);
+            update_stats(iTelem);
+        }
+
         for (const auto& field : telemFields)
         {
-           stateTelem[field][iStep] = static_cast<float>(*state->at(field));
+           stateTelem[field][iTelem] = static_cast<float>(*state->at(field));
         }
 
-        if (y[0] <= 0.0)
-        {
+        iStep += 1;
 
-            flightTermStep = iStep;
-
-            break; // TODO: could include more complex logic with an "apogeeFlag"
-        }
+        // TODO: could include more complex logic with an "apogeeFlag"
 
         /*
         TODO
@@ -119,6 +128,15 @@ void Flight::update()
     }
 
     flightTerm = true; // TODO: better handling for flight termination
+    // interpolate_state();
+    // missing last telem elements???
+    write_telem(iTelem);
+    update_stats(iTelem);
+
+    if (telemStream.is_open())
+    {
+        telemStream.close();
+    }
 
 }
 
@@ -146,66 +164,86 @@ int ode_update(double t, const double y[], double f[], void *params)
 
 //---------------------------------------------------------------------------//
 
-std::vector<std::string> Flight::telemFieldsDefault = {"time"       ,
-                                                       "thrust"     ,
-                                                       "massEng"    ,
-                                                       "mass"       ,
-                                                       "gravity"    ,
-                                                       "temperature",
-                                                       "pressure"   ,
-                                                       "density"    ,
-                                                       "dynamicPressure",
-                                                       "mach"       ,
-                                                       "alphaT"     ,
-                                                       "dragCoeff",
-                                                       "dragForce"  ,
-                                                       "liftForce"  ,
-                                                       "forceZ"     ,
-                                                       "linAccZ"    ,
-                                                       "linVelZ"    ,
-                                                       "linPosZ"    ,
-                                                       "isBurnout"  };
-
-std::vector<std::string> Flight::telemUnitsDefault = {"s"     ,
-                                                      "N"     ,
-                                                      "kg"    ,
-                                                      "kg"    ,
-                                                      "m/s^2" ,
-                                                      "K"     ,
-                                                      "Pa"    ,
-                                                      "kg/m^3",
-                                                      "Pa",
-                                                      ""      ,
-                                                      "rad"   ,
-                                                      "",
-                                                      "N"     ,
-                                                      "N"     ,
-                                                      "N"     ,
-                                                      "m/s^2" ,
-                                                      "m/s"   ,
-                                                      "m"     ,
-                                                      ""      };
-
-//---------------------------------------------------------------------------//
-
-void Flight::set_telem(const std::vector<std::string> &telemFieldsInit, const std::vector<std::string> &telemUnitsInit)
+void Flight::set_telem(const std::vector<std::string>& telemFieldsInit, const std::vector<std::string>& telemUnitsInit)
 {
     telemFields = telemFieldsInit;
     telemUnits  = telemUnitsInit;
 }
 
-void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool for success/error status?
+//---------------------------------------------------------------------------//
+
+std::vector<std::string> Flight::telemFieldsDefault =
+{
+    "time"           ,
+    "thrust"         ,
+    "massEng"        ,
+    "mass"           ,
+    "gravity"        ,
+    "temperature"    ,
+    "pressure"       ,
+    "density"        ,
+    "dynamicPressure",
+    "mach"           ,
+    "alphaT"         ,
+    "dragCoeff"      ,
+    "dragForce"      ,
+    "liftForce"      ,
+    "forceZ"         ,
+    "linAccZ"        ,
+    "linVelZ"        ,
+    "linPosZ"        ,
+    "isBurnout"      ,
+};
+
+std::vector<std::string> Flight::telemUnitsDefault =
+{
+    "s"     ,
+    "N"     ,
+    "kg"    ,
+    "kg"    ,
+    "m/s^2" ,
+    "K"     ,
+    "Pa"    ,
+    "kg/m^3",
+    "Pa"    ,
+    ""      ,
+    "rad"   ,
+    ""      ,
+    "N"     ,
+    "N"     ,
+    "N"     ,
+    "m/s^2" ,
+    "m/s"   ,
+    "m"     ,
+    ""      ,
+};
+
+//---------------------------------------------------------------------------//
+
+void Flight::init_telem(const std::string& outputDir)
 {
 
-    if (!flightTerm)
+    std::string filePath = outputDir + "/telem";
+
+    if (telemMode == "text")
     {
-        // TODO: some kind of error message?
-        std::cout << "Error:write_telem:!flightTerm\n";
-        return;
+        filePath += ".csv";
+        init_telem_text(filePath);
+    }
+    else if (telemMode == "binary")
+    {
+        filePath += ".npy";
+        init_telem_binary(filePath);
     }
 
-    std::ofstream ofs;
-    ofs.open(fileOut, std::ofstream::trunc);
+}
+
+//---------------------------------------------------------------------------//
+
+void Flight::init_telem_text(const std::string& filePath)
+{
+
+    telemStream.open(filePath, std::ofstream::trunc);
 
     /*
     if (!ofs.is_open())
@@ -218,20 +256,51 @@ void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool 
     std::ostringstream oss;
     const char* delim = ",";
 
-    // TODO: consider replace std::endl w/ "\n" for performance
-
     std::copy(telemFields.begin(), telemFields.end() - 1, std::ostream_iterator<std::string>(oss, delim));
     oss << telemFields.back() << "\n";
 
     std::copy(telemUnits.begin(), telemUnits.end() - 1, std::ostream_iterator<std::string>(oss, delim));
     oss << telemUnits.back() << "\n";
 
-    ofs << oss.str();
+    telemStream << oss.str();
+
+}
+
+//---------------------------------------------------------------------------//
+
+void Flight::init_telem_binary(const std::string& filePath)
+{
+    ;
+}
+
+//---------------------------------------------------------------------------//
+
+void Flight::write_telem(const int& iTelem)
+{
+
+    if (telemMode == "text")
+    {
+        write_telem_text(iTelem);
+    }
+    else if (telemMode == "binary")
+    {
+        write_telem_binary(iTelem);
+    }
+
+}
+
+//---------------------------------------------------------------------------//
+
+void Flight::write_telem_text(const int& iTelem) // TODO: maybe return bool for success/error status?
+{
 
     // Write data values
+    std::ostringstream oss;
+    const char* delim = ",";
+
     std::string strOut;
 
-    for (int iStep = 0; iStep < nStep; iStep++)
+    for (int iStep = 0; iStep < iTelem; iStep++)
     {
 
         oss.str("");
@@ -245,32 +314,50 @@ void Flight::write_telem(const std::string &fileOut) // TODO: maybe return bool 
         strOut = oss.str();
         strOut.pop_back();
 
-        ofs << strOut << "\n";
-
-        if (iStep == flightTermStep)
-        {
-            break;
-        }
+        telemStream << strOut << "\n";
 
     }
-
-    ofs.close();
 
 }
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_stats(const std::string &fileOut) // TODO: maybe return bool for success/error status?
+void Flight::write_telem_binary(const int& iTelem)
+{
+    ;
+}
+
+//---------------------------------------------------------------------------//
+
+void Flight::update_stats(const int& iTelem)
 {
 
-    if (!flightTerm)
+    double minValue;
+    double maxValue;
+
+    for (const auto& field : telemFields)
     {
-        // TODO: some kind of error message?
-        return;
+
+        auto begin = stateTelem[field].begin();
+        auto end   = begin + (iTelem + 1); // +1 for zero index
+
+        minValue = *std::min_element(begin, end);
+        maxValue = *std::max_element(begin, end);
+
+        stateTelemMin[field] = std::min(stateTelemMin[field], minValue);
+        stateTelemMax[field] = std::max(stateTelemMax[field], maxValue);
+
     }
 
+}
+
+//---------------------------------------------------------------------------//
+
+void Flight::write_stats(const std::string& filePath) // TODO: maybe return bool for success/error status?
+{
+
     std::ofstream ofs;
-    ofs.open(fileOut, std::ofstream::trunc);
+    ofs.open(filePath, std::ofstream::trunc);
 
     /*
     if (!ofs.is_open())
@@ -279,33 +366,20 @@ void Flight::write_stats(const std::string &fileOut) // TODO: maybe return bool 
     }
     */
 
-    // Flight Time
-    //ofs << "Flight Time: " << std::fixed << std::setprecision(nPrec) << flightTime << "\n";
-
     // Document start
     ofs << "---\n";
 
     std::string tab = "    ";
 
-    float minValue;
-    float maxValue;
-
-    int nTm = telemFields.size();
+    int nField = telemFields.size();
     std::string field;
     std::string units;
 
-    for (int iTm = 0; iTm < nTm; iTm++)
+    for (int iField = 0; iField < nField; iField++)
     {
 
-        field = telemFields[iTm];
-
-        auto begin = stateTelem[field].begin();
-        auto end   = begin + (flightTermStep + 1); // +1 for zero index
-
-        minValue = *std::min_element(begin, end);
-        maxValue = *std::max_element(begin, end);
-
-        units = telemUnits[iTm];
+        field = telemFields[iField];
+        units = telemUnits[iField];
 
         if (units.empty())
         {
@@ -314,8 +388,8 @@ void Flight::write_stats(const std::string &fileOut) // TODO: maybe return bool 
 
         ofs << field << ":\n";
         ofs << tab << "Units: " << units << "\n";
-        ofs << tab << "Min: " << std::fixed << std::setprecision(nPrec) << minValue << "\n";
-        ofs << tab << "Max: " << std::fixed << std::setprecision(nPrec) << maxValue << "\n";
+        ofs << tab << "Min: " << std::fixed << std::setprecision(nPrec) << stateTelemMin[field] << "\n";
+        ofs << tab << "Max: " << std::fixed << std::setprecision(nPrec) << stateTelemMax[field] << "\n";
 
     }
 

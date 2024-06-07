@@ -137,7 +137,6 @@ void bind_Flight(py::module_ &m)
         .def_readonly_static("telemFieldsDefault", &Flight::telemFieldsDefault)
         .def_readonly_static("telemUnitsDefault", &Flight::telemUnitsDefault)
         .def("set_telem", &Flight::set_telem)
-        .def("write_telem", &Flight::write_telem)
         .def("write_stats", &Flight::write_stats);
 
 }

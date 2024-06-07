@@ -244,11 +244,10 @@ def run_sim(simInput, simConfig, simData, iRun):
 
     flight.set_telem(simConfig.output["telem"], simConfig.output["telemUnits"])
 
-    t0    = 0.0
-    dt    = simInput["flight"]["timeStep"]["value"]
-    tf    = simInput["flight"]["timeFlight"]["value"]
-    nPrec = simInput["flight"]["precision"]["value"]
-    flight.init(t0, dt, tf, nPrec)
+    telemMode = simInput["flight"]["output"]["value"]
+    nPrec     = simInput["flight"]["precision"]["value"]
+    outputPath3 = simConfig.outputPath2 / f"run{iRun}"
+    flight.init(telemMode, nPrec, str(outputPath3))
 
     # Execute flight
     flight.update()
@@ -289,10 +288,6 @@ def write_output(simInput, simConfig, iRun, flight):
 
     with open(str(outputInput), 'w') as file:
         yaml.dump(simInput, file, sort_keys=False, indent=4)
-
-    # Write telemetry *.csv
-    outputTelem = outputPath3 / "telem.csv"
-    flight.write_telem(str(outputTelem))
 
     # Write statistics *.yml
     outputStats = outputPath3 / "stats.yml"

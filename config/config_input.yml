@@ -49,18 +49,10 @@ exec:
         min: 0
         max: .inf
 flight:
-    timeFlight:
-        type: float
-        quantity: time
-        unit: s
-        min: 0.0
-        max: .inf
-    timeStep:
-        type: float
-        quantity: time
-        unit: s
-        min: 0.0
-        max: .inf
+    output:
+        type: str
+        isPath: false
+        valid: [text, binary, none]
     precision:
         type: int
         quantity: null
