@@ -1,6 +1,7 @@
 # System modules
 import sys
 import os
+import shutil
 import pathlib
 import copy
 import multiprocessing as mp
@@ -107,8 +108,10 @@ def exec(inputPath, outputPath):
     inputName   = pathlib.Path(inputPath).stem
     outputPath2 = pathlib.Path(outputPath) / inputName
 
-    if not os.path.exists(outputPath2):
-        os.mkdir(outputPath2)
+    if os.path.exists(outputPath2):
+        shutil.rmtree(outputPath2)
+
+    os.mkdir(outputPath2)
 
     # Validate telemetry output fields
     telemInvalid = set(configOutput["telem"]) - set(model.Flight.telemFieldsDefault)
@@ -246,22 +249,20 @@ def run_sim(simInput, simConfig, simData, iRun):
 
     telemMode = simInput["flight"]["output"]["value"]
     nPrec     = simInput["flight"]["precision"]["value"]
+
+    # Setup run output folder
     outputPath3 = simConfig.outputPath2 / f"run{iRun}"
+    os.mkdir(outputPath3)
+
     flight.init(telemMode, nPrec, str(outputPath3))
 
     # Execute flight
     flight.update()
-    write_output(simInput, simConfig, iRun, flight)
+    write_output(simInput, simConfig, outputPath3, flight)
 
 #------------------------------------------------------------------------------#
 
-def write_output(simInput, simConfig, iRun, flight):
-
-    # Setup run output folder
-    outputPath3 = simConfig.outputPath2 / f"run{iRun}"
-
-    if not os.path.exists(outputPath3):
-        os.mkdir(outputPath3)
+def write_output(simInput, simConfig, outputPath3, flight):
 
     # Write input *.yml
     # Archives montecarlo draw for run recreation
