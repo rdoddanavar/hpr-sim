@@ -82,8 +82,12 @@ void Flight::update()
 
     for (const auto& field : telemFields)
     {
-        stateTelemMin[field]   = *state->at(field);
+
+        stateTelem[field][iTelem] = static_cast<float>(*state->at(field));
+
+        stateTelemMin[field] = *state->at(field);
         stateTelemMax[field] = *state->at(field);
+
     }
 
     iStep += 1;
@@ -101,15 +105,15 @@ void Flight::update()
 
         iTelem = iStep % N_TELEM_ARRAY; // Index wraps from [0, N_TELEM_ARRAY]
 
-        if (iTelem == 0)
-        {
-            write_telem(iTelem);
-            update_stats(iTelem);
-        }
-
         for (const auto& field : telemFields)
         {
            stateTelem[field][iTelem] = static_cast<float>(*state->at(field));
+        }
+
+        if (iTelem == (N_TELEM_ARRAY - 1))
+        {
+            write_telem(iTelem);
+            update_stats(iTelem);
         }
 
         iStep += 1;
@@ -300,7 +304,7 @@ void Flight::write_telem_text(const int& iTelem) // TODO: maybe return bool for 
 
     std::string strOut;
 
-    for (int iStep = 0; iStep < iTelem; iStep++)
+    for (int iStep = 0; iStep < (iTelem + 1); iStep++)
     {
 
         oss.str("");
