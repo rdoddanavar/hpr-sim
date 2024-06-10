@@ -146,38 +146,49 @@ def exec(inputPath, outputPath):
     simData = SimData(machData, alphaData, aeroData, timeEng, thrustEng, massEng)
 
     # Sim execution
-    mode    = simInput["exec"]["mode"]["value"]
-    numProc = simInput["exec"]["numProc"]["value"]
-    numMC   = simInput["exec"]["numMC"]["value"]
+    mcMode   = simInput["exec"]["mcMode"]["value"]
+    numMC    = simInput["exec"]["numMC"]["value"]
+    procMode = simInput["exec"]["procMode"]["value"]
+    numProc  = simInput["exec"]["numProc"]["value"]
 
     print()
     print(f"Simulation output available at: {colorama.Fore.YELLOW}{simConfig.outputPath2}/run*{colorama.Style.RESET_ALL}")
 
-    if mode == "nominal":
+    if mcMode == "nominal":
 
         print("Executing nominal run")
         run_sim(simInput, simConfig, simData, 0)
 
-    elif mode == "montecarlo":
+    elif mcMode == "montecarlo":
 
         print(f"Monte Carlo summary available at: {colorama.Fore.YELLOW}{simConfig.outputPath2}/summary.yml{colorama.Style.RESET_ALL}")
         print()
+        print("Executing Monte Carlo runs:")
 
-        with mp.Pool(numProc) as pool:
+        # Setup progress bar
+        pBar = tqdm.tqdm(total=numMC, unit="run", dynamic_ncols=True, colour="green")
 
-            print("Executing Monte Carlo runs:")
+        # Callback functions to update progress bar
+        callback_parallel = functools.partial(cli_status, pBar)
+        callback_serial   = functools.partial(callback_parallel, None)
 
-            # Setup progress bar
-            pBar = tqdm.tqdm(total=numMC, unit="run", dynamic_ncols=True, colour="green")
-            callback_fun = functools.partial(cli_status, pBar)
+        if procMode == "serial":
 
-            # Execute parallel runs
             for iRun in range(numMC):
-                pool.apply_async(run_sim_mc, (simInput, simConfig, simData, iRun), callback=callback_fun)
+                run_sim_mc(simInput, simConfig, simData, iRun)
+                callback_serial()
 
-            # Pool cleanup
-            pool.close()
-            pool.join()
+        elif procMode == "parallel":
+
+            with mp.Pool(numProc) as pool:
+
+                # Execute parallel runs
+                for iRun in range(numMC):
+                    pool.apply_async(run_sim_mc, (simInput, simConfig, simData, iRun), callback=callback_parallel)
+
+                # Pool cleanup
+                pool.close()
+                pool.join()
 
         # Write summary *.yml
         write_summary(simConfig.outputPath2 / "summary.yml", simInput["flight"]["precision"]["value"])
@@ -247,7 +258,7 @@ def run_sim(simInput, simConfig, simData, iRun):
 
     flight.set_telem(simConfig.output["telem"], simConfig.output["telemUnits"])
 
-    telemMode = simInput["flight"]["output"]["value"]
+    telemMode = simInput["flight"]["telemMode"]["value"]
     nPrec     = simInput["flight"]["precision"]["value"]
 
     # Setup run output folder
@@ -266,7 +277,7 @@ def write_output(simInput, simConfig, outputPath3, flight):
 
     # Write input *.yml
     # Archives montecarlo draw for run recreation
-    simInput["exec"]["mode"]["value"] = "nominal"
+    simInput["exec"]["mcMode"]["value"] = "nominal"
 
     for group in simInput.keys():
         for param in simInput[group].keys():

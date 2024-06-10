@@ -26,7 +26,7 @@
 #     None
 ---
 exec:
-    mode:
+    mcMode:
         type: str
         isPath: false
         valid: [nominal, montecarlo]
@@ -42,6 +42,10 @@ exec:
         unit: null
         min: 0
         max: .inf
+    procMode:
+        type: str
+        isPath: false
+        valid: [serial, parallel]
     numProc:
         type: int
         quantity: null
@@ -49,7 +53,7 @@ exec:
         min: 0
         max: .inf
 flight:
-    output:
+    telemMode:
         type: str
         isPath: false
         valid: [text, binary, none]
