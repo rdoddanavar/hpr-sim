@@ -1,13 +1,12 @@
 #pragma once
 
 // System libraries
+#include <cstdio>
 #include <string>
 #include <vector>
 #include <set>
 #include <map>
 #include <memory>
-#include <iostream>
-#include <fstream>
 
 // External libraries
 #include "pybind11/pybind11.h"
@@ -356,12 +355,14 @@ class Flight : public Model
         std::vector<std::string> telemFields;
         std::vector<std::string> telemUnits;
 
+        int nTelemFields;
+
         telemArrayMap stateTelem;
         telemMap      stateTelemMin;
         telemMap      stateTelemMax;
 
         std::string   telemMode;
-        std::ofstream telemStream;
+        std::FILE*    telemFile;
 
         // State variables
 

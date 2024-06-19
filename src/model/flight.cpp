@@ -1,17 +1,17 @@
 // System libraries
+#include <cstdio>
 #include <string>
 #include <vector>
 #include <map>
-
 #include <iostream>
-#include <sstream>
 #include <fstream>
-#include <iterator>
 #include <iomanip>
 
 // External libraries
 #include "gsl/ode-initval2/gsl_odeiv2.h"
 #include "gsl/err/gsl_errno.h"
+#include "fmt/core.h"
+#include "fmt/ranges.h"
 
 // Project headers
 #include "model.h"
@@ -48,6 +48,8 @@ void Flight::init(const std::string& telemModeIn,  const int& nPrecIn, const std
 
     telemFields = telemFieldsDefault;
     telemUnits  = telemUnitsDefault;
+
+    nTelemFields = telemFields.size();
 
     for (const auto& field : telemFields)
     {
@@ -135,12 +137,8 @@ void Flight::update()
     // interpolate_state();
     // missing last telem elements???
     write_telem(iTelem);
+    fclose(telemFile);
     update_stats(iTelem);
-
-    if (telemStream.is_open())
-    {
-        telemStream.close();
-    }
 
 }
 
@@ -247,26 +245,16 @@ void Flight::init_telem(const std::string& outputDir)
 void Flight::init_telem_text(const std::string& filePath)
 {
 
-    telemStream.open(filePath, std::ofstream::trunc);
-
-    /*
-    if (!ofs.is_open())
-    {
-        ; TODO: raise some error
-    }
-    */
+    telemFile = std::fopen(filePath.c_str(), "w+");
+    // TODO: Error catching here?
 
     // Write data fields & units
-    std::ostringstream oss;
+    auto out = fmt::memory_buffer();
     const char* delim = ",";
 
-    std::copy(telemFields.begin(), telemFields.end() - 1, std::ostream_iterator<std::string>(oss, delim));
-    oss << telemFields.back() << "\n";
-
-    std::copy(telemUnits.begin(), telemUnits.end() - 1, std::ostream_iterator<std::string>(oss, delim));
-    oss << telemUnits.back() << "\n";
-
-    telemStream << oss.str();
+    fmt::format_to(std::back_inserter(out), "{}\n", fmt::join(telemFields, delim));
+    fmt::format_to(std::back_inserter(out), "{}\n", fmt::join(telemUnits , delim));
+    fmt::print(telemFile, fmt::to_string(out));
 
 }
 
@@ -299,28 +287,27 @@ void Flight::write_telem_text(const int& iTelem) // TODO: maybe return bool for 
 {
 
     // Write data values
-    std::ostringstream oss;
-    const char* delim = ",";
-
-    std::string strOut;
+    auto out = fmt::memory_buffer();
+    std::string delim;
+    int iField;
 
     for (int iStep = 0; iStep < (iTelem + 1); iStep++)
     {
 
-        oss.str("");
-        oss.clear();
+        iField = 0;
 
         for (const auto& field : telemFields)
         {
-            oss << std::fixed << std::setprecision(nPrec) << stateTelem[field][iStep] << delim;
+            iField++;
+            delim = (iField < nTelemFields) ? "," : "";
+            fmt::format_to(std::back_inserter(out), "{:.{}f}{}", stateTelem[field][iStep], nPrec, delim);
         }
 
-        strOut = oss.str();
-        strOut.pop_back();
-
-        telemStream << strOut << "\n";
+        fmt::format_to(std::back_inserter(out), "\n");
 
     }
+
+    fmt::print(telemFile, fmt::to_string(out));
 
 }
 
