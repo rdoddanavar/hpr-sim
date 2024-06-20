@@ -3,9 +3,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <iostream>
-#include <fstream>
-#include <iomanip>
 
 // External libraries
 #include "gsl/ode-initval2/gsl_odeiv2.h"
@@ -298,8 +295,7 @@ void Flight::write_telem_text(const int& iTelem) // TODO: maybe return bool for 
 
         for (const auto& field : telemFields)
         {
-            iField++;
-            delim = (iField < nTelemFields) ? "," : "";
+            delim = (++iField < nTelemFields) ? "," : "";
             fmt::format_to(std::back_inserter(out), "{:.{}f}{}", stateTelem[field][iStep], nPrec, delim);
         }
 
@@ -347,26 +343,19 @@ void Flight::update_stats(const int& iTelem)
 void Flight::write_stats(const std::string& filePath) // TODO: maybe return bool for success/error status?
 {
 
-    std::ofstream ofs;
-    ofs.open(filePath, std::ofstream::trunc);
+    std::FILE* statsFile = std::fopen(filePath.c_str(), "w+");
+    // Error handling here?
 
-    /*
-    if (!ofs.is_open())
-    {
-        ; TODO: raise some error
-    }
-    */
+    auto out = fmt::memory_buffer();
+    const std::string tab = "    "; // 4 spaces
 
     // Document start
-    ofs << "---\n";
+    fmt::format_to(std::back_inserter(out), "---\n");
 
-    std::string tab = "    ";
-
-    int nField = telemFields.size();
     std::string field;
     std::string units;
 
-    for (int iField = 0; iField < nField; iField++)
+    for (int iField = 0; iField < nTelemFields; iField++)
     {
 
         field = telemFields[iField];
@@ -377,16 +366,17 @@ void Flight::write_stats(const std::string& filePath) // TODO: maybe return bool
             units = "null";
         }
 
-        ofs << field << ":\n";
-        ofs << tab << "Units: " << units << "\n";
-        ofs << tab << "Min: " << std::fixed << std::setprecision(nPrec) << stateTelemMin[field] << "\n";
-        ofs << tab << "Max: " << std::fixed << std::setprecision(nPrec) << stateTelemMax[field] << "\n";
+       fmt::format_to(std::back_inserter(out), "{}:\n", field);
+       fmt::format_to(std::back_inserter(out), "{}Units: {}\n", tab, units);
+       fmt::format_to(std::back_inserter(out), "{}Min: {:.{}f}\n", tab, stateTelemMin[field], nPrec);
+       fmt::format_to(std::back_inserter(out), "{}Max: {:.{}f}\n", tab, stateTelemMax[field], nPrec);
 
     }
 
     // Document end
-    ofs << "...\n";
-    ofs.close();
+    fmt::format_to(std::back_inserter(out), "...\n");
+    fmt::print(statsFile, fmt::to_string(out));
+    std::fclose(statsFile);
 
 }
 
