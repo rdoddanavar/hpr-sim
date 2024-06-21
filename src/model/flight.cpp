@@ -131,11 +131,65 @@ void Flight::update()
     }
 
     flightTerm = true; // TODO: better handling for flight termination
-    // interpolate_state();
-    // missing last telem elements???
+
+    // Finalize output data
+    telem_interp(iTelem);
     write_telem(iTelem);
-    fclose(telemFile);
+    std::fclose(telemFile);
     update_stats(iTelem);
+
+}
+
+//---------------------------------------------------------------------------//
+
+void Flight::telem_interp(const int& iTelem)
+{
+
+    /*
+    The last element in stateTelem["linPosZ"] is <= 0.0 (to tigger flight termination).
+    A negative end position (in Z) is non-physical, i.e. under the ground.
+    To correct the last data point, we find the zero point for linPosZ
+    and linearly interpolate all other states to this zero point.
+
+    Visualization:
+
+    Index: [i1]------|------[i2]
+    Value:  x1      0.0      x2
+    */
+
+    // Get indices of last two points
+    int i2 = iTelem;
+    int i1 = (i2 == 0) ? (N_TELEM_ARRAY - 1) : (i2 - 1);
+
+    // Catching if end position is 0.0?
+
+    double x1 = stateTelem["linPosZ"][i1]; // End position prev (positive)
+    double x2 = stateTelem["linPosZ"][i2]; // End position      (negative)
+
+    double dx12    = x1 - x2;   // Distance traveled between (positive)
+    double dx10    = x1 - 0.0;  // Distance from zero point  (positive)
+    double dx10Rel = dx10/dx12; // " " normalized [0.0, 1.0]
+
+    // Force linPosZ = 0.0 at flight termination
+    stateTelem["linPosZ"][i2] = 0.0;
+
+    for (const auto& field : telemFields)
+    {
+
+        if (field == "linPosZ") continue;
+
+        double y1 = stateTelem[field][i1]; // End state prev
+        double y2 = stateTelem[field][i2]; // End state
+
+        double dy12 = y2 - y1;
+
+        // Perform interpolation
+        double y0 = y1 + dx10Rel*dy12;
+
+        // Overwrite last value
+        stateTelem[field][i2] = y0;
+
+    }
 
 }
 

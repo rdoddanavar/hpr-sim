@@ -350,6 +350,7 @@ class Flight : public Model
         void write_telem(const int& iTelem);
         void write_telem_text(const int& iTelem);
         void write_telem_binary(const int& iTelem);
+        void telem_interp(const int& iTelem);
         void update_stats(const int& iTelem);
 
         std::vector<std::string> telemFields;
