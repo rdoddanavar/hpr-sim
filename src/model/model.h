@@ -324,12 +324,11 @@ class Flight : public Model
 
     public:
 
-        void init(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDir);
+        void init(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDirIn);
         void set_state_fields() override;
         void update() override;
 
         void set_telem(const std::vector<std::string>& telemFieldsInit, const std::vector<std::string>& telemUnitsInit);
-        void write_stats(const std::string& filePath);
 
         ~Flight(); // Destructor
 
@@ -341,14 +340,17 @@ class Flight : public Model
     private:
 
         // Telemetry
-        void init_telem(const std::string& outputDir);
+        void init_telem();
         void init_telem_text(const std::string& filePath);
         void init_telem_binary(const std::string& filePath);
-        void write_telem(const int& iTelem);
-        void write_telem_text(const int& iTelem);
-        void write_telem_binary(const int& iTelem);
-        void telem_interp(const int& iTelem);
-        void update_stats(const int& iTelem);
+        void write_telem();
+        void write_telem_text();
+        void write_telem_binary();
+        void telem_interp();
+        void update_stats();
+        void write_stats();
+
+        std::string outputDir;
 
         std::vector<std::string> telemFields;
         std::vector<std::string> telemUnits;
@@ -369,9 +371,9 @@ class Flight : public Model
         // Miscellaneous
         double dt;
         int    nPrec;
+        int    iTelem;
 
         bool   flightTerm{false};
-        int    flightTermStep;
 
         // TODO: create "phase" structure to capture all flags
 

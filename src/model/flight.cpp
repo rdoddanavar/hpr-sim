@@ -16,7 +16,7 @@
 
 //---------------------------------------------------------------------------//
 
-void Flight::init(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDir)
+void Flight::init(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDirIn)
 {
 
     // Solver setup
@@ -40,8 +40,9 @@ void Flight::init(const std::string& telemModeIn,  const int& nPrecIn, const std
     // Telemetry setup
     telemMode = telemModeIn;
     nPrec     = nPrecIn;
+    outputDir = outputDirIn;
 
-    init_telem(outputDir);
+    init_telem();
 
     telemFields = telemFieldsDefault;
     telemUnits  = telemUnitsDefault;
@@ -69,9 +70,10 @@ void Flight::set_state_fields()
 void Flight::update()
 {
 
-    dt = 0.01;
+    dt     = 0.01;
+    iTelem = 0;
+
     int iStep = 0;
-    int iTelem = 0;
 
     double y[] = {*state->at("linPosZ"),
                   *state->at("linVelZ")};
@@ -111,8 +113,8 @@ void Flight::update()
 
         if (iTelem == (N_TELEM_ARRAY - 1))
         {
-            write_telem(iTelem);
-            update_stats(iTelem);
+            write_telem();
+            update_stats();
         }
 
         iStep += 1;
@@ -132,17 +134,19 @@ void Flight::update()
 
     flightTerm = true; // TODO: better handling for flight termination
 
-    // Finalize output data
-    telem_interp(iTelem);
-    write_telem(iTelem);
-    std::fclose(telemFile);
-    update_stats(iTelem);
+    // Finalize telem output
+    telem_interp();
+    write_telem();
+
+    // Finalize stats output
+    update_stats();
+    write_stats();
 
 }
 
 //---------------------------------------------------------------------------//
 
-void Flight::telem_interp(const int& iTelem)
+void Flight::telem_interp()
 {
 
     /*
@@ -273,7 +277,7 @@ std::vector<std::string> Flight::telemUnitsDefault =
 
 //---------------------------------------------------------------------------//
 
-void Flight::init_telem(const std::string& outputDir)
+void Flight::init_telem()
 {
 
     std::string filePath = outputDir + "/telem";
@@ -318,23 +322,23 @@ void Flight::init_telem_binary(const std::string& filePath)
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_telem(const int& iTelem)
+void Flight::write_telem()
 {
 
     if (telemMode == "text")
     {
-        write_telem_text(iTelem);
+        write_telem_text();
     }
     else if (telemMode == "binary")
     {
-        write_telem_binary(iTelem);
+        write_telem_binary();
     }
 
 }
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_telem_text(const int& iTelem) // TODO: maybe return bool for success/error status?
+void Flight::write_telem_text() // TODO: maybe return bool for success/error status?
 {
 
     // Write data values
@@ -363,14 +367,14 @@ void Flight::write_telem_text(const int& iTelem) // TODO: maybe return bool for 
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_telem_binary(const int& iTelem)
+void Flight::write_telem_binary()
 {
     ;
 }
 
 //---------------------------------------------------------------------------//
 
-void Flight::update_stats(const int& iTelem)
+void Flight::update_stats()
 {
 
     double minValue;
@@ -394,10 +398,11 @@ void Flight::update_stats(const int& iTelem)
 
 //---------------------------------------------------------------------------//
 
-void Flight::write_stats(const std::string& filePath) // TODO: maybe return bool for success/error status?
+void Flight::write_stats() // TODO: maybe return bool for success/error status?
 {
 
-    std::FILE* statsFile = std::fopen(filePath.c_str(), "w+");
+    const std::string filePath  = outputDir + "/stats.yml";
+    std::FILE*        statsFile = std::fopen(filePath.c_str(), "w+");
     // Error handling here?
 
     auto out = fmt::memory_buffer();
@@ -442,6 +447,7 @@ Flight::~Flight()
     if (isInit)
     {
         gsl_odeiv2_driver_free(odeSolver.driver);
+        std::fclose(telemFile);
     }
 
 }

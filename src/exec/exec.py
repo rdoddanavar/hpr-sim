@@ -191,7 +191,7 @@ def exec(inputPath, outputPath):
                 pool.join()
 
         # Write summary *.yml
-        write_summary(simConfig.outputPath2 / "summary.yml", simInput["flight"]["precision"]["value"])
+        write_mc_summary(simConfig.outputPath2 / "summary.yml", simInput["flight"]["precision"]["value"])
 
 #------------------------------------------------------------------------------#
 
@@ -269,11 +269,11 @@ def run_sim(simInput, simConfig, simData, iRun):
 
     # Execute flight
     flight.update()
-    write_output(simInput, simConfig, outputPath3, flight)
+    write_mc_input(simInput, simConfig, outputPath3)
 
 #------------------------------------------------------------------------------#
 
-def write_output(simInput, simConfig, outputPath3, flight):
+def write_mc_input(simInput, simConfig, outputPath3):
 
     # Write input *.yml
     # Archives montecarlo draw for run recreation
@@ -301,13 +301,9 @@ def write_output(simInput, simConfig, outputPath3, flight):
     with open(str(outputInput), 'w') as file:
         yaml.dump(simInput, file, sort_keys=False, indent=4)
 
-    # Write statistics *.yml
-    outputStats = outputPath3 / "stats.yml"
-    flight.write_stats(str(outputStats))
-
 #------------------------------------------------------------------------------#
 
-def write_summary(filePathOut, nPrec):
+def write_mc_summary(filePathOut, nPrec):
 
     dir = pathlib.Path(filePathOut).parent
     subdirs = [subdir for subdir in dir.iterdir() if subdir.is_dir()]
