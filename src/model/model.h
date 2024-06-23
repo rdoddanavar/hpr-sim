@@ -29,17 +29,14 @@
 namespace py = pybind11;
 
 // Type aliases
-using stateMap      = std::map<std::string, double*>;
+using stateMap      = std::unordered_map<std::string, double*>;
 using stateMapPtr   = std::shared_ptr<stateMap>;
 
-using telemMap      = std::map<std::string, double>;
+using telemMap      = std::unordered_map<std::string, double>;
 using telemArray    = std::array<double, N_TELEM_ARRAY>;
-using telemArrayMap = std::map<std::string, telemArray>;
+using telemArrayMap = std::unordered_map<std::string, telemArray>;
 
 using numpyArray    = py::array_t<double, py::array::c_style | py::array::forcecast>;
-
-// TODO: consider replacing std::map w/ std::unordered_map for performance
-// Performance vs. memory usage?
 
 //---------------------------------------------------------------------------//
 
