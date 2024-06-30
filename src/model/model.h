@@ -324,7 +324,7 @@ class Flight : public Model
 
     public:
 
-        void init(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDirIn);
+        void init(const std::string& telemModeIn, const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn);
         void set_state_fields() override;
         void update() override;
 
@@ -363,6 +363,8 @@ class Flight : public Model
 
         std::string   telemMode;
         std::FILE*    telemFile;
+
+        std::string metaStr;
 
         // State variables
 

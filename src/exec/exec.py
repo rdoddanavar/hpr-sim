@@ -11,6 +11,7 @@ from dataclasses import dataclass
 import functools
 import tqdm
 import colorama
+from datetime import datetime
 
 # Path modifications
 paths = ["../../build/src", "../preproc", "../util"]
@@ -40,10 +41,20 @@ import model
 #------------------------------------------------------------------------------#
 
 # Module variables
-# TODO: find alternatives to globals? Mutables like list or dict?
-#configPathRel = "../../config"
 
-# TODO: Replace this with a data class
+@dataclass
+class Metadata:
+    timeStamp: str
+    version: str
+
+@dataclass
+class SimConfig:
+    input: dict
+    output: dict
+    inputPath: str
+    outputPath2: pathlib.Path
+    metadata: str
+
 @dataclass
 class SimData:
     machData: dict
@@ -53,23 +64,16 @@ class SimData:
     thrustEng: np.ndarray
     massEng: np.ndarray
 
-@dataclass
-class SimConfig:
-    input: dict
-    output: dict
-    outputPath2: pathlib.Path
-
 #------------------------------------------------------------------------------#
 
-def cli_intro():
-
-    version = util_misc.get_cmake_cache("../../build/CMakeCache.txt", "CMAKE_PROJECT_VERSION")
+def cli_intro(metadata):
 
     colorama.init()
 
-    print(f"{colorama.Fore.CYAN}hpr-sim v{version}")
-    print(f"https://github.com/rdoddanavar/hpr-sim{colorama.Style.RESET_ALL}")
-    print()
+    print(f"{colorama.Fore.CYAN}")
+    print(f"{metadata.timeStamp}")
+    print(f"hpr-sim v{metadata.version}")
+    print(colorama.Style.RESET_ALL)
 
 #------------------------------------------------------------------------------#
 
@@ -85,7 +89,11 @@ def exec(inputPath, outputPath):
     :type outputPath: str
     """
 
-    cli_intro()
+    timeStamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    version   = util_misc.get_cmake_cache("../../build/CMakeCache.txt", "CMAKE_PROJECT_VERSION")
+    metadata  = Metadata(timeStamp, version)
+
+    cli_intro(metadata)
 
     # Pre-processing
     util_unit.config()
@@ -125,10 +133,8 @@ def exec(inputPath, outputPath):
             if configOutput["telem"][i] in model.Flight.telemFieldsDefault:
                 configOutput["telemUnits"].append(model.Flight.telemUnitsDefault[i])
 
-    # TEST
-    simConfig = SimConfig(configInput, configOutput, outputPath2)
-    # TEST
-    
+    simConfig = SimConfig(configInput, configOutput, inputPath, outputPath2, metadata)
+
     # TODO: if issues with config_ouput.yml, resort to default fields
     # Also, populate output stats fields
 
@@ -191,7 +197,7 @@ def exec(inputPath, outputPath):
                 pool.join()
 
         # Write summary *.yml
-        write_mc_summary(simConfig.outputPath2 / "summary.yml", simInput["flight"]["precision"]["value"])
+        write_mc_summary(simConfig, simInput)
 
 #------------------------------------------------------------------------------#
 
@@ -260,12 +266,20 @@ def run_sim(simInput, simConfig, simData, iRun):
 
     telemMode = simInput["flight"]["telemMode"]["value"]
     nPrec     = simInput["flight"]["precision"]["value"]
+    numMC     = simInput["exec"]["numMC"]["value"]
 
     # Setup run output folder
     outputPath3 = simConfig.outputPath2 / f"run{iRun}"
     os.mkdir(outputPath3)
 
-    flight.init(telemMode, nPrec, str(outputPath3))
+    # Make header string for metadata
+    metaStr0 = f"# {simConfig.metadata.timeStamp}\n"
+    metaStr1 = f"# hpr-sim v{simConfig.metadata.version}\n"
+    metaStr2 = f"# Input: {simConfig.inputPath}\n"
+    metaStr3 = f"# Run: {iRun}/{numMC}"
+    metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
+
+    flight.init(telemMode, nPrec, str(outputPath3), metaStr)
 
     # Execute flight
     flight.update()
@@ -303,11 +317,14 @@ def write_mc_input(simInput, simConfig, outputPath3):
 
 #------------------------------------------------------------------------------#
 
-def write_mc_summary(filePathOut, nPrec):
+def write_mc_summary(simConfig, simInput):
 
-    dir = pathlib.Path(filePathOut).parent
-    subdirs = [subdir for subdir in dir.iterdir() if subdir.is_dir()]
-    nSubdir = len(subdirs)
+    filePath = simConfig.outputPath2 / "summary.yml"
+    dir      = filePath.parent
+    subdirs  = [subdir for subdir in dir.iterdir() if subdir.is_dir()]
+    nSubdir  = len(subdirs)
+    nPrec    = simInput["flight"]["precision"]["value"]
+    numMC    = simInput["exec"]["numMC"]["value"]
 
     first = True
 
@@ -354,7 +371,17 @@ def write_mc_summary(filePathOut, nPrec):
 
         summary[key]["Max"] = summaryMax
 
-    with open(filePathOut, 'w', encoding="utf8") as stream:
+    with open(filePath, 'w', encoding="utf8") as stream:
+
+        # Make header string for metadata
+        metaStr0 = f"# {simConfig.metadata.timeStamp}\n"
+        metaStr1 = f"# hpr-sim v{simConfig.metadata.version}\n"
+        metaStr2 = f"# Input: {simConfig.inputPath}\n"
+        metaStr3 = f"# Run: {numMC}/{numMC}"
+        metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
+
+        stream.write(f"{metaStr}\n")
+
         yaml.dump(summary, stream, indent=4, explicit_start=True, explicit_end=True, sort_keys=False)
 
 #------------------------------------------------------------------------------#

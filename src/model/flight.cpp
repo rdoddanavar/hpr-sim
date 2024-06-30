@@ -16,7 +16,7 @@
 
 //---------------------------------------------------------------------------//
 
-void Flight::init(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDirIn)
+void Flight::init(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn)
 {
 
     // Solver setup
@@ -41,6 +41,7 @@ void Flight::init(const std::string& telemModeIn,  const int& nPrecIn, const std
     telemMode = telemModeIn;
     nPrec     = nPrecIn;
     outputDir = outputDirIn;
+    metaStr   = metaStrIn;
 
     init_telem();
 
@@ -307,6 +308,7 @@ void Flight::init_telem_text(const std::string& filePath)
     auto out = fmt::memory_buffer();
     const char* delim = ",";
 
+    fmt::format_to(std::back_inserter(out), "{}\n", metaStr);
     fmt::format_to(std::back_inserter(out), "{}\n", fmt::join(telemFields, delim));
     fmt::format_to(std::back_inserter(out), "{}\n", fmt::join(telemUnits , delim));
     fmt::print(telemFile, fmt::to_string(out));
@@ -409,6 +411,7 @@ void Flight::write_stats() // TODO: maybe return bool for success/error status?
     const std::string tab = "    "; // 4 spaces
 
     // Document start
+    fmt::format_to(std::back_inserter(out), "{}\n", metaStr);
     fmt::format_to(std::back_inserter(out), "---\n");
 
     std::string field;
