@@ -1,6 +1,7 @@
 #pragma once
 
 // System libraries
+#include <cstdio>
 #include <string>
 #include <vector>
 #include <set>
@@ -21,17 +22,21 @@
 
 //---------------------------------------------------------------------------//
 
+// Macros
+#define N_TELEM_ARRAY 1000
+
 // Namespaces
 namespace py = pybind11;
 
 // Type aliases
-using stateMap    = std::map<std::string, double*>;
-using stateMapPtr = std::shared_ptr<stateMap>;
-using stateMapVec = std::map<std::string, std::vector<float>>;
-using numpyArray  = py::array_t<double, py::array::c_style | py::array::forcecast>;
+using stateMap      = std::unordered_map<std::string, double*>;
+using stateMapPtr   = std::shared_ptr<stateMap>;
 
-// TODO: consider replacing std::map w/ std::unordered_map for performance
-// Performance vs. memory usage?
+using telemMap      = std::unordered_map<std::string, double>;
+using telemArray    = std::array<double, N_TELEM_ARRAY>;
+using telemArrayMap = std::unordered_map<std::string, telemArray>;
+
+using numpyArray    = py::array_t<double, py::array::c_style | py::array::forcecast>;
 
 //---------------------------------------------------------------------------//
 
@@ -319,39 +324,58 @@ class Flight : public Model
 
     public:
 
-        void init(double t0Init, double dtInit, double tfInit, int nPrecInit);
+        void init(const std::string& telemModeIn, const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn);
         void set_state_fields() override;
         void update() override;
 
-        void set_telem(const std::vector<std::string> &telemFieldsInit, const std::vector<std::string> &telemUnitsInit);
-        void write_telem(const std::string &fileOut);
-        void write_stats(const std::string &fileOut);
+        void set_telem(const std::vector<std::string>& telemFieldsInit, const std::vector<std::string>& telemUnitsInit);
 
         ~Flight(); // Destructor
 
         static std::vector<std::string> telemFieldsDefault;
         static std::vector<std::string> telemUnitsDefault;
 
-        std::vector<std::string> telemFields;
-        std::vector<std::string> telemUnits;
-
         OdeSolver odeSolver; // ODE solver settings & driver
 
     private:
 
+        // Telemetry
+        void init_telem();
+        void init_telem_text(const std::string& filePath);
+        void init_telem_binary(const std::string& filePath);
+        void write_telem();
+        void write_telem_text();
+        void write_telem_binary();
+        void telem_interp();
+        void update_stats();
+        void write_stats();
+
+        std::string outputDir;
+
+        std::vector<std::string> telemFields;
+        std::vector<std::string> telemUnits;
+
+        int nTelemFields;
+
+        telemArrayMap stateTelem;
+        telemMap      stateTelemMin;
+        telemMap      stateTelemMax;
+
+        std::string   telemMode;
+        std::FILE*    telemFile;
+
+        std::string metaStr;
+
         // State variables
-        stateMapVec stateTelem;
+
         double time;
 
         // Miscellaneous
-        double t0;
         double dt;
-        double tf;
-        int    nStep;
         int    nPrec;
+        int    iTelem;
 
-        bool   flightTerm = false;
-        int    flightTermStep;
+        bool   flightTerm{false};
 
         // TODO: create "phase" structure to capture all flags
 
