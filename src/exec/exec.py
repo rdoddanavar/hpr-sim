@@ -283,11 +283,11 @@ def run_sim(simInput, simConfig, simData, iRun):
 
     # Execute flight
     flight.update()
-    write_mc_input(simInput, simConfig, outputPath3)
+    write_input(simInput, simConfig, iRun)
 
 #------------------------------------------------------------------------------#
 
-def write_mc_input(simInput, simConfig, outputPath3):
+def write_input(simInput, simConfig, iRun):
 
     # Write input *.yml
     # Archives montecarlo draw for run recreation
@@ -310,10 +310,23 @@ def write_mc_input(simInput, simConfig, outputPath3):
                     value = util_unit.convert(value, quantity, "default", unit)
                     simInput[group][param]["value"] = value
 
+    outputPath3 = simConfig.outputPath2 / f"run{iRun}"
     outputInput = outputPath3 / "input.yml"
 
     with open(str(outputInput), 'w') as file:
-        yaml.dump(simInput, file, sort_keys=False, indent=4)
+
+        numMC = simInput["exec"]["numMC"]["value"]
+
+        # Make header string for metadata
+        metaStr0 = f"# {simConfig.metadata.timeStamp}\n"
+        metaStr1 = f"# hpr-sim v{simConfig.metadata.version}\n"
+        metaStr2 = f"# Input: {simConfig.inputPath}\n"
+        metaStr3 = f"# Run: {iRun}/{numMC}"
+        metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
+
+        file.write(f"{metaStr}\n")
+
+        yaml.dump(simInput, file, indent=4, explicit_start=True, explicit_end=True, sort_keys=False)
 
 #------------------------------------------------------------------------------#
 
