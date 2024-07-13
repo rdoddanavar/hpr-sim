@@ -85,7 +85,7 @@ void Flight::update()
     for (const auto& field : telemFields)
     {
 
-        stateTelem[field][iTelem] = static_cast<float>(*state->at(field));
+        stateTelem[field][iTelem] = *state->at(field);
 
         stateTelemMin[field] = *state->at(field);
         stateTelemMax[field] = *state->at(field);
@@ -109,7 +109,7 @@ void Flight::update()
 
         for (const auto& field : telemFields)
         {
-           stateTelem[field][iTelem] = static_cast<float>(*state->at(field));
+           stateTelem[field][iTelem] = *state->at(field);
         }
 
         if (iTelem == (N_TELEM_ARRAY - 1))
