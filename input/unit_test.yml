@@ -6,13 +6,13 @@ const:
     pi: 3.141592653589793
 #-----------------------------------------------------------------------------#
 exec:
-    mode: montecarlo
+    mcMode: montecarlo
     seed: 0
     numMC: 5
+    procMode: parallel
     numProc: 4
 flight:
-    timeFlight: 100.0
-    timeStep: 0.01
+    telemMode: text
     precision: 3
 engine:
     inputPath: input/AeroTech_J450DM.eng

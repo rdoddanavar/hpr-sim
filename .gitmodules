@@ -7,3 +7,6 @@
 [submodule "lib/gsl"]
 	path = lib/gsl
 	url = https://github.com/ampl/gsl.git
+[submodule "lib/fmt"]
+	path = lib/fmt
+	url = https://github.com/fmtlib/fmt.git
