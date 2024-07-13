@@ -94,7 +94,7 @@ def load_eng(inputPath):
     thrustNorm = thrust / thrust.max()
     alpha      = propMass / np.trapz(thrustNorm, time) # Scaling factor
     massFlow   = alpha * thrustNorm
-    mass       = totalMass - integrate.cumtrapz(massFlow, time)
+    mass       = totalMass - integrate.cumulative_trapezoid(massFlow, time)
     mass       = np.insert(mass, 0, totalMass) # t=0 mass @ totalMass
 
     return time, thrust, mass
