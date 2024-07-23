@@ -1,5 +1,4 @@
 # System modules
-import sys
 import os
 import shutil
 import pathlib
@@ -13,34 +12,19 @@ import tqdm
 import colorama
 from datetime import datetime
 
-# Path modifications
-paths = ["../../build/src", "../preproc", "../util"]
-
-for item in paths:
-    addPath = pathlib.Path(__file__).parent / item
-    sys.path.append(str(addPath.resolve()))
-
 # Project modules
 import exec_rand
 import util_yaml
 import util_unit
-import util_misc
 import preproc_input
 import preproc_engine
 import preproc_aerodynamics
-
-compilerPath       = util_misc.get_cmake_cache("../../build/CMakeCache.txt", "CMAKE_CXX_COMPILER")
-compilerPathParent = str(pathlib.Path(compilerPath).parent)
-
-if os.name == "nt":
-    # Explicitly add path to libstdc++
-    os.add_dll_directory(compilerPathParent)
-
 import model
 
 #------------------------------------------------------------------------------#
 
 # Module variables
+version = "0.0.0"
 
 @dataclass
 class Metadata:
@@ -66,6 +50,12 @@ class SimData:
 
 #------------------------------------------------------------------------------#
 
+def set_version(version_):
+    global version
+    version = version_
+
+#------------------------------------------------------------------------------#
+
 def cli_intro(metadata):
 
     colorama.init()
@@ -77,7 +67,7 @@ def cli_intro(metadata):
 
 #------------------------------------------------------------------------------#
 
-def exec(inputPath, outputPath):
+def exec(inputPath, outputPath, configPath):
 
     """
     Executes simluation using paramters defined in input file
@@ -89,17 +79,14 @@ def exec(inputPath, outputPath):
     :type outputPath: str
     """
 
+    # Metadata
     timeStamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    version   = util_misc.get_cmake_cache("../../build/CMakeCache.txt", "CMAKE_PROJECT_VERSION")
     metadata  = Metadata(timeStamp, version)
 
     cli_intro(metadata)
 
     # Pre-processing
-    util_unit.config()
-
-    configPath  = pathlib.Path(__file__).parent / "../../config" #configPathRel
-    configPath  = configPath.resolve()
+    util_unit.config(configPath / "config_unit.yml")
 
     configInput = util_yaml.load(str(configPath / "config_input.yml"))
     util_yaml.process(configInput)
@@ -396,14 +383,3 @@ def write_mc_summary(simConfig, simInput):
         stream.write(f"{metaStr}\n")
 
         yaml.dump(summary, stream, indent=4, explicit_start=True, explicit_end=True, sort_keys=False)
-
-#------------------------------------------------------------------------------#
-
-if __name__ == "__main__":
-
-    inputPath  = sys.argv[1]
-    outputPath = sys.argv[2]
-
-    # TODO: mp.freeze_support() # Need this for pyinstaller
-
-    exec(inputPath, outputPath)

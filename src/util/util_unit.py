@@ -20,18 +20,17 @@ Classes:
 '''
 
 # System modules
-import pathlib
+# <none>
 
 # Project modules
 import util_yaml
 
 # Module variables
-configPathRel = "../../config/config_unit.yml"
-configUnit    = None
+configUnit = None
 
 #------------------------------------------------------------------------------#
 
-def config():
+def config(configPath):
 
     '''
     Parses YAML config file, creates global dict of unit conversion factors.
@@ -44,8 +43,6 @@ def config():
 
     if not configUnit:
 
-        configPath = pathlib.Path(__file__).parent / configPathRel
-        configPath = str(configPath.resolve())
         configUnit = util_yaml.load(configPath)
         util_yaml.process(configUnit)
 
