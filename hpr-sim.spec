@@ -4,8 +4,8 @@
 a = Analysis(
     ['hpr-sim.py'],
     pathex=['src/exec','src/preproc','src/postproc','src/util'],
-    binaries=[('build/src/model.cpython-310-x86_64-linux-gnu.so','.')],
-    datas=[('build/CMakeCache.txt','.'),
+    binaries=[('build/src/model.cpython-310-x86_64-linux-gnu.so','build/src')],
+    datas=[('build/CMakeCache.txt','build'),
            ('config/config_input.yml','config'),
            ('config/config_output.yml','config'),
            ('config/config_unit.yml','config')],

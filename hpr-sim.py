@@ -6,15 +6,8 @@ import os
 import argparse
 import pathlib
 
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-    isPyinstaller = True
-    paths = ["_internal"]
-else:
-    isPyinstaller = False
-    paths = ["build/src"]
-
 # Path modifications
-paths += ["src/exec", "src/preproc", "src/postproc", "src/util"]
+paths = ["build/src", "src/exec", "src/preproc", "src/postproc", "src/util"]
 
 for item in paths:
     addPath = pathlib.Path(__file__).parent / item
@@ -39,14 +32,10 @@ if __name__ == "__main__":
     args       = parser.parse_args()
     inputPath  = args.input
     outputPath = args.output
-
-    # Get configPath
-    subdir     = "_internal" if isPyinstaller else "."
-    configPath = pathlib.Path(subdir) / "config"
+    configPath = pathlib.Path(__file__).parent / "config"
 
     # Get version
-    subdir    = "_internal" if isPyinstaller else "build"
-    cmakePath = pathlib.Path(subdir) / "CMakeCache.txt"
+    cmakePath = pathlib.Path(__file__).parent / "build" / "CMakeCache.txt"
     version   = util_misc.get_cmake_cache(cmakePath.resolve().as_posix(), "CMAKE_PROJECT_VERSION")
 
     if os.name == "nt":
