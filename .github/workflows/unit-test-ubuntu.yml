@@ -62,7 +62,7 @@ jobs:
           python-version: '3.10'
       - name: Install python packages
         run: pip install -r requirements.txt
-      - name: Pyinstaller build
+      - name: PyInstaller build
         run: python tools/pyinstaller_build.py
       - name: Run unit test
         run: cd build/pyinstaller/dist/hpr-sim && ./hpr-sim -i input/unit_test.yml output/ && ls -l output/*/*
