@@ -1,34 +1,48 @@
-
-#NAME="hpr-sim"
-#WORKPATH="build/pyinstaller"
-#DISTPATH="build/pyinstaller/dist"
-#OPTS="--workpath $WORKPATH --distpath $DISTPATH --noconfirm"
-#SPECFILE="$NAME.spec"
-
-#pyinstaller $OPTS $SPECFILE
-#cp -rfv input $DISTPATH/$NAME
-#mkdir -p $DISTPATH/$NAME/output
-
 import os
+import shutil
 import pathlib
 import PyInstaller.__main__
 
 if os.name == "posix":
-    binaries = ["model.cpython-310-x86_64-linux-gnu.so"]
+    binaries = ["build/src/model.cpython-310-x86_64-linux-gnu.so:build/src"]
 elif os.name == "nt":
-    binaries = ["model.cp310-win_amd64.pyd"]
+    binaries = ["build/src/model.cp310-win_amd64.pyd:build/src"]
 
-name     = "hpr-sim"
-specFile = name + ".spec"
-workPath = pathlib.Path("build/pyinstaller")
-distPath = workPath / "dist"
-output   = distPath / "output"
+name       = "hpr-sim"
+specFile   = name + ".spec"
+workPath   = pathlib.Path("build/pyinstaller")
+distPath   = workPath / "dist"
+outputPath = distPath / "hpr-sim" / "output"
+
+paths    = ["src/exec", "src/preproc", "src/postproc", "src/util"]
+datas    = ["build/CMakeCache.txt:build", "config/config_input.yml:config", "config/config_output.yml:config", "config/config_unit.yml:config"]
 
 PyInstaller.__main__.run([
     f"{name}.py",
-    "--no-conirm",
-    f"--workpath {workPath.resolve().as_posix()}",
-    f"--distpath {distPath.resolve().as_posix()}"
+    "--workpath",
+    workPath.resolve().as_posix(),
+    "--distpath",
+    distPath.resolve().as_posix(),
+    "--noconfirm",
+    "--paths",
+    paths[0],
+    "--paths",
+    paths[1],
+    "--paths",
+    paths[2],
+    "--paths",
+    paths[3],
+    "--add-binary",
+    binaries[0],
+    "--add-data",
+    datas[0],
+    "--add-data",
+    datas[1],
+    "--add-data",
+    datas[2],
+    "--add-data",
+    datas[3]
 ])
 
-os.mkdir(output.resolve().as_posix())
+outputPath.mkdir(parents=True, exist_ok=True)
+shutil.copytree("input", distPath / "hpr-sim" / "input")

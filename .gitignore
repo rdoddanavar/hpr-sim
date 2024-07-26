@@ -1,6 +1,7 @@
-# Python aritifacts
+# Python artifacts
 __pycache__
 *.pyc
+hpr-sim.spec
 
 # Sphinx artifiacts
 doc/_build/*
