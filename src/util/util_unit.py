@@ -24,10 +24,10 @@ import pathlib
 
 # Project modules
 import util_yaml
+import util_misc
 
 # Module variables
-configPathRel = "../../config/config_unit.yml"
-configUnit    = None
+configUnit = None
 
 #------------------------------------------------------------------------------#
 
@@ -44,8 +44,8 @@ def config():
 
     if not configUnit:
 
-        configPath = pathlib.Path(__file__).parent / configPathRel
-        configPath = str(configPath.resolve())
+        subdir     = "_internal" if util_misc.is_bundled() else "."
+        configPath = pathlib.Path(subdir) / "config/config_unit.yml"
         configUnit = util_yaml.load(configPath)
         util_yaml.process(configUnit)
 
@@ -143,6 +143,6 @@ def convert_temp(*args):
 #------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
-
-    # Standalone execution
     pass
+else:
+    config()

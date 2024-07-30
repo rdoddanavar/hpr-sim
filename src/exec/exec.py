@@ -1,5 +1,4 @@
 # System modules
-import sys
 import os
 import shutil
 import pathlib
@@ -13,14 +12,7 @@ import tqdm
 import colorama
 from datetime import datetime
 
-# Path modifications
-paths = ["../../build/src", "../preproc", "../util"]
-
-for item in paths:
-    addPath = pathlib.Path(__file__).parent / item
-    sys.path.append(str(addPath.resolve()))
-
-# Project modules
+# Project modules (python)
 import exec_rand
 import util_yaml
 import util_unit
@@ -29,18 +21,17 @@ import preproc_input
 import preproc_engine
 import preproc_aerodynamics
 
-compilerPath       = util_misc.get_cmake_cache("../../build/CMakeCache.txt", "CMAKE_CXX_COMPILER")
-compilerPathParent = str(pathlib.Path(compilerPath).parent)
+# Project modules (pybind11)
 
 if os.name == "nt":
+
     # Explicitly add path to libstdc++
-    os.add_dll_directory(compilerPathParent)
+    compilerPath = util_misc.get_cmake_cache("CMAKE_CXX_COMPILER")
+    os.add_dll_directory(pathlib.Path(compilerPath).parent)
 
 import model
 
 #------------------------------------------------------------------------------#
-
-# Module variables
 
 @dataclass
 class Metadata:
@@ -51,7 +42,7 @@ class Metadata:
 class SimConfig:
     input: dict
     output: dict
-    inputPath: str
+    inputPath: pathlib.Path
     outputPath2: pathlib.Path
     metadata: str
 
@@ -77,7 +68,7 @@ def cli_intro(metadata):
 
 #------------------------------------------------------------------------------#
 
-def exec(inputPath, outputPath):
+def exec(inputPath, outputPath, configPath):
 
     """
     Executes simluation using paramters defined in input file
@@ -89,32 +80,25 @@ def exec(inputPath, outputPath):
     :type outputPath: str
     """
 
+    # Metadata
     timeStamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    version   = util_misc.get_cmake_cache("../../build/CMakeCache.txt", "CMAKE_PROJECT_VERSION")
+    version   = util_misc.get_cmake_cache("CMAKE_PROJECT_VERSION")
     metadata  = Metadata(timeStamp, version)
 
     cli_intro(metadata)
 
     # Pre-processing
-    util_unit.config()
-
-    configPath  = pathlib.Path(__file__).parent / "../../config" #configPathRel
-    configPath  = configPath.resolve()
-
-    configInput = util_yaml.load(str(configPath / "config_input.yml"))
+    configInput = util_yaml.load(configPath / "config_input.yml")
     util_yaml.process(configInput)
 
-    configOutput = util_yaml.load(str(configPath / "config_output.yml"))
-
-    print(f"Reading input file: {colorama.Fore.YELLOW}{inputPath}{colorama.Style.RESET_ALL}")
+    print(f"Reading input file: {colorama.Fore.YELLOW}{inputPath.resolve()}{colorama.Style.RESET_ALL}")
     simInput = util_yaml.load(inputPath)
     util_yaml.process(simInput)                  # Validate raw input file, resolve references
     preproc_input.process(simInput, configInput) # Validate input parameter values
     exec_rand.check_dist(simInput)               # Validate random distribution choice, parameters
 
     # Output setup
-    inputName   = pathlib.Path(inputPath).stem
-    outputPath2 = pathlib.Path(outputPath) / inputName
+    outputPath2 = outputPath / inputPath.stem
 
     if os.path.exists(outputPath2):
         shutil.rmtree(outputPath2)
@@ -122,6 +106,7 @@ def exec(inputPath, outputPath):
     os.mkdir(outputPath2)
 
     # Validate telemetry output fields
+    configOutput = util_yaml.load(configPath / "config_output.yml")
     telemInvalid = set(configOutput["telem"]) - set(model.Flight.telemFieldsDefault)
 
     configOutput["telemUnits"] = []
@@ -139,13 +124,13 @@ def exec(inputPath, outputPath):
     # Also, populate output stats fields
 
     # Motor data
-    enginePath = simInput["engine"]["inputPath"]["value"]
-    print(f"Reading propulsion data: {colorama.Fore.YELLOW}{enginePath}{colorama.Style.RESET_ALL}")
+    enginePath = pathlib.Path(simInput["engine"]["inputPath"]["value"])
+    print(f"Reading propulsion data: {colorama.Fore.YELLOW}{enginePath.resolve()}{colorama.Style.RESET_ALL}")
     timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
 
     # Aeromodel data
-    aeroPath = simInput["aerodynamics"]["inputPath"]["value"]
-    print(f"Reading aerodynamic data: {colorama.Fore.YELLOW}{aeroPath}{colorama.Style.RESET_ALL}")
+    aeroPath = pathlib.Path(simInput["aerodynamics"]["inputPath"]["value"])
+    print(f"Reading aerodynamic data: {colorama.Fore.YELLOW}{aeroPath.resolve()}{colorama.Style.RESET_ALL}")
     (machData, alphaData, aeroData) = preproc_aerodynamics.load_csv(aeroPath)
 
     # Collect all sim data
@@ -158,7 +143,7 @@ def exec(inputPath, outputPath):
     numProc  = simInput["exec"]["numProc"]["value"]
 
     print()
-    print(f"Simulation output available at: {colorama.Fore.YELLOW}{simConfig.outputPath2}/run*{colorama.Style.RESET_ALL}")
+    print(f"Simulation output available at: {colorama.Fore.YELLOW}{simConfig.outputPath2.resolve()}{colorama.Style.RESET_ALL}")
 
     if mcMode == "nominal":
 
@@ -167,7 +152,8 @@ def exec(inputPath, outputPath):
 
     elif mcMode == "montecarlo":
 
-        print(f"Monte Carlo summary available at: {colorama.Fore.YELLOW}{simConfig.outputPath2}/summary.yml{colorama.Style.RESET_ALL}")
+        summaryPath = simConfig.outputPath2 / "summary.yml"
+        print(f"Monte Carlo summary available at: {colorama.Fore.YELLOW}{summaryPath.resolve()}{colorama.Style.RESET_ALL}")
         print()
         print("Executing Monte Carlo runs:")
 
@@ -279,7 +265,7 @@ def run_sim(simInput, simConfig, simData, iRun):
     metaStr3 = f"# Run: {iRun}/{numMC}"
     metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
 
-    flight.init(telemMode, nPrec, str(outputPath3), metaStr)
+    flight.init(telemMode, nPrec, outputPath3.resolve().as_posix(), metaStr)
 
     # Execute flight
     flight.update()
@@ -313,7 +299,7 @@ def write_input(simInput, simConfig, iRun):
     outputPath3 = simConfig.outputPath2 / f"run{iRun}"
     outputInput = outputPath3 / "input.yml"
 
-    with open(str(outputInput), 'w') as file:
+    with open(outputInput, 'w') as file:
 
         numMC = simInput["exec"]["numMC"]["value"]
 
@@ -396,14 +382,3 @@ def write_mc_summary(simConfig, simInput):
         stream.write(f"{metaStr}\n")
 
         yaml.dump(summary, stream, indent=4, explicit_start=True, explicit_end=True, sort_keys=False)
-
-#------------------------------------------------------------------------------#
-
-if __name__ == "__main__":
-
-    inputPath  = sys.argv[1]
-    outputPath = sys.argv[2]
-
-    # TODO: mp.freeze_support() # Need this for pyinstaller
-
-    exec(inputPath, outputPath)

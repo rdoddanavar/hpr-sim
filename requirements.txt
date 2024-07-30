@@ -4,3 +4,4 @@ matplotlib
 pyyaml
 tqdm
 colorama
+pyinstaller

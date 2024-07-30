@@ -51,3 +51,27 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run unit test
         run: ./hpr-sim.py -i input/unit_test.yml output/ && ls -l output/*/*
+  pyinstaller-windows:
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
+    needs: build-windows
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Retrieve build artifacts
+        uses: actions/cache@v4
+        with:
+          path: build
+          key: ${{ github.workflow }}-${{ github.event.pull_request.head.sha }}
+      - name: Setup python environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      - name: Install python packages
+        run: pip install -r requirements.txt
+      - name: PyInstaller build
+        run: python tools/pyinstaller_build.py
+      - name: Run unit test
+        run: cd build/pyinstaller/dist/hpr-sim && ./hpr-sim -i input/unit_test.yml output/ && ls -l output/*/*

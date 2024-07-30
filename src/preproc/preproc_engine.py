@@ -22,7 +22,6 @@ Dependencies:
 
 # System modules
 import sys
-import pdb
 from pathlib import Path
 import numpy as np
 from scipy import integrate
@@ -34,15 +33,13 @@ sys.path.append(str(addPath.resolve()))
 # Project modules
 import util_unit
 
-util_unit.config() # remove later when setup process updated
-
 #------------------------------------------------------------------------------#
 
 # Add error for bad engine file reading! Maybe data vectors are mismatched?
 # Feed in bad files to test
 
 def load(inputPath):
-    
+
     ext = Path(inputPath).suffix
 
     if ext == ".eng":
@@ -57,21 +54,21 @@ def load(inputPath):
 #------------------------------------------------------------------------------#
 
 def load_eng(inputPath):
-    
+
     # Initialize arrays; implicit (0,0) point must be created
     time   = np.array([0])
     thrust = np.array([0])
 
     with open(inputPath, 'r') as engFile:
         for line in engFile.read().splitlines():
-            
+
             if ';' in line:
                 continue # Skip header comments
-            
+
             words = line.strip().split(' ')
 
             if len(words) > 2:
-                
+
                 # Process info line:
                 # motor name, diameter [mm], length [mm], delays, prop. mass [kg], tot. mass [kg], manufacturer
                 diameter  = float(words[1]) 
@@ -102,7 +99,7 @@ def load_eng(inputPath):
 #------------------------------------------------------------------------------#
 
 def load_rse(inputPath):
-    
+
     tree = ET.parse(inputPath)
     root = tree.getroot()
 
