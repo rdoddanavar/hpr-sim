@@ -12,19 +12,26 @@ import tqdm
 import colorama
 from datetime import datetime
 
-# Project modules
+# Project modules (python)
 import exec_rand
 import util_yaml
 import util_unit
+import util_misc
 import preproc_input
 import preproc_engine
 import preproc_aerodynamics
+
+# Project modules (pybind11)
+
+if os.name == "nt":
+
+    # Explicitly add path to libstdc++
+    compilerPath = util_misc.get_cmake_cache("CMAKE_CXX_COMPILER")
+    os.add_dll_directory(pathlib.Path(compilerPath).parent)
+
 import model
 
 #------------------------------------------------------------------------------#
-
-# Module variables
-version = "0.0.0"
 
 @dataclass
 class Metadata:
@@ -35,7 +42,7 @@ class Metadata:
 class SimConfig:
     input: dict
     output: dict
-    inputPath: str
+    inputPath: pathlib.Path
     outputPath2: pathlib.Path
     metadata: str
 
@@ -47,12 +54,6 @@ class SimData:
     timeEng: np.ndarray
     thrustEng: np.ndarray
     massEng: np.ndarray
-
-#------------------------------------------------------------------------------#
-
-def set_version(version_):
-    global version
-    version = version_
 
 #------------------------------------------------------------------------------#
 
@@ -81,27 +82,23 @@ def exec(inputPath, outputPath, configPath):
 
     # Metadata
     timeStamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    version   = util_misc.get_cmake_cache("CMAKE_PROJECT_VERSION")
     metadata  = Metadata(timeStamp, version)
 
     cli_intro(metadata)
 
     # Pre-processing
-    util_unit.config(configPath / "config_unit.yml")
-
-    configInput = util_yaml.load(str(configPath / "config_input.yml"))
+    configInput = util_yaml.load(configPath / "config_input.yml")
     util_yaml.process(configInput)
 
-    configOutput = util_yaml.load(str(configPath / "config_output.yml"))
-
-    print(f"Reading input file: {colorama.Fore.YELLOW}{inputPath}{colorama.Style.RESET_ALL}")
+    print(f"Reading input file: {colorama.Fore.YELLOW}{inputPath.resolve()}{colorama.Style.RESET_ALL}")
     simInput = util_yaml.load(inputPath)
     util_yaml.process(simInput)                  # Validate raw input file, resolve references
     preproc_input.process(simInput, configInput) # Validate input parameter values
     exec_rand.check_dist(simInput)               # Validate random distribution choice, parameters
 
     # Output setup
-    inputName   = pathlib.Path(inputPath).stem
-    outputPath2 = pathlib.Path(outputPath) / inputName
+    outputPath2 = outputPath / inputPath.stem
 
     if os.path.exists(outputPath2):
         shutil.rmtree(outputPath2)
@@ -109,6 +106,7 @@ def exec(inputPath, outputPath, configPath):
     os.mkdir(outputPath2)
 
     # Validate telemetry output fields
+    configOutput = util_yaml.load(configPath / "config_output.yml")
     telemInvalid = set(configOutput["telem"]) - set(model.Flight.telemFieldsDefault)
 
     configOutput["telemUnits"] = []
@@ -126,13 +124,13 @@ def exec(inputPath, outputPath, configPath):
     # Also, populate output stats fields
 
     # Motor data
-    enginePath = simInput["engine"]["inputPath"]["value"]
-    print(f"Reading propulsion data: {colorama.Fore.YELLOW}{enginePath}{colorama.Style.RESET_ALL}")
+    enginePath = pathlib.Path(simInput["engine"]["inputPath"]["value"])
+    print(f"Reading propulsion data: {colorama.Fore.YELLOW}{enginePath.resolve()}{colorama.Style.RESET_ALL}")
     timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
 
     # Aeromodel data
-    aeroPath = simInput["aerodynamics"]["inputPath"]["value"]
-    print(f"Reading aerodynamic data: {colorama.Fore.YELLOW}{aeroPath}{colorama.Style.RESET_ALL}")
+    aeroPath = pathlib.Path(simInput["aerodynamics"]["inputPath"]["value"])
+    print(f"Reading aerodynamic data: {colorama.Fore.YELLOW}{aeroPath.resolve()}{colorama.Style.RESET_ALL}")
     (machData, alphaData, aeroData) = preproc_aerodynamics.load_csv(aeroPath)
 
     # Collect all sim data
@@ -145,7 +143,7 @@ def exec(inputPath, outputPath, configPath):
     numProc  = simInput["exec"]["numProc"]["value"]
 
     print()
-    print(f"Simulation output available at: {colorama.Fore.YELLOW}{simConfig.outputPath2}/run*{colorama.Style.RESET_ALL}")
+    print(f"Simulation output available at: {colorama.Fore.YELLOW}{simConfig.outputPath2.resolve()}{colorama.Style.RESET_ALL}")
 
     if mcMode == "nominal":
 
@@ -154,7 +152,8 @@ def exec(inputPath, outputPath, configPath):
 
     elif mcMode == "montecarlo":
 
-        print(f"Monte Carlo summary available at: {colorama.Fore.YELLOW}{simConfig.outputPath2}/summary.yml{colorama.Style.RESET_ALL}")
+        summaryPath = simConfig.outputPath2 / "summary.yml"
+        print(f"Monte Carlo summary available at: {colorama.Fore.YELLOW}{summaryPath.resolve()}{colorama.Style.RESET_ALL}")
         print()
         print("Executing Monte Carlo runs:")
 
@@ -266,7 +265,7 @@ def run_sim(simInput, simConfig, simData, iRun):
     metaStr3 = f"# Run: {iRun}/{numMC}"
     metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
 
-    flight.init(telemMode, nPrec, str(outputPath3), metaStr)
+    flight.init(telemMode, nPrec, outputPath3.resolve().as_posix(), metaStr)
 
     # Execute flight
     flight.update()
@@ -300,7 +299,7 @@ def write_input(simInput, simConfig, iRun):
     outputPath3 = simConfig.outputPath2 / f"run{iRun}"
     outputInput = outputPath3 / "input.yml"
 
-    with open(str(outputInput), 'w') as file:
+    with open(outputInput, 'w') as file:
 
         numMC = simInput["exec"]["numMC"]["value"]
 

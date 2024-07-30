@@ -20,17 +20,18 @@ Classes:
 '''
 
 # System modules
-# <none>
+import pathlib
 
 # Project modules
 import util_yaml
+import util_misc
 
 # Module variables
 configUnit = None
 
 #------------------------------------------------------------------------------#
 
-def config(configPath):
+def config():
 
     '''
     Parses YAML config file, creates global dict of unit conversion factors.
@@ -43,6 +44,8 @@ def config(configPath):
 
     if not configUnit:
 
+        subdir     = "_internal" if util_misc.is_bundled() else "."
+        configPath = pathlib.Path(subdir) / "config/config_unit.yml"
         configUnit = util_yaml.load(configPath)
         util_yaml.process(configUnit)
 
@@ -140,6 +143,6 @@ def convert_temp(*args):
 #------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
-
-    # Standalone execution
     pass
+else:
+    config()

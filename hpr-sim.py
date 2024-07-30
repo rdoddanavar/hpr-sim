@@ -2,9 +2,9 @@
 
 # System modules
 import sys
-import os
 import argparse
 import pathlib
+import multiprocessing as mp
 
 # Path modifications
 paths = ["build/src", "src/exec", "src/preproc", "src/postproc", "src/util"]
@@ -16,13 +16,13 @@ for item in paths:
 # Project modules
 import exec
 import postproc_flight
-import util_misc
 
 #------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
 
-    # TODO: mp.freeze_support() # Need this for pyinstaller
+    # Multiprocessing support for PyInstaller
+    mp.freeze_support()
 
     # Parse CLI
     parser = argparse.ArgumentParser()
@@ -30,24 +30,11 @@ if __name__ == "__main__":
     parser.add_argument('output', type=str, help="Output file path")
 
     args       = parser.parse_args()
-    inputPath  = args.input
-    outputPath = args.output
+    inputPath  = pathlib.Path(args.input)
+    outputPath = pathlib.Path(args.output)
     configPath = pathlib.Path(__file__).parent / "config"
 
-    # Get version
-    cmakePath = pathlib.Path(__file__).parent / "build" / "CMakeCache.txt"
-    version   = util_misc.get_cmake_cache(cmakePath.resolve().as_posix(), "CMAKE_PROJECT_VERSION")
-
-    if os.name == "nt":
-
-        # Explicitly add path to libstdc++
-        compilerPath       = util_misc.get_cmake_cache(cmakePath.resovle().as_posix(), "CMAKE_CXX_COMPILER")
-        compilerPathParent = pathlib.Path(compilerPath).parent
-
-        os.add_dll_directory(compilerPathParent)
-
     if inputPath is not None:
-        exec.set_version(version)
         exec.exec(inputPath, outputPath, configPath)
     else:
         postproc_flight.postproc(outputPath)

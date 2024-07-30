@@ -1,10 +1,23 @@
+import sys
 import pathlib
 
 #------------------------------------------------------------------------------#
 
-def get_cmake_cache(cmakePath, field):
+def is_bundled():
 
-    filePath = pathlib.Path(__file__).parent / cmakePath
+    # https://pyinstaller.org/en/stable/runtime-information.html#run-time-information
+
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        return True
+    else:
+        return False
+
+#------------------------------------------------------------------------------#
+
+def get_cmake_cache(field):
+
+    subdir   = "_internal" if is_bundled() else "."
+    filePath = pathlib.Path(subdir) / "build/CMakeCache.txt"
 
     with open(filePath, 'r') as cacheFile:
 
