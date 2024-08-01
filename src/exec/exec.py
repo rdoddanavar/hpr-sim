@@ -22,13 +22,7 @@ import preproc_engine
 import preproc_aerodynamics
 
 # Project modules (pybind11)
-
-if os.name == "nt":
-
-    # Explicitly add path to libstdc++
-    compilerPath = util_misc.get_cmake_cache("CMAKE_CXX_COMPILER")
-    os.add_dll_directory(pathlib.Path(compilerPath).parent)
-
+util_misc.pybind11_setup()
 import model
 
 #------------------------------------------------------------------------------#
