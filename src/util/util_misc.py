@@ -1,4 +1,5 @@
 import sys
+import os
 import pathlib
 
 #------------------------------------------------------------------------------#
@@ -27,6 +28,16 @@ def get_cmake_cache(field):
             if field in line:
                 value = line.split('=')[1]
                 return value
+
+#------------------------------------------------------------------------------#
+
+def pybind11_setup():
+
+    if (os.name == "nt") and not(is_bundled()):
+
+        # Explicitly add path to libstdc++
+        compilerPath = get_cmake_cache("CMAKE_CXX_COMPILER")
+        os.add_dll_directory(pathlib.Path(compilerPath).parent)
 
 #------------------------------------------------------------------------------#
 
