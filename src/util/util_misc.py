@@ -41,6 +41,18 @@ def pybind11_setup():
 
 #------------------------------------------------------------------------------#
 
+def qt_setup():
+
+    if os.name == "posix":
+
+        # Fix for interaction between Qt5 & Wayland
+        os.environ["QT_QPA_PLATFORM"] = "xcb"
+
+    elif os.name == "nt":
+        pass
+
+#------------------------------------------------------------------------------#
+
 if __name__ == "__main__":
 
     # Standalone execution

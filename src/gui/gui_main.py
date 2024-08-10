@@ -1,19 +1,23 @@
-from PySide6.QtWidgets import QApplication, QWidget
+from PyQt5.QtWidgets import(
+    QApplication,
+    QLabel,
+    QMainWindow,
+    QPushButton,
+    QTabWidget,
+    QWidget,
+)
 
-# Only needed for access to command line arguments
-import sys
+import util_misc
+import gui_elements
 
-# You need one (and only one) QApplication instance per application.
-# Pass in sys.argv to allow command line arguments for your app.
-# If you know you won't use command line arguments QApplication([]) works too.
-gui = QApplication(sys.argv)
+def exec():
 
-# Create a Qt widget, which will be our window.
-window = QWidget()
-window.show()  # IMPORTANT!!!!! Windows are hidden by default.
+    util_misc.qt_setup()
 
-# Start the event loop.
-gui.exec()
+    app = QApplication([])
+    window = gui_elements.MainWindow()
+    window.show()
+    app.exec()
 
-# Your application won't reach here until you exit and the event
-# loop has stopped.
+if __name__ == "__main__":
+    pass
