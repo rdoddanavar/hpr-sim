@@ -137,7 +137,7 @@ class TabInput(QWidget):
 
         labelNumMC = QLabel("Num MC:")
         spinNumMC  = QSpinBox()
-        spinNumMC.setMinimum(0)
+        spinNumMC.setMinimum(1)
         spinNumMC.setMaximum(spinBoxMax)
 
         labelProcMode = QLabel("Proc Mode:")
@@ -146,7 +146,7 @@ class TabInput(QWidget):
 
         labelNumProc = QLabel("Num Proc:")
         spinNumProc  = QSpinBox()
-        spinNumProc.setMinimum(0)
+        spinNumProc.setMinimum(1)
         spinNumProc.setMaximum(os.cpu_count())
 
         progressBar = QProgressBar()
