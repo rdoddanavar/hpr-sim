@@ -4,7 +4,11 @@ from PyQt5.QtWidgets import(
     QMainWindow,
     QPushButton,
     QTabWidget,
-    QWidget,
+    QWidget
+)
+
+from PyQt5.QtGui import (
+    QFont
 )
 
 import util_misc
@@ -15,6 +19,9 @@ def exec():
     util_misc.qt_setup()
 
     app = QApplication([])
+    font = QFont()
+    font.setPointSize(14)
+    app.setFont(font)
     window = gui_elements.MainWindow()
     window.show()
     app.exec()

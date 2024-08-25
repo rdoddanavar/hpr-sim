@@ -10,7 +10,6 @@ from PyQt5.QtWidgets import(
     QWidget,
     QGridLayout,
     QGroupBox,
-    QLabel,
     QScrollArea,
     QLineEdit,
     QSizePolicy,
@@ -25,11 +24,22 @@ import pyqtgraph as pg
 
 
 import functools
-import gui_events
+import gui_actions
 
 spinBoxMax = 2147483647 # Enforced by QSpinBox.setMaximum
 
 #------------------------------------------------------------------------------#
+
+class Label(QLabel):
+
+    # QLabel w/ desired default settings
+
+    def __init__(self,text):
+
+        super().__init__(text)
+
+        # Center text
+        self.setAlignment(Qt.AlignCenter)
 
 class PushButton(QPushButton):
 
@@ -82,25 +92,23 @@ class TabInput(QWidget):
         groupIO.setLayout(layoutIO)
 
         # Input File
-        labelInput  = QLabel("Input File:")
-        textInput   = QLineEdit("file/path")
+        labelInput  = Label("Input File:")
+        lineInput   = QLineEdit("file/path")
         buttonInput = PushButton("<icon>")
-        get_input_file = functools.partial(gui_events.get_file,self,textInput)
-        buttonInput.clicked.connect(get_input_file)
+        buttonInput.clicked.connect(gui_actions.get_file_action(self,lineInput))
 
         # Output File
-        labelOutput  = QLabel("Output File:")
-        textOutput   = QLineEdit("file/path")
+        labelOutput  = Label("Output File:")
+        lineOutput   = QLineEdit("file/path")
         buttonOutput = PushButton("<icon>")
-        get_output_dir = functools.partial(gui_events.get_directory,self,textOutput)
-        buttonOutput.clicked.connect(get_output_dir)
+        buttonOutput.clicked.connect(gui_actions.get_directory_action(self,lineOutput))
 
         # Populate group layout
         layoutIO.addWidget(labelInput  , 0, 0)
-        layoutIO.addWidget(textInput   , 0, 1)
+        layoutIO.addWidget(lineInput   , 0, 1)
         layoutIO.addWidget(buttonInput , 0, 2)
         layoutIO.addWidget(labelOutput , 0, 3)
-        layoutIO.addWidget(textOutput  , 0, 4)
+        layoutIO.addWidget(lineOutput  , 0, 4)
         layoutIO.addWidget(buttonOutput, 0, 5)
 
         #----------------------------------------------------------------------#
@@ -111,11 +119,11 @@ class TabInput(QWidget):
         layoutParam = QGridLayout()
         groupParam.setLayout(layoutParam)
 
-        labelModel = QLabel("Model:")
+        labelModel = Label("Model:")
         comboModel = QComboBox()
         comboModel.insertItems(0, ["item1", "item2", "item3"])
 
-        labelParameter = QLabel("Parameter:")
+        labelParameter = Label("Parameter:")
         comboParameter = QComboBox()
         comboParameter.insertItems(0, ["item1", "item2", "item3"])
 
@@ -145,25 +153,25 @@ class TabInput(QWidget):
         layoutControl = QGridLayout()
         groupControl.setLayout(layoutControl)
 
-        labelMcMode   = QLabel("MC Mode:")
+        labelMcMode   = Label("MC Mode:")
         comboMcMode   = QComboBox()
         comboMcMode.insertItems(0, ["nominal", "montecarlo"])
 
-        labelSeed = QLabel("Seed:")
+        labelSeed = Label("Seed:")
         spinSeed  = QSpinBox()
         spinSeed.setMinimum(0)
         spinSeed.setMaximum(spinBoxMax)
 
-        labelNumMC = QLabel("Num MC:")
+        labelNumMC = Label("Num MC:")
         spinNumMC  = QSpinBox()
         spinNumMC.setMinimum(1)
         spinNumMC.setMaximum(spinBoxMax)
 
-        labelProcMode = QLabel("Proc Mode:")
+        labelProcMode = Label("Proc Mode:")
         comboProcMode = QComboBox()
         comboProcMode.insertItems(0, ["serial", "parallel"])
 
-        labelNumProc = QLabel("Num Proc:")
+        labelNumProc = Label("Num Proc:")
         spinNumProc  = QSpinBox()
         spinNumProc.setMinimum(1)
         spinNumProc.setMaximum(os.cpu_count())
@@ -171,7 +179,7 @@ class TabInput(QWidget):
         progressBar = QProgressBar()
         progressBar.setValue(50)
 
-        labelRun = QLabel("50/100")
+        labelRun = Label("50/100")
 
         buttonRun = PushButton("RUN")
 
@@ -215,14 +223,15 @@ class TabOutput(QWidget):
         groupIO.setLayout(layoutIO)
 
         # Output Path
-        labelOutput  = QLabel("Output Path:")
-        textOutput   = QLineEdit("file/path")
+        labelOutput  = Label("Output Path:")
+        lineOutput   = QLineEdit("file/path")
         buttonOutput = PushButton("<icon>")
+        buttonOutput.clicked.connect(gui_actions.get_directory_action(self,lineOutput))
 
         # Populate group layout
-        layoutIO.addWidget(labelOutput  , 0, 0)
-        layoutIO.addWidget(textOutput  , 0, 1)
-        layoutIO.addWidget(buttonOutput , 0, 2)
+        layoutIO.addWidget(labelOutput , 0, 0)
+        layoutIO.addWidget(lineOutput  , 0, 1)
+        layoutIO.addWidget(buttonOutput, 0, 2)
 
         #----------------------------------------------------------------------#
 
@@ -230,21 +239,21 @@ class TabOutput(QWidget):
         layoutVis = QGridLayout()
         groupVis.setLayout(layoutVis)
 
-        labelField = QLabel("Field:")
+        labelField = Label("Field:")
         comboField = QComboBox()
         comboField.insertItems(0, ["item1", "item2", "item3"])
 
-        labelUnits = QLabel("Units:")
+        labelUnits = Label("Units:")
         comboUnits = QComboBox()
         comboUnits.insertItems(0, ["item1", "item2", "item3"])
 
-        labelRunNum = QLabel("Run Num:")
+        labelRunNum = Label("Run Num:")
 
         spinRunNum = QSpinBox()
         spinRunNum.setMinimum(1)
         spinRunNum.setMaximum(100)
 
-        labelRunAll  = QLabel("Plot All:")
+        labelRunAll  = Label("Plot All:")
         checkRunAll = QCheckBox()
 
         x = np.array([1, 2, 3])
@@ -253,17 +262,17 @@ class TabOutput(QWidget):
         plot.setBackground('w')
 
         # Plot axis controls
-        labelAxisXMin = QLabel("Axis X-Min:")
-        textAxisXMin  = QLineEdit()
+        labelAxisXMin = Label("Axis X-Min:")
+        lineAxisXMin  = QLineEdit()
 
-        labelAxisXMax = QLabel("Axis X-Max:")
-        textAxisXMax  = QLineEdit()
+        labelAxisXMax = Label("Axis X-Max:")
+        lineAxisXMax  = QLineEdit()
 
-        labelAxisYMin = QLabel("Axis Y-Min:")
-        textAxisYMin  = QLineEdit()
+        labelAxisYMin = Label("Axis Y-Min:")
+        lineAxisYMin  = QLineEdit()
 
-        labelAxisYMax = QLabel("Axis Y-Max:")
-        textAxisYMax  = QLineEdit()
+        labelAxisYMax = Label("Axis Y-Max:")
+        lineAxisYMax  = QLineEdit()
 
         # Plot update
         buttonUpdate = PushButton("Update")
@@ -279,13 +288,13 @@ class TabOutput(QWidget):
         layoutVis.addWidget(checkRunAll  ,  0, 7, 1,  1)
         layoutVis.addWidget(plot         ,  1, 0, 8, 10)
         layoutVis.addWidget(labelAxisXMin, 10, 0, 1,  1)
-        layoutVis.addWidget(textAxisXMin , 10, 1, 1,  1)
+        layoutVis.addWidget(lineAxisXMin , 10, 1, 1,  1)
         layoutVis.addWidget(labelAxisXMax, 10, 2, 1,  1)
-        layoutVis.addWidget(textAxisXMax , 10, 3, 1,  1)
+        layoutVis.addWidget(lineAxisXMax , 10, 3, 1,  1)
         layoutVis.addWidget(labelAxisYMin, 10, 4, 1,  1)
-        layoutVis.addWidget(textAxisYMin , 10, 5, 1,  1)
+        layoutVis.addWidget(lineAxisYMin , 10, 5, 1,  1)
         layoutVis.addWidget(labelAxisYMax, 10, 6, 1,  1)
-        layoutVis.addWidget(textAxisYMax , 10, 7, 1,  1)
+        layoutVis.addWidget(lineAxisYMax , 10, 7, 1,  1)
         layoutVis.addWidget(buttonUpdate , 10, 8, 1,  2)
 
         #----------------------------------------------------------------------#
