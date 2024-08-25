@@ -23,6 +23,10 @@ from PyQt5.QtWidgets import(
 from PyQt5.QtCore import Qt
 import pyqtgraph as pg
 
+
+import functools
+import gui_events
+
 spinBoxMax = 2147483647 # Enforced by QSpinBox.setMaximum
 
 #------------------------------------------------------------------------------#
@@ -81,11 +85,15 @@ class TabInput(QWidget):
         labelInput  = QLabel("Input File:")
         textInput   = QLineEdit("file/path")
         buttonInput = PushButton("<icon>")
+        get_input_file = functools.partial(gui_events.get_file,self,textInput)
+        buttonInput.clicked.connect(get_input_file)
 
         # Output File
         labelOutput  = QLabel("Output File:")
         textOutput   = QLineEdit("file/path")
         buttonOutput = PushButton("<icon>")
+        get_output_dir = functools.partial(gui_events.get_directory,self,textOutput)
+        buttonOutput.clicked.connect(get_output_dir)
 
         # Populate group layout
         layoutIO.addWidget(labelInput  , 0, 0)
@@ -287,4 +295,3 @@ class TabOutput(QWidget):
         layoutTab.addWidget(groupIO, 0, 0, 1, 1)
         layoutTab.addWidget(groupVis, 1, 0, 10, 1)
         self.setLayout(layoutTab)
-
