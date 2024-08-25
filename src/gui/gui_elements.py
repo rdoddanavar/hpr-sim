@@ -182,6 +182,7 @@ class TabInput(QWidget):
         labelRun = Label("50/100")
 
         buttonRun = PushButton("RUN")
+        buttonRun.clicked.connect(gui_actions.run_exec_action(lineInput, lineOutput))
 
         # Populate group layout
         layoutControl.addWidget(labelMcMode  , 0,  0, 1,  1)
