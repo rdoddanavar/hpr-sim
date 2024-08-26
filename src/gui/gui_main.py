@@ -1,10 +1,5 @@
 from PyQt5.QtWidgets import(
-    QApplication,
-    QLabel,
-    QMainWindow,
-    QPushButton,
-    QTabWidget,
-    QWidget
+    QApplication
 )
 
 from PyQt5.QtGui import (
