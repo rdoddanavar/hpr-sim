@@ -15,7 +15,8 @@ from PyQt5.QtWidgets import(
     QProgressBar,
     QComboBox,
     QSpinBox,
-    QCheckBox
+    QCheckBox,
+    QListWidget,
 )
 
 from PyQt5.QtGui import (
@@ -116,12 +117,17 @@ class TabInput(QWidget):
         self.scrollProperties.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.scrollProperties.setWidgetResizable(True)
 
+        # Plot parameter distributions
+        self.plotDist = pg.PlotWidget()
+        self.plotDist.setBackground('w')
+
         # Populate group layout
         self.layoutParam.addWidget(self.labelModel      , 0, 0, 1, 1)
         self.layoutParam.addWidget(self.comboModel      , 0, 1, 1, 1)
         self.layoutParam.addWidget(self.labelParameter  , 0, 2, 1, 1)
         self.layoutParam.addWidget(self.comboParameter  , 0, 3, 1, 1)
-        self.layoutParam.addWidget(self.scrollProperties, 1, 0, 1, 10)
+        self.layoutParam.addWidget(self.scrollProperties, 1, 0, 1, 4)
+        self.layoutParam.addWidget(self.plotDist, 0, 4, 2, 1)
 
         #----------------------------------------------------------------------#
 
@@ -212,11 +218,18 @@ class TabOutput(QWidget):
         self.buttonLoad = gui_common.PushButton("Load")
         self.buttonLoad.clicked.connect(self.action_load_data)
 
+        # Metadata
+        self.labelMeta = gui_common.Label("Metadata:")
+        self.editMeta  = QLineEdit()
+        self.editMeta.setReadOnly(True)
+
         # Populate group layout
-        self.layoutIO.addWidget(self.labelOutput , 0, 0)
-        self.layoutIO.addWidget(self.lineOutput  , 0, 1)
-        self.layoutIO.addWidget(self.buttonOutput, 0, 2)
-        self.layoutIO.addWidget(self.buttonLoad  , 0, 3)
+        self.layoutIO.addWidget(self.labelOutput , 0, 0, 1, 1)
+        self.layoutIO.addWidget(self.lineOutput  , 0, 1, 1, 1)
+        self.layoutIO.addWidget(self.buttonOutput, 0, 2, 1, 1)
+        self.layoutIO.addWidget(self.buttonLoad  , 0, 3, 1, 1)
+        self.layoutIO.addWidget(self.labelMeta   , 1, 0, 1 ,1)
+        self.layoutIO.addWidget(self.editMeta    , 1, 1, 1 ,3)
 
         #----------------------------------------------------------------------#
 
@@ -224,9 +237,9 @@ class TabOutput(QWidget):
         self.layoutVis = QGridLayout()
         self.groupVis.setLayout(self.layoutVis)
 
-        self.labelField = gui_common.Label("Field:")
-        self.comboField = QComboBox()
-        self.comboField.currentIndexChanged.connect(self.action_plot_update)
+        self.listFields = QListWidget()
+        self.listFields.currentItemChanged.connect(self.action_plot_update)
+        # TODO: resize to fit list contents
 
         self.labelUnits = gui_common.Label("Units:")
         self.comboUnits = QComboBox()
@@ -238,52 +251,50 @@ class TabOutput(QWidget):
 
         self.labelRunAll = gui_common.Label("Plot All:")
         self.checkRunAll = QCheckBox()
-        # connect(self.action_plot_update)
+        self.checkRunAll.stateChanged.connect(self.action_plot_update)
 
-        x = np.array([1, 2, 3])
-        y = np.array([1, 4, 9])
-        self.plot = pg.plot(x, y, pen='b')
-        self.plot.setBackground('w')
+        # Plot
+        self.plotTelem = pg.PlotWidget()
+        self.plotTelem.setBackground('w')
 
         # Plot axis controls
-        self.labelAxisXMin = gui_common.Label("Axis X-Min:")
+        self.labelAxisXMin = gui_common.Label("X-Min:")
         self.lineAxisXMin  = QLineEdit()
-        self.lineAxisXMin.returnPressed.connect(self.action_plot_update)
+        self.lineAxisXMin.returnPressed.connect(self.action_plot_update_limits)
         self.lineAxisXMin.setValidator(QDoubleValidator())
 
-        self.labelAxisXMax = gui_common.Label("Axis X-Max:")
+        self.labelAxisXMax = gui_common.Label("X-Max:")
         self.lineAxisXMax  = QLineEdit()
-        self.lineAxisXMax.returnPressed.connect(self.action_plot_update)
+        self.lineAxisXMax.returnPressed.connect(self.action_plot_update_limits)
         self.lineAxisXMax.setValidator(QDoubleValidator())
 
-        self.labelAxisYMin = gui_common.Label("Axis Y-Min:")
+        self.labelAxisYMin = gui_common.Label("Y-Min:")
         self.lineAxisYMin  = QLineEdit()
-        self.lineAxisYMin.returnPressed.connect(self.action_plot_update)
+        self.lineAxisYMin.returnPressed.connect(self.action_plot_update_limits)
         self.lineAxisYMin.setValidator(QDoubleValidator())
 
-        self.labelAxisYMax = gui_common.Label("Axis Y-Max:")
+        self.labelAxisYMax = gui_common.Label("Y-Max:")
         self.lineAxisYMax  = QLineEdit()
-        self.lineAxisYMax.returnPressed.connect(self.action_plot_update)
+        self.lineAxisYMax.returnPressed.connect(self.action_plot_update_limits)
         self.lineAxisYMax.setValidator(QDoubleValidator())
 
         # Populate group layout
-        self.layoutVis.addWidget(self.labelField   ,  0, 0, 1,  1)
-        self.layoutVis.addWidget(self.comboField   ,  0, 1, 1,  1)
-        self.layoutVis.addWidget(self.labelUnits   ,  0, 2, 1,  1)
-        self.layoutVis.addWidget(self.comboUnits   ,  0, 3, 1,  1)
-        self.layoutVis.addWidget(self.labelRunNum  ,  0, 4, 1,  1)
-        self.layoutVis.addWidget(self.spinRunNum   ,  0, 5, 1,  1)
-        self.layoutVis.addWidget(self.labelRunAll  ,  0, 6, 1,  1)
-        self.layoutVis.addWidget(self.checkRunAll  ,  0, 7, 1,  1)
-        self.layoutVis.addWidget(self.plot         ,  1, 0, 8, 10)
-        self.layoutVis.addWidget(self.labelAxisXMin, 10, 0, 1,  1)
-        self.layoutVis.addWidget(self.lineAxisXMin , 10, 1, 1,  1)
-        self.layoutVis.addWidget(self.labelAxisXMax, 10, 2, 1,  1)
-        self.layoutVis.addWidget(self.lineAxisXMax , 10, 3, 1,  1)
-        self.layoutVis.addWidget(self.labelAxisYMin, 10, 4, 1,  1)
-        self.layoutVis.addWidget(self.lineAxisYMin , 10, 5, 1,  1)
-        self.layoutVis.addWidget(self.labelAxisYMax, 10, 6, 1,  1)
-        self.layoutVis.addWidget(self.lineAxisYMax , 10, 7, 1,  1)
+        self.layoutVis.addWidget(self.listFields   ,  0, 0, 3,  1)
+        self.layoutVis.addWidget(self.labelUnits   ,  0, 1, 1,  1)
+        self.layoutVis.addWidget(self.comboUnits   ,  0, 2, 1,  1)
+        self.layoutVis.addWidget(self.labelRunNum  ,  0, 3, 1,  1)
+        self.layoutVis.addWidget(self.spinRunNum   ,  0, 4, 1,  1)
+        self.layoutVis.addWidget(self.labelRunAll  ,  0, 5, 1,  1)
+        self.layoutVis.addWidget(self.checkRunAll  ,  0, 6, 1,  1)
+        self.layoutVis.addWidget(self.plotTelem    ,  1, 1, 1,  8)
+        self.layoutVis.addWidget(self.labelAxisXMin,  2, 1, 1,  1)
+        self.layoutVis.addWidget(self.lineAxisXMin ,  2, 2, 1,  1)
+        self.layoutVis.addWidget(self.labelAxisXMax,  2, 3, 1,  1)
+        self.layoutVis.addWidget(self.lineAxisXMax ,  2, 4, 1,  1)
+        self.layoutVis.addWidget(self.labelAxisYMin,  2, 5, 1,  1)
+        self.layoutVis.addWidget(self.lineAxisYMin ,  2, 6, 1,  1)
+        self.layoutVis.addWidget(self.labelAxisYMax,  2, 7, 1,  1)
+        self.layoutVis.addWidget(self.lineAxisYMax ,  2, 8, 1,  1)
 
         #----------------------------------------------------------------------#
 
@@ -298,17 +309,70 @@ class TabOutput(QWidget):
         outputPath = pathlib.Path(self.lineOutput.text())
         self.telem = postproc_flight.load_mc(outputPath)
 
-        # Update comboboxes
-        self.comboField.clear()
-        self.comboField.addItems(self.telem[0]["fields"])
+        # Populate metadata
+        metaStr = ", ".join(self.telem[0]["meta"])
+        self.editMeta.setText(metaStr)
 
-        #self.comboField.clear()
-        #self.comboField.addItems()
+        # Update telemetry fields
+        self.listFields.clear()
+        fields = self.telem[0]["fields"]
+        fields.remove("time")
+        self.listFields.addItems(fields)
+        iRow = fields.index("linPosZ")
+        self.listFields.setCurrentRow(iRow)
 
         # Update spinbox
         self.spinRunNum.setMaximum(len(self.telem))
 
+        # Initialize polot
+        self.action_plot_update()
+
     def action_plot_update(self):
 
-        runNum = self.spinRunNum.value()
-        print(runNum)
+        # Clear old data
+        self.plotTelem.clear()
+
+        # Plot new data
+        field  = self.listFields.currentItem().text()
+        iRun   = self.spinRunNum.value() - 1
+        runAll = self.checkRunAll.isChecked()
+
+        if runAll:
+
+            nRun = len(self.telem)
+            plot = [None]*len(self.telem)
+
+            for iRun in range(nRun):
+
+                x = self.telem[iRun]["data"]["time"]
+                y = self.telem[iRun]["data"][field]
+                plot[iRun] = self.plotTelem.plot(x, y)
+
+        else:
+
+            x = self.telem[iRun]["data"]["time"]
+            y = self.telem[iRun]["data"][field]
+            plot = self.plotTelem.plot(x, y)
+
+        self.plotTelem.setLabel("bottom", "Time", "s")
+        self.plotTelem.setLabel("left", field)
+
+        # Reset axis limits
+        self.plotTelem.enableAutoRange()
+
+        # Update plot axis limits
+        #self.lineAxisXMin.setText(self.plotTelem.getAxis)
+        #self.lineAxisXMax.setText()
+        #self.lineAxisYMin.setText()
+        #self.lineAxisYMax.setText()
+
+    def action_plot_update_limits(self):
+
+        xMin = float(self.lineAxisXMin.text())
+        xMax = float(self.lineAxisXMax.text())
+
+        yMin = float(self.lineAxisYMin.text())
+        yMax = float(self.lineAxisYMax.text())
+
+        self.plotTelem.setXRange(xMin, xMax)
+        self.plotTelem.setYRange(yMin, yMax)

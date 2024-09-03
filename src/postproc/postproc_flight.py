@@ -24,8 +24,10 @@ def load_csv(filePath):
         lines = file.read().splitlines()
 
     # Remove comment lines in header
+    meta = []
+
     while lines[0][0] == '#':
-        lines.pop(0)
+        meta.append(lines.pop(0).strip("# "))
 
     fields = lines[0].split(',')
     units  = lines[1].split(',')
@@ -46,10 +48,12 @@ def load_csv(filePath):
     for field in fields:
         data[field] = np.array(data[field])
 
-    telem = {}
-    telem["fields"] = fields
-    telem["units"]  = units
-    telem["data"]   = data
+    telem = {
+        "meta"   : meta  ,
+        "fields" : fields,
+        "units"  : units ,
+        "data"   : data  ,
+    }
 
     return telem
 
