@@ -10,6 +10,15 @@ from PyQt5.QtWidgets import(
 )
 
 from PyQt5.QtCore import Qt
+import pyqtgraph as pg
+
+#------------------------------------------------------------------------------#
+
+def pyqtgraph_setup():
+
+    pg.setConfigOptions(background='w')
+    pg.setConfigOptions(foreground='k')
+    pg.setConfigOptions(antialias=True)
 
 #------------------------------------------------------------------------------#
 

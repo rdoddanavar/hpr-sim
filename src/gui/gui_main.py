@@ -1,13 +1,12 @@
-from PyQt5.QtWidgets import(
-    QApplication
-)
+# System modules
+from PyQt5.QtWidgets import QApplication
+from PyQt5.QtGui import QFont
 
-from PyQt5.QtGui import (
-    QFont
-)
-
+# Project modules
 import util_misc
 import gui_elements
+
+#------------------------------------------------------------------------------#
 
 def exec():
 
@@ -20,6 +19,8 @@ def exec():
     window = gui_elements.MainWindow()
     window.show()
     app.exec()
+
+#------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
     pass

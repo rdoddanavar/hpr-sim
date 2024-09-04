@@ -40,6 +40,7 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle("hpr-sim")
+        gui_common.pyqtgraph_setup()
 
         # Define tab widgets
         self.tabInput  = TabInput()
@@ -119,7 +120,6 @@ class TabInput(QWidget):
 
         # Plot parameter distributions
         self.plotDist = pg.PlotWidget()
-        self.plotDist.setBackground('w')
 
         # Populate group layout
         self.layoutParam.addWidget(self.labelModel      , 0, 0, 1, 1)
@@ -243,7 +243,7 @@ class TabOutput(QWidget):
 
         self.labelUnits = gui_common.Label("Units:")
         self.comboUnits = QComboBox()
-        self.comboUnits.currentIndexChanged.connect(self.action_plot_update)
+        self.comboUnits.currentIndexChanged.connect(self.action_plot_update_units)
 
         self.labelRunNum = gui_common.Label("Run Num:")
         self.spinRunNum  = gui_common.SpinBox(0,0)
@@ -255,7 +255,7 @@ class TabOutput(QWidget):
 
         # Plot
         self.plotTelem = pg.PlotWidget()
-        self.plotTelem.setBackground('w')
+        self.penTelem  = pg.mkPen('b', width=1)
 
         # Plot axis controls
         self.labelAxisXMin = gui_common.Label("X-Min:")
@@ -316,7 +316,10 @@ class TabOutput(QWidget):
         # Update telemetry fields
         self.listFields.clear()
         fields = self.telem[0]["fields"]
-        fields.remove("time")
+        units = self.telem[0]["units"]
+        iPop = fields.index("time")
+        fields.pop(iPop)
+        units.pop(iPop)
         self.listFields.addItems(fields)
         iRow = fields.index("linPosZ")
         self.listFields.setCurrentRow(iRow)
@@ -329,11 +332,17 @@ class TabOutput(QWidget):
 
     def action_plot_update(self):
 
+        # TODO: plot arbitrary X vs Y data
+
         # Clear old data
         self.plotTelem.clear()
 
         # Plot new data
         field  = self.listFields.currentItem().text()
+        iField = self.telem[0]["fields"].index(field)
+        units  = self.telem[0]["units"][iField]
+        self.comboUnits.clear()
+        self.comboUnits.addItems([units])
         iRun   = self.spinRunNum.value() - 1
         runAll = self.checkRunAll.isChecked()
 
@@ -346,16 +355,16 @@ class TabOutput(QWidget):
 
                 x = self.telem[iRun]["data"]["time"]
                 y = self.telem[iRun]["data"][field]
-                plot[iRun] = self.plotTelem.plot(x, y)
+                plot[iRun] = self.plotTelem.plot(x, y, pen=self.penTelem)
 
         else:
 
             x = self.telem[iRun]["data"]["time"]
             y = self.telem[iRun]["data"][field]
-            plot = self.plotTelem.plot(x, y)
+            plot = self.plotTelem.plot(x, y, pen=self.penTelem)
 
         self.plotTelem.setLabel("bottom", "Time", "s")
-        self.plotTelem.setLabel("left", field)
+        self.plotTelem.setLabel("left", field, units)
 
         # Reset axis limits
         self.plotTelem.enableAutoRange()
@@ -365,6 +374,9 @@ class TabOutput(QWidget):
         #self.lineAxisXMax.setText()
         #self.lineAxisYMin.setText()
         #self.lineAxisYMax.setText()
+
+    def action_plot_update_units(self):
+        pass
 
     def action_plot_update_limits(self):
 
