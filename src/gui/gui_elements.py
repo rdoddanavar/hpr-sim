@@ -120,6 +120,7 @@ class TabInput(QWidget):
 
         # Plot parameter distributions
         self.plotDist = pg.PlotWidget()
+        self.plotDist.setMenuEnabled(False)
 
         # Populate group layout
         self.layoutParam.addWidget(self.labelModel      , 0, 0, 1, 1)
@@ -255,27 +256,32 @@ class TabOutput(QWidget):
 
         # Plot
         self.plotTelem = pg.PlotWidget()
+        self.plotTelem.setMenuEnabled(False)
         self.penTelem  = pg.mkPen('b', width=1)
+        self.plotTelem.sigRangeChanged.connect(self.action_plot_get_range)
 
         # Plot axis controls
+        #self.buttonAxisAuto = gui_common.PushButton("Auto")
+        #self.buttonAxisAuto.clicked.connect(self.action_plot_auto_range)
+
         self.labelAxisXMin = gui_common.Label("X-Min:")
         self.lineAxisXMin  = QLineEdit()
-        self.lineAxisXMin.returnPressed.connect(self.action_plot_update_limits)
+        self.lineAxisXMin.returnPressed.connect(self.action_plot_set_range)
         self.lineAxisXMin.setValidator(QDoubleValidator())
 
         self.labelAxisXMax = gui_common.Label("X-Max:")
         self.lineAxisXMax  = QLineEdit()
-        self.lineAxisXMax.returnPressed.connect(self.action_plot_update_limits)
+        self.lineAxisXMax.returnPressed.connect(self.action_plot_set_range)
         self.lineAxisXMax.setValidator(QDoubleValidator())
 
         self.labelAxisYMin = gui_common.Label("Y-Min:")
         self.lineAxisYMin  = QLineEdit()
-        self.lineAxisYMin.returnPressed.connect(self.action_plot_update_limits)
+        self.lineAxisYMin.returnPressed.connect(self.action_plot_set_range)
         self.lineAxisYMin.setValidator(QDoubleValidator())
 
         self.labelAxisYMax = gui_common.Label("Y-Max:")
         self.lineAxisYMax  = QLineEdit()
-        self.lineAxisYMax.returnPressed.connect(self.action_plot_update_limits)
+        self.lineAxisYMax.returnPressed.connect(self.action_plot_set_range)
         self.lineAxisYMax.setValidator(QDoubleValidator())
 
         # Populate group layout
@@ -287,6 +293,7 @@ class TabOutput(QWidget):
         self.layoutVis.addWidget(self.labelRunAll  ,  0, 5, 1,  1)
         self.layoutVis.addWidget(self.checkRunAll  ,  0, 6, 1,  1)
         self.layoutVis.addWidget(self.plotTelem    ,  1, 1, 1,  8)
+        #self.layoutVis.addWidget(self.buttonAxisAuto, 2, 1, 1, 1)
         self.layoutVis.addWidget(self.labelAxisXMin,  2, 1, 1,  1)
         self.layoutVis.addWidget(self.lineAxisXMin ,  2, 2, 1,  1)
         self.layoutVis.addWidget(self.labelAxisXMax,  2, 3, 1,  1)
@@ -327,7 +334,7 @@ class TabOutput(QWidget):
         # Update spinbox
         self.spinRunNum.setMaximum(len(self.telem))
 
-        # Initialize polot
+        # Initialize plot
         self.action_plot_update()
 
     def action_plot_update(self):
@@ -370,15 +377,24 @@ class TabOutput(QWidget):
         self.plotTelem.enableAutoRange()
 
         # Update plot axis limits
-        #self.lineAxisXMin.setText(self.plotTelem.getAxis)
-        #self.lineAxisXMax.setText()
-        #self.lineAxisYMin.setText()
-        #self.lineAxisYMax.setText()
+        self.action_plot_get_range()
 
     def action_plot_update_units(self):
         pass
 
-    def action_plot_update_limits(self):
+    def action_plot_auto_range(self):
+        self.plotTelem.enableAutoRange()
+
+    def action_plot_get_range(self):
+
+        viewRange = self.plotTelem.getViewBox().viewRange()
+
+        self.lineAxisXMin.setText(str(round(viewRange[0][0], 2)))
+        self.lineAxisXMax.setText(str(round(viewRange[0][1], 2)))
+        self.lineAxisYMin.setText(str(round(viewRange[1][0], 2)))
+        self.lineAxisYMax.setText(str(round(viewRange[1][1], 2)))
+
+    def action_plot_set_range(self):
 
         xMin = float(self.lineAxisXMin.text())
         xMax = float(self.lineAxisXMax.text())
