@@ -6,3 +6,4 @@ tqdm
 colorama
 pyinstaller
 pyqt5
+pyqtgraph
