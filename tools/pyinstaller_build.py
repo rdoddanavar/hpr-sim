@@ -44,6 +44,8 @@ PyInstaller.__main__.run([
     paths[2],
     "--paths",
     paths[3],
+    "--paths",
+    paths[4],
     "--add-binary",
     f"{binaries[0][0]}:{binaries[0][1]}",
     "--add-data",
