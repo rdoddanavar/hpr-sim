@@ -10,7 +10,7 @@ distPath   = workPath / "dist"
 outputPath = distPath / "hpr-sim/output"
 
 # Set import search paths
-paths = ["src/exec", "src/preproc", "src/postproc", "src/util"]
+paths = ["src/exec", "src/gui", "src/preproc", "src/postproc", "src/util"]
 
 # Set binary files and bundled locations: ("filePath", "location")
 
@@ -26,7 +26,7 @@ datas = [("build/CMakeCache.txt"    , "build" ),
          ("config/config_unit.yml"  , "config")]
 
 # Excluded modules from bundle
-excludes = ["PySide2"] # PySide2 conflicts with PyQt5
+excludes = ["PySide2", "PySide6", "PyQt6"] # Using PyQt5; Qt bindings conflict with each other
 
 # Execute PyInstaller commands
 PyInstaller.__main__.run([
@@ -44,6 +44,8 @@ PyInstaller.__main__.run([
     paths[2],
     "--paths",
     paths[3],
+    "--paths",
+    paths[4],
     "--add-binary",
     f"{binaries[0][0]}:{binaries[0][1]}",
     "--add-data",
@@ -55,7 +57,15 @@ PyInstaller.__main__.run([
     "--add-data",
     f"{datas[3][0]}:{datas[3][1]}",
     "--exclude-module",
-    f"{excludes[0]}"
+    f"{excludes[0]}",
+    "--exclude-module",
+    f"{excludes[1]}",
+    "--exclude-module",
+    f"{excludes[2]}",
+    "--hidden-import",
+    "scipy.special._special_ufuncs",
+    "--hidden-import",
+    "scipy._lib.array_api_compat.numpy.fft"
 ])
 
 outputPath.mkdir(parents=True, exist_ok=True)

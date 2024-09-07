@@ -62,7 +62,7 @@ def cli_intro(metadata):
 
 #------------------------------------------------------------------------------#
 
-def exec(inputPath, outputPath, configPath):
+def run(inputPath, outputPath, configPath):
 
     """
     Executes simluation using paramters defined in input file
