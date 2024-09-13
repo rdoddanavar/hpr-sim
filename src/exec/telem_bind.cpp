@@ -15,7 +15,7 @@ PYBIND11_MODULE(telem, m)
     m.doc() = "Telemetry class"; // Optional module docstring
 
     py::class_<Telem>(m, "Telem")
-        .def(py::init<>())
+        .def(py::init<const std::string&, const int&, const std::string&, const std::string&>())
         .def_readonly_static("telemFieldsDefault", &Telem::telemFieldsDefault)
         .def_readonly_static("telemUnitsDefault", &Telem::telemUnitsDefault);
 

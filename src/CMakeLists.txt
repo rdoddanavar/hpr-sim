@@ -9,12 +9,14 @@ set(SRC "./model/model_bind.cpp"
         "./model/aerodynamics.cpp"
         "./model/eom.cpp"
         "./model/flight.cpp"
+        "./exec/telem.cpp"
         )
 
 set(HDR "./model/model.h")
 
 set(DEP util_model
         gsl
+        # telem # Unused link
         )
 
 pybind11_add_module(model MODULE ${SRC} ${HDR})
@@ -25,6 +27,7 @@ target_link_libraries(model PUBLIC ${DEP})
 # "telem" module
 
 set(SRC "./exec/telem.cpp"
+        "./exec/telem_bind.cpp"
         )
 
 set(HDR "./exec/telem.h")

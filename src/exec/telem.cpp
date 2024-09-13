@@ -10,7 +10,7 @@
 
 //----------------------------------------------------------------------------//
 
-Telem::Telem(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn)
+Telem::Telem(const std::string& telemModeIn, const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn)
 {
 
     // Telemetry setup

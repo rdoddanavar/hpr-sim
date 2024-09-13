@@ -317,7 +317,7 @@ class Flight : public Model
 
     public:
 
-        void init(std::string solverMethod, double solverStep);
+        void init(const std::string& solverMethod, const double& solverStep);
         void set_state_fields() override;
         void update() override;
 

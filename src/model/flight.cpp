@@ -11,7 +11,7 @@
 
 //---------------------------------------------------------------------------//
 
-void Flight::init(std::string solverMethod, double solverStep)
+void Flight::init(const std::string& solverMethod, const double& solverStep)
 {
 
     // Solver setup
