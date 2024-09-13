@@ -11,31 +11,55 @@ exec:
     numMC: 5
     procMode: parallel
     numProc: 4
-flight:
-    telemMode: text
+model:
+    flight:
+        solverMethod: rkf45
+        solverStep: 0.01
+    engine:
+        inputPath: input/AeroTech_J450DM.eng
+    mass:
+        massBody:
+            value: 5.0
+            unit: lbm
+            dist:
+                name: normal
+                param: [5.0, 0.5]
+    geodetic:
+        latitude:
+            value: 32.269798 # SARA launch site: (32.269798, -111.274751)
+            unit: deg
+        altitude: 0.0
+    atmosphere:
+        temperature: 288.15
+        pressure:
+            value: 1.0
+            unit: atm
+    aerodynamics:
+        inputPath: input/patriot_aerodynamics.csv
+        refArea:
+            value: 12.566
+            unit: in^2
+telem:
+    mode: text
     precision: 3
-engine:
-    inputPath: input/AeroTech_J450DM.eng
-mass:
-    massBody:
-        value: 5.0
-        unit: lbm
-        dist:
-            name: normal
-            param: [5.0, 0.5]
-geodetic:
-    latitude:
-        value: 32.269798 # SARA launch site: (32.269798, -111.274751)
-        unit: deg
-    altitude: 0.0
-atmosphere:
-    temperature: 288.15
-    pressure:
-        value: 1.0
-        unit: atm
-aerodynamics:
-    inputPath: input/patriot_aerodynamics.csv
-    refArea:
-        value: 12.566
-        unit: in^2
+    fields:
+    - time
+    - thrust
+    - massEng
+    - mass
+    - gravity
+    - temperature
+    - pressure
+    - density
+    - dynamicPressure
+    - mach
+    - alphaT
+    - dragCoeff
+    - dragForce
+    - liftForce
+    - forceZ
+    - linAccZ
+    - linVelZ
+    - linPosZ
+    - isBurnout
 ...

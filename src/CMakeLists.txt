@@ -15,13 +15,27 @@ set(HDR "./model/model.h")
 
 set(DEP util_model
         gsl
-        fmt
         )
 
 pybind11_add_module(model MODULE ${SRC} ${HDR})
 target_link_libraries(model PUBLIC ${DEP})
 
-#-----------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
+
+# "telem" module
+
+set(SRC "./exec/telem.cpp"
+        )
+
+set(HDR "./exec/telem.h")
+
+set(DEP fmt
+        )
+
+pybind11_add_module(telem MODULE ${SRC} ${HDR})
+target_link_libraries(telem PUBLIC ${DEP})
+
+#------------------------------------------------------------------------------#
 
 # "util_model" shared library
 
@@ -34,10 +48,11 @@ set(DEP gsl)
 add_library(util_model SHARED ${SRC} ${HDR})
 target_link_libraries(util_model PUBLIC ${DEP})
 
-#-----------------------------------------------------------------------------#
+#------------------------------------------------------------------------------#
 
 # Expose all modules to library headers
 include_directories("${CMAKE_SOURCE_DIR}/lib"
+                    "./exec/"
                     "./model/"
                     "./util/"
                     )

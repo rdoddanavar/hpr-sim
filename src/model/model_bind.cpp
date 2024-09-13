@@ -133,9 +133,6 @@ void bind_Flight(py::module_ &m)
 
     py::class_<Flight, Model>(m, "Flight")
         .def(py::init<>())
-        .def("init", &Flight::init)
-        .def_readonly_static("telemFieldsDefault", &Flight::telemFieldsDefault)
-        .def_readonly_static("telemUnitsDefault", &Flight::telemUnitsDefault)
-        .def("set_telem", &Flight::set_telem);
+        .def("init", &Flight::init);
 
 }

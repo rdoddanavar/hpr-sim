@@ -5,8 +5,6 @@
 #include <string>
 #include <vector>
 #include <set>
-#include <map>
-#include <memory>
 
 // External libraries
 #include "pybind11/pybind11.h"
@@ -18,25 +16,18 @@
 #include "eigen/Eigen/Core"
 
 // Project headers
+#include "telem.h"
 #include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
 // Macros
-#define N_TELEM_ARRAY 1000
 
 // Namespaces
 namespace py = pybind11;
 
 // Type aliases
-using stateMap      = std::unordered_map<std::string, double*>;
-using stateMapPtr   = std::shared_ptr<stateMap>;
-
-using telemMap      = std::unordered_map<std::string, double>;
-using telemArray    = std::array<double, N_TELEM_ARRAY>;
-using telemArrayMap = std::unordered_map<std::string, telemArray>;
-
-using numpyArray    = py::array_t<double, py::array::c_style | py::array::forcecast>;
+using numpyArray = py::array_t<double, py::array::c_style | py::array::forcecast>;
 
 //---------------------------------------------------------------------------//
 
@@ -65,9 +56,10 @@ class Model
             }
         }
 
-        void init_state()
+        void init_state(Telem* telemIn)
         {
-            set_state(stateMapPtr(new stateMap));
+            telem = telemIn;
+            set_state(stateMapPtr(&(telem->state)));
         }
 
         void set_state(stateMapPtr stateIn)
@@ -83,6 +75,7 @@ class Model
 
         }
 
+        Telem* telem;
         bool isInit = false;
         stateMapPtr state;
         std::set<Model*> depModels; // std::set enforces unique elements
@@ -324,57 +317,21 @@ class Flight : public Model
 
     public:
 
-        void init(const std::string& telemModeIn, const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn);
+        void init(std::string solverMethod, double solverStep);
         void set_state_fields() override;
         void update() override;
 
-        void set_telem(const std::vector<std::string>& telemFieldsInit, const std::vector<std::string>& telemUnitsInit);
-
         ~Flight(); // Destructor
-
-        static std::vector<std::string> telemFieldsDefault;
-        static std::vector<std::string> telemUnitsDefault;
 
         OdeSolver odeSolver; // ODE solver settings & driver
 
     private:
 
-        // Telemetry
-        void init_telem();
-        void init_telem_text(const std::string& filePath);
-        void init_telem_binary(const std::string& filePath);
-        void write_telem();
-        void write_telem_text();
-        void write_telem_binary();
-        void telem_interp();
-        void update_stats();
-        void write_stats();
-
-        std::string outputDir;
-
-        std::vector<std::string> telemFields;
-        std::vector<std::string> telemUnits;
-
-        int nTelemFields;
-
-        telemArrayMap stateTelem;
-        telemMap      stateTelemMin;
-        telemMap      stateTelemMax;
-
-        std::string   telemMode;
-        std::FILE*    telemFile;
-
-        std::string metaStr;
-
         // State variables
-
         double time;
 
         // Miscellaneous
         double dt;
-        int    nPrec;
-        int    iTelem;
-
         bool   flightTerm{false};
 
         // TODO: create "phase" structure to capture all flags
