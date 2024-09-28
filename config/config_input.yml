@@ -36,12 +36,14 @@ exec:
         unit: null
         min: 0
         max: .inf
+        isRand: false
     numMC:
         type: int
         quantity: null
         unit: null
         min: 0
         max: .inf
+        isRand: false
     procMode:
         type: str
         isPath: false
@@ -52,17 +54,19 @@ exec:
         unit: null
         min: 0
         max: .inf
+        isRand: false
 flight:
-    telemMode:
+    solverMethod:
         type: str
         isPath: false
-        valid: [text, binary, none]
-    precision:
-        type: int
-        quantity: null
-        unit: null
+        valid: [rk2, rk4, rkf45, rkck, rk8pd]
+    solverStep:
+        type: float
+        quantity: time
+        unit: s
         min: 0
         max: .inf
+        isRand: false
 engine:
     inputPath:
         type: str
@@ -74,6 +78,7 @@ mass:
         unit: kg
         min: 0.0
         max: .inf
+        isRand: true
 geodetic:
     latitude:
         type: float
@@ -81,12 +86,14 @@ geodetic:
         unit: rad
         min: -3.14159265359/2
         max: 3.14159265359/2
+        isRand: true
     altitude:
         type: float
         quantity: length
         unit: m
         min: 0.0
         max: .inf
+        isRand: true
 atmosphere:
     temperature:
         type: float
@@ -94,12 +101,14 @@ atmosphere:
         unit: K
         min: 0.0
         max: .inf
+        isRand: true
     pressure:
         type: float
         quantity: pressure
         unit: Pa
         min: 0.0
         max: .inf
+        isRand: true
 aerodynamics:
     inputPath:
         type: str
@@ -110,4 +119,19 @@ aerodynamics:
         unit: m^2
         min: 0.0
         max: .inf
+        isRand: false
+telem:
+    mode:
+        type: str
+        isPath: false
+    precision:
+        type: int
+        quantity: null
+        unit: null
+        min: 0
+        max: 10
+        isRand: false
+    fields:
+        type: str
+        isPath: false
 ...
