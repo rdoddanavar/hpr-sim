@@ -16,7 +16,7 @@ set(HDR "./model/model.h")
 
 set(DEP util_model
         gsl
-        # telem # Unused link
+        telem
         )
 
 pybind11_add_module(model MODULE ${SRC} ${HDR})
