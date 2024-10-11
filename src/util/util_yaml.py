@@ -163,7 +163,10 @@ def math_eval(value: str) -> float:
         test = test.replace(char, "")
 
     if test.isnumeric():
-        return eval(value) # Evaluate original expression if valid
+        try:
+            return eval(value) # Evaluate original expression if valid
+        except:
+            return value
     else:
         return value
 
