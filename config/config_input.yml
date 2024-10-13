@@ -25,16 +25,6 @@
 # Dependencies:
 #     None
 ---
-meta:
-    timeStamp:
-        type: str
-        isPath: false
-    version:
-        type: str
-        isPath: false
-    inputPath:
-        type: str
-        isPath: true
 exec:
     mcMode:
         type: str

@@ -40,7 +40,7 @@ def config() -> None:
 
     global configInput # Necessary for reassignment
 
-    if not configInput:
+    if configInput is None:
 
         subdir     = "_internal" if util_misc.is_bundled() else "."
         configPath = pathlib.Path(subdir) / "config/config_input.yml"

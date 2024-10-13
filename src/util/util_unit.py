@@ -42,7 +42,7 @@ def config():
 
     global configUnit # Necessary for reassignment
 
-    if not configUnit:
+    if configUnit is None:
 
         subdir     = "_internal" if util_misc.is_bundled() else "."
         configPath = pathlib.Path(subdir) / "config/config_unit.yml"

@@ -1,6 +1,10 @@
 import sys
 import os
 import pathlib
+from datetime import datetime
+
+# Module variables
+timestamp = None
 
 #------------------------------------------------------------------------------#
 
@@ -50,6 +54,24 @@ def qt_setup():
 
     elif os.name == "nt":
         pass
+
+#------------------------------------------------------------------------------#
+
+def get_version():
+    return get_cmake_cache("CMAKE_PROJECT_VERSION")
+
+#------------------------------------------------------------------------------#
+
+def get_timestamp():
+
+    global timestamp
+
+    if timestamp is None:
+        # Generate timestamp for session
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    else:
+        # Get existing timestamp
+        return timestamp
 
 #------------------------------------------------------------------------------#
 

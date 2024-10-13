@@ -44,7 +44,6 @@ def run(inputParams: dict, outputPath: pathlib.Path) -> None:
     exec_rand.check_dist(inputParams)  # Validate random distribution choice, parameters
 
     # Output setup
-    outputPath = outputPath / pathlib.Path(inputParams["meta"]["inputPath"]["value"]).stem
 
     if os.path.exists(outputPath):
         shutil.rmtree(outputPath)
@@ -172,11 +171,10 @@ def run_sim(inputParams, outputPath, modelData, iRun):
     write_input(inputParams, outputPath, iRun)
 
     # Make header string for metadata
-    metaStr0 = "# "          + inputParams["meta"]["timeStamp"]["value"] + "\n"
-    metaStr1 = "# hpr-sim v" + inputParams["meta"]["version"]["value"]   + "\n"
-    metaStr2 = "# Input: "   + inputParams["meta"]["inputPath"]["value"] + "\n"
-    metaStr3 = f"# Run: {iRun}/{numMC}"
-    metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
+    metaStr0 = f"# {util_misc.get_timestamp()}\n"
+    metaStr1 = f"# hpr-sim v{util_misc.get_version()}\n"
+    metaStr2 = f"# Run: {iRun}/{numMC}"
+    metaStr  = metaStr0 + metaStr1 + metaStr2
 
     telem = telemetry.Telem(telemMode, telemPrec, outputPath.resolve().as_posix(), metaStr)
 
@@ -253,11 +251,10 @@ def write_input(inputParams, outputPath, iRun):
         numMC = inputParamsEcho["exec"]["numMC"]["value"]
 
         # Make header string for metadata
-        metaStr0 = "# "          + inputParamsEcho["meta"]["timeStamp"]["value"] + "\n"
-        metaStr1 = "# hpr-sim v" + inputParamsEcho["meta"]["version"]["value"]   + "\n"
-        metaStr2 = "# Input: "   + inputParamsEcho["meta"]["inputPath"]["value"] + "\n"
-        metaStr3 = f"# Run: {iRun}/{numMC}"
-        metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
+        metaStr0 = f"# {util_misc.get_timestamp()}\n"
+        metaStr1 = f"# hpr-sim v{util_misc.get_version()}\n"
+        metaStr2 = f"# Run: {iRun}/{numMC}"
+        metaStr  = metaStr0 + metaStr1 + metaStr2
 
         file.write(f"{metaStr}\n")
 
@@ -322,11 +319,10 @@ def write_mc_summary(inputParams, outputPath):
     with open(filePath, 'w', encoding="utf8") as stream:
 
         # Make header string for metadata
-        metaStr0 = "# "          + inputParams["meta"]["timeStamp"]["value"] + "\n"
-        metaStr1 = "# hpr-sim v" + inputParams["meta"]["version"]["value"]   + "\n"
-        metaStr2 = "# Input: "   + inputParams["meta"]["inputPath"]["value"] + "\n"
-        metaStr3 = f"# Run: {numMC}/{numMC}"
-        metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
+        metaStr0 = f"# {util_misc.get_timestamp()}\n"
+        metaStr1 = f"# hpr-sim v{util_misc.get_version()}\n"
+        metaStr2 = f"# Run: {numMC}/{numMC}"
+        metaStr  = metaStr0 + metaStr1 + metaStr2
 
         stream.write(f"{metaStr}\n")
 
