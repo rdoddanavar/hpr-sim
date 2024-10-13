@@ -59,10 +59,10 @@ class Model
         void init_state(Telem* telemIn)
         {
             telem = telemIn;
-            set_state(stateMapPtr(&(telem->state)));
+            set_state(&(telem->state));
         }
 
-        void set_state(stateMapPtr stateIn)
+        void set_state(stateMap* stateIn)
         {
 
             state = stateIn;
@@ -77,7 +77,7 @@ class Model
 
         Telem* telem;
         bool isInit = false;
-        stateMapPtr state;
+        stateMap* state;
         std::set<Model*> depModels; // std::set enforces unique elements
 
         // TODO: track which state fields are necessary to satisfy model

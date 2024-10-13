@@ -11,6 +11,8 @@ exec:
     numMC: 5
     procMode: parallel
     numProc: 4
+    telemMode: text
+    telemPrec: 3
 flight:
     solverMethod: rkf45
     solverStep: 0.01
@@ -38,27 +40,4 @@ aerodynamics:
     refArea:
         value: 12.566
         unit: in^2
-telem:
-    mode: text
-    precision: 3
-    fields:
-    - time
-    - thrust
-    - massEng
-    - mass
-    - gravity
-    - temperature
-    - pressure
-    - density
-    - dynamicPressure
-    - mach
-    - alphaT
-    - dragCoeff
-    - dragForce
-    - liftForce
-    - forceZ
-    - linAccZ
-    - linVelZ
-    - linPosZ
-    - isBurnout
 ...

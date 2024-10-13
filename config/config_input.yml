@@ -25,6 +25,16 @@
 # Dependencies:
 #     None
 ---
+meta:
+    timeStamp:
+        type: str
+        isPath: false
+    version:
+        type: str
+        isPath: false
+    inputPath:
+        type: str
+        isPath: true
 exec:
     mcMode:
         type: str
@@ -54,6 +64,17 @@ exec:
         unit: null
         min: 0
         max: .inf
+        isRand: false
+    telemMode:
+        type: str
+        isPath: false
+        valid: [text, binary]
+    telemPrec:
+        type: int
+        quantity: null
+        unit: null
+        min: 0
+        max: 10
         isRand: false
 flight:
     solverMethod:
@@ -120,18 +141,4 @@ aerodynamics:
         min: 0.0
         max: .inf
         isRand: false
-telem:
-    mode:
-        type: str
-        isPath: false
-    precision:
-        type: int
-        quantity: null
-        unit: null
-        min: 0
-        max: 10
-        isRand: false
-    fields:
-        type: str
-        isPath: false
 ...

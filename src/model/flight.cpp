@@ -94,8 +94,8 @@ void Flight::update()
 int ode_update(double t, const double y[], double f[], void *params)
 {
 
-    Model*      flight = static_cast<Model*>(params);
-    stateMapPtr state  = flight->state;
+    Model*    flight = static_cast<Model*>(params);
+    stateMap* state  = flight->state;
 
     // Set current state
     *state->at("linPosZ") = y[0];

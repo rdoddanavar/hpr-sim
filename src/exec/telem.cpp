@@ -19,16 +19,6 @@ Telem::Telem(const std::string& telemModeIn, const int& nPrecIn, const std::stri
     outputDir = outputDirIn;
     metaStr   = metaStrIn;
 
-}
-
-//----------------------------------------------------------------------------//
-
-void Telem::set_telem_fields(const std::vector<std::string>& telemFieldsInit, const std::vector<std::string>& telemUnitsInit)
-{
-
-    telemFields = telemFieldsInit;
-    telemUnits  = telemUnitsInit;
-
     nTelemFields = telemFields.size();
 
     for (const auto& field : telemFields)
@@ -310,7 +300,7 @@ void Telem::interp_boundary(std::string targetField, double targetPoint)
 
 //----------------------------------------------------------------------------//
 
-std::vector<std::string> Telem::telemFieldsDefault =
+std::vector<std::string> Telem::telemFields =
 {
     "time"           ,
     "thrust"         ,
@@ -335,7 +325,7 @@ std::vector<std::string> Telem::telemFieldsDefault =
 
 //----------------------------------------------------------------------------//
 
-std::vector<std::string> Telem::telemUnitsDefault =
+std::vector<std::string> Telem::telemUnits =
 {
     "s"     ,
     "N"     ,

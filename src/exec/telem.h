@@ -9,8 +9,6 @@
 
 // Type aliases
 using stateMap      = std::unordered_map<std::string, double*>;
-using stateMapPtr   = std::shared_ptr<stateMap>;
-
 using telemMap      = std::unordered_map<std::string, double>;
 using telemArray    = std::array<double, N_TELEM_ARRAY>;
 using telemArrayMap = std::unordered_map<std::string, telemArray>;
@@ -22,7 +20,6 @@ class Telem
 
         Telem(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn);
 
-        void set_telem_fields(const std::vector<std::string>& telemFieldsInit, const std::vector<std::string>& telemUnitsInit);
         void init();
         void update(int iStep);
         void interp_boundary(std::string targetField, double targetPoint);
@@ -30,8 +27,8 @@ class Telem
 
         void init_output();
 
-        static std::vector<std::string> telemFieldsDefault;
-        static std::vector<std::string> telemUnitsDefault;
+        static std::vector<std::string> telemFields;
+        static std::vector<std::string> telemUnits;
 
         stateMap state;
 
@@ -48,9 +45,6 @@ class Telem
         void write_stats();
 
         std::string outputDir;
-
-        std::vector<std::string> telemFields;
-        std::vector<std::string> telemUnits;
 
         int nTelemFields;
 
