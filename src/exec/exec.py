@@ -225,41 +225,43 @@ def write_input(inputParams, outputPath, iRun):
 
     # Write input *.yml
     # Archives montecarlo draw for run recreation
-    inputParams["exec"]["mcMode"]["value"] = "nominal"
+    inputParamsEcho = copy.deepcopy(inputParams)
 
-    for group in inputParams.keys():
-        for param in inputParams[group].keys():
+    inputParamsEcho["exec"]["mcMode"]["value"] = "nominal"
 
-            props = inputParams[group][param].keys()
+    for group in inputParamsEcho.keys():
+        for param in inputParamsEcho[group].keys():
+
+            props = inputParamsEcho[group][param].keys()
 
             if "unit" in props:
 
-                value    = inputParams[group][param]["value"]
+                value    = inputParamsEcho[group][param]["value"]
                 quantity = preproc_input.configInput[group][param]["quantity"]
-                unit     = inputParams[group][param]["unit"]
+                unit     = inputParamsEcho[group][param]["unit"]
 
                 # Convert values back to original units specified by user
 
                 if quantity:
                     value = util_unit.convert(value, quantity, "default", unit)
-                    inputParams[group][param]["value"] = value
+                    inputParamsEcho[group][param]["value"] = value
 
     filePath = outputPath / "input.yml"
 
     with open(filePath, 'w') as file:
 
-        numMC = inputParams["exec"]["numMC"]["value"]
+        numMC = inputParamsEcho["exec"]["numMC"]["value"]
 
         # Make header string for metadata
-        metaStr0 = "# "          + inputParams["meta"]["timeStamp"]["value"] + "\n"
-        metaStr1 = "# hpr-sim v" + inputParams["meta"]["version"]["value"]   + "\n"
-        metaStr2 = "# Input: "   + inputParams["meta"]["inputPath"]["value"] + "\n"
+        metaStr0 = "# "          + inputParamsEcho["meta"]["timeStamp"]["value"] + "\n"
+        metaStr1 = "# hpr-sim v" + inputParamsEcho["meta"]["version"]["value"]   + "\n"
+        metaStr2 = "# Input: "   + inputParamsEcho["meta"]["inputPath"]["value"] + "\n"
         metaStr3 = f"# Run: {iRun}/{numMC}"
         metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
 
         file.write(f"{metaStr}\n")
 
-        yaml.dump(inputParams, file, indent=4, explicit_start=True, explicit_end=True, sort_keys=False)
+        yaml.dump(inputParamsEcho, file, indent=4, explicit_start=True, explicit_end=True, sort_keys=False)
 
 #------------------------------------------------------------------------------#
 
