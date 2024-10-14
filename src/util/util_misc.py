@@ -69,9 +69,8 @@ def get_timestamp():
     if timestamp is None:
         # Generate timestamp for session
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    else:
-        # Get existing timestamp
-        return timestamp
+
+    return timestamp
 
 #------------------------------------------------------------------------------#
 
