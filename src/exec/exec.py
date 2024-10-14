@@ -164,7 +164,7 @@ def run_sim(inputParams, outputPath, modelData, iRun):
     telemPrec = inputParams["exec"]["telemPrec"]["value"]
 
     # Setup run output folder
-    outputPath = outputPath / f"run{iRun}"
+    outputPath = outputPath / f"run{iRun+1}"
     os.mkdir(outputPath)
 
     # Echo input file for specific run
