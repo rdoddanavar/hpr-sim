@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 # System modules
+import os
 import sys
 import argparse
 import pathlib
@@ -23,39 +24,57 @@ import util_misc
 
 #------------------------------------------------------------------------------#
 
+def cli_intro():
+
+    colorama.init()
+
+    print(colorama.Fore.CYAN)
+    print(f"{util_misc.get_timestamp()}")
+    print(f"hpr-sim v{util_misc.get_version()}")
+    print(colorama.Style.RESET_ALL)
+
+#------------------------------------------------------------------------------#
+
 if __name__ == "__main__":
 
     # Multiprocessing support for PyInstaller
     mp.freeze_support()
 
-    # Parse CLI
+    # Parse CLI arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("--headless", action="store_true", help="Headless mode (no GUI)")
-    parser.add_argument("-i", "--input", type=str, help="Input file path")
-    parser.add_argument("output", type=str, help="Output file path")
+    parser.add_argument("-i", "--input", type=str, help="Input file")
+    parser.add_argument("-o", "--output", type=str, help="Output directory")
 
-    args       = parser.parse_args()
-    inputPath  = pathlib.Path(args.input)
-    outputPath = pathlib.Path(args.output) / inputPath.stem
-
-    # CLI intro
-    colorama.init()
-
-    print(f"{colorama.Fore.CYAN}")
-    print(f"{util_misc.get_timestamp()}")
-    print(f"hpr-sim v{util_misc.get_version()}")
-    print(colorama.Style.RESET_ALL)
+    args = parser.parse_args()
 
     # Run program
 
-    if not(args.headless):
-        gui_main.exec()
-    elif inputPath is not None:
+    if args.input is None:
 
+        # Run GUI
+        gui_main.exec()
+
+    else:
+
+        # Run CLI (headless)
+        cli_intro()
+        inputPath = pathlib.Path(args.input)
+
+        if args.output is None:
+
+            outputPath = pathlib.Path("output")
+            print(colorama.Fore.RED, end='')
+            print(f"No output directory given, using: {outputPath.resolve()}")
+            print(colorama.Style.RESET_ALL)
+
+            if not os.path.exists(outputPath):
+                os.mkdir(outputPath)
+
+        else:
+            outputPath = pathlib.Path(args.output)
+
+        outputPath = outputPath / inputPath.stem # Add subdirectory
         print(f"Reading input file: {colorama.Fore.YELLOW}{inputPath.resolve()}{colorama.Style.RESET_ALL}")
         inputParams = util_yaml.load(inputPath)
 
         exec.run(inputParams, outputPath)
-
-    else:
-        postproc_flight.postproc(outputPath)
