@@ -42,8 +42,11 @@ def config() -> None:
 
     if configInput is None:
 
-        subdir     = "_internal" if util_misc.is_bundled() else "."
-        configPath = pathlib.Path(subdir) / "config/config_input.yml"
+        if util_misc.is_bundled():
+            configPath = pathlib.Path("_internal") / "config_input.yml"
+        else:
+            configPath = pathlib.Path(__file__).parent / "config_input.yml"
+
         configInput = util_yaml.load(configPath)
         util_yaml.process(configInput)
 
