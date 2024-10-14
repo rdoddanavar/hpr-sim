@@ -20,10 +20,9 @@ elif os.name == "nt":
     binaries = [("build/src/model.cp310-win_amd64.pyd", "build/src")]
 
 # Set data files and bundled locations: ("filePath", "location")
-datas = [("build/CMakeCache.txt"    , "build" ), 
-         ("config/config_input.yml" , "config"), 
-         ("config/config_output.yml", "config"), 
-         ("config/config_unit.yml"  , "config")]
+datas = [("build/CMakeCache.txt"        , "build"), 
+         ("src/preproc/config_input.yml", "."    ), 
+         ("src/util/config_unit.yml"    , "."    )]
 
 # Excluded modules from bundle
 excludes = ["PySide2", "PySide6", "PyQt6"] # Using PyQt5; Qt bindings conflict with each other
@@ -54,8 +53,6 @@ PyInstaller.__main__.run([
     f"{datas[1][0]}:{datas[1][1]}",
     "--add-data",
     f"{datas[2][0]}:{datas[2][1]}",
-    "--add-data",
-    f"{datas[3][0]}:{datas[3][1]}",
     "--exclude-module",
     f"{excludes[0]}",
     "--exclude-module",
