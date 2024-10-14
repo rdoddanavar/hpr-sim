@@ -173,7 +173,7 @@ def run_sim(inputParams, outputPath, modelData, iRun):
     # Make header string for metadata
     metaStr0 = f"# {util_misc.get_timestamp()}\n"
     metaStr1 = f"# hpr-sim v{util_misc.get_version()}\n"
-    metaStr2 = f"# Run: {iRun}/{numMC}"
+    metaStr2 = f"# Run: {iRun+1}/{numMC}"
     metaStr  = metaStr0 + metaStr1 + metaStr2
 
     telem = telemetry.Telem(telemMode, telemPrec, outputPath.resolve().as_posix(), metaStr)
@@ -225,7 +225,11 @@ def write_input(inputParams, outputPath, iRun):
     # Archives montecarlo draw for run recreation
     inputParamsEcho = copy.deepcopy(inputParams)
 
-    inputParamsEcho["exec"]["mcMode"]["value"] = "nominal"
+    # Settings for individual run recreation
+    inputParamsEcho["exec"]["mcMode"]["value"]   = "nominal"
+    inputParamsEcho["exec"]["numMC"]["value"]    = 1
+    inputParamsEcho["exec"]["procMode"]["value"] = "serial"
+    inputParamsEcho["exec"]["numProc"]["value"]  = 1
 
     for group in inputParamsEcho.keys():
         for param in inputParamsEcho[group].keys():
@@ -248,12 +252,13 @@ def write_input(inputParams, outputPath, iRun):
 
     with open(filePath, 'w') as file:
 
-        numMC = inputParamsEcho["exec"]["numMC"]["value"]
+        # Get MC count from original parameter set
+        numMC = inputParams["exec"]["numMC"]["value"]
 
         # Make header string for metadata
         metaStr0 = f"# {util_misc.get_timestamp()}\n"
         metaStr1 = f"# hpr-sim v{util_misc.get_version()}\n"
-        metaStr2 = f"# Run: {iRun}/{numMC}"
+        metaStr2 = f"# Run: {iRun+1}/{numMC}"
         metaStr  = metaStr0 + metaStr1 + metaStr2
 
         file.write(f"{metaStr}\n")
