@@ -65,4 +65,4 @@ jobs:
       - name: PyInstaller build
         run: python tools/pyinstaller_build.py
       - name: Run unit test
-        run: cd build/pyinstaller/dist/hpr-sim && ./hpr-sim -i input/unit_test.yml -o output/ --headless && ls -l output/*/*
+        run: cd build/pyinstaller/dist/hpr-sim && ./hpr-sim -i input/unit_test.yml -o output/ && ls -l output/*/*
