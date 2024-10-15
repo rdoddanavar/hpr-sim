@@ -44,7 +44,7 @@ jobs:
       - name: Install python packages
         run: pip install -r requirements.txt
       - name: Run unit test
-        run: ./hpr-sim.py -i input/unit_test.yml output/ --headless && ls -l output/*/*
+        run: ./hpr-sim.py -i input/unit_test.yml -o output/ && ls -l output/*/*
   pyinstaller-ubuntu:
     runs-on: ubuntu-22.04
     needs: build-ubuntu
