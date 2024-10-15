@@ -1,7 +1,6 @@
-# 2024-10-12 18:18:45
+# 2024-10-14 22:25:41
 # hpr-sim v0.0.0
-# Input: input/unit_test.yml
-# Run: 4/5
+# Run: 5/5
 time,thrust,massEng,mass,gravity,temperature,pressure,density,dynamicPressure,mach,alphaT,dragCoeff,dragForce,liftForce,forceZ,linAccZ,linVelZ,linPosZ,isBurnout
 s,N,kg,kg,m/s^2,K,Pa,kg/m^3,Pa,,rad,,N,N,N,m/s^2,m/s,m,
 0.000,0.000,1.223,3.565,9.795,288.150,101325.000,1.225,0.000,0.000,0.000,0.462,0.000,0.000,0.000,0.000,0.000,0.000,0.000
