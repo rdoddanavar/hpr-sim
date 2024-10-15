@@ -23,7 +23,7 @@ jobs:
       - name: Configure build
         run: cd build && cmake --preset windows ../
       - name: Execute build
-        run: cd build && cmake --build . -j
+        run: cd build && cmake --build .
       - name: Cache build artifacts
         uses: actions/cache@v4
         with:
