@@ -118,5 +118,3 @@ def mc_draw(inputDictRun):
                         rngEval = util_unit.convert(rngEval, quantity, unit)
 
                 inputDictRun[group][param]["value"] = rngEval
-
-#------------------------------------------------------------------------------#

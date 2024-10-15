@@ -189,6 +189,11 @@ def process_string(inputParams, group, param):
     if "valid" in configInput[group][param].keys():
         if value not in configInput[group][param]["valid"]:
             raise ValueError("Invalid choice for input parameter", param, value)
+        
+    # Ensure that string parameter doesn't have random distribution
+
+    if "dist" in inputParams[group][param].keys():
+        raise ValueError("Input parameter does not allow a random distribution", param)
 
 #------------------------------------------------------------------------------#
 
