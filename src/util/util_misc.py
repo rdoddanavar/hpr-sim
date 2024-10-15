@@ -62,13 +62,19 @@ def get_version():
 
 #------------------------------------------------------------------------------#
 
+def set_timestamp():
+
+    global timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+#------------------------------------------------------------------------------#
+
 def get_timestamp():
 
     global timestamp
 
     if timestamp is None:
-        # Generate timestamp for session
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        set_timestamp()
 
     return timestamp
 

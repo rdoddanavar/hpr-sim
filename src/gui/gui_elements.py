@@ -31,6 +31,7 @@ import exec
 import gui_common
 import postproc_flight
 import util_yaml
+import util_misc
 
 #------------------------------------------------------------------------------#
 
@@ -197,6 +198,7 @@ class TabInput(QWidget):
         inputParams = util_yaml.load(inputPath)
         outputPath  = outputPath / inputPath.stem # Add subdirectory
 
+        util_misc.set_timestamp()
         exec.run(inputParams, outputPath)
 
 #------------------------------------------------------------------------------#

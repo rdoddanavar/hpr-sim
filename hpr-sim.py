@@ -57,6 +57,7 @@ if __name__ == "__main__":
     else:
 
         # Run CLI (headless)
+        util_misc.set_timestamp()
         cli_intro()
         inputPath = pathlib.Path(args.input)
 
