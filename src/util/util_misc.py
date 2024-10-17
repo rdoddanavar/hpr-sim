@@ -1,6 +1,10 @@
 import sys
 import os
 import pathlib
+from datetime import datetime
+
+# Module variables
+timestamp = None
 
 #------------------------------------------------------------------------------#
 
@@ -17,8 +21,8 @@ def is_bundled():
 
 def get_cmake_cache(field):
 
-    subdir   = "_internal" if is_bundled() else "."
-    filePath = pathlib.Path(subdir) / "build/CMakeCache.txt"
+    subdir   = "_internal" if is_bundled() else "build"
+    filePath = pathlib.Path(subdir) / "CMakeCache.txt"
 
     with open(filePath, 'r') as cacheFile:
 
@@ -50,6 +54,29 @@ def qt_setup():
 
     elif os.name == "nt":
         pass
+
+#------------------------------------------------------------------------------#
+
+def get_version():
+    return get_cmake_cache("CMAKE_PROJECT_VERSION")
+
+#------------------------------------------------------------------------------#
+
+def set_timestamp():
+
+    global timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+#------------------------------------------------------------------------------#
+
+def get_timestamp():
+
+    global timestamp
+
+    if timestamp is None:
+        set_timestamp()
+
+    return timestamp
 
 #------------------------------------------------------------------------------#
 
