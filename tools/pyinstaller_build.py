@@ -15,14 +15,14 @@ paths = ["src/exec", "src/gui", "src/preproc", "src/postproc", "src/util"]
 # Set binary files and bundled locations: ("filePath", "location")
 
 if os.name == "posix":
-    binaries = [("build/src/model.cpython-310-x86_64-linux-gnu.so", "build/src")]
+    binaries = [("build/src/model.cpython-310-x86_64-linux-gnu.so", ".")]
 elif os.name == "nt":
-    binaries = [("build/src/model.cp310-win_amd64.pyd", "build/src")]
+    binaries = [("build/src/model.cp310-win_amd64.pyd", ".")]
 
 # Set data files and bundled locations: ("filePath", "location")
-datas = [("build/CMakeCache.txt"        , "build"), 
-         ("src/preproc/config_input.yml", "."    ), 
-         ("src/util/config_unit.yml"    , "."    )]
+datas = [("build/CMakeCache.txt"        , "."), 
+         ("src/preproc/config_input.yml", "."), 
+         ("src/util/config_unit.yml"    , ".")]
 
 # Excluded modules from bundle
 excludes = ["PySide2", "PySide6", "PyQt6"] # Using PyQt5; Qt bindings conflict with each other

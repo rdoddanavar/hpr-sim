@@ -21,8 +21,8 @@ def is_bundled():
 
 def get_cmake_cache(field):
 
-    subdir   = "_internal" if is_bundled() else "."
-    filePath = pathlib.Path(subdir) / "build/CMakeCache.txt"
+    subdir   = "_internal" if is_bundled() else "build"
+    filePath = pathlib.Path(subdir) / "CMakeCache.txt"
 
     with open(filePath, 'r') as cacheFile:
 

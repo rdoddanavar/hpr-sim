@@ -22,7 +22,6 @@ import preproc_aerodynamics
 # Project modules (pybind11)
 util_misc.pybind11_setup()
 import model
-import telem as telemetry
 
 #------------------------------------------------------------------------------#
 
@@ -176,7 +175,7 @@ def run_sim(inputParams, outputPath, modelData, iRun):
     metaStr2 = f"# Run: {iRun+1}/{numMC}"
     metaStr  = metaStr0 + metaStr1 + metaStr2
 
-    telem = telemetry.Telem(telemMode, telemPrec, outputPath.resolve().as_posix(), metaStr)
+    telem = model.Telem(telemMode, telemPrec, outputPath.resolve().as_posix(), metaStr)
 
     # Initialize state from top-level model
     flight.init_state(telem)
