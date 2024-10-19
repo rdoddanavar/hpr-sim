@@ -37,11 +37,18 @@ def get_cmake_cache(field):
 
 def pybind11_setup():
 
-    if (os.name == "nt") and not(is_bundled()):
+    if os.name == "nt":
 
-        # Explicitly add path to libstdc++
-        compilerPath = get_cmake_cache("CMAKE_CXX_COMPILER")
-        os.add_dll_directory(pathlib.Path(compilerPath).parent)
+        if is_bundled():
+
+            # Add path to pybind11 module(s)
+            sys.path.append(pathlib.Path("_internal").resolve().as_posix())
+
+        else:
+
+            # Add path to libstdc++
+            compilerPath = get_cmake_cache("CMAKE_CXX_COMPILER")
+            os.add_dll_directory(pathlib.Path(compilerPath).parent)
 
 #------------------------------------------------------------------------------#
 

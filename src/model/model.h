@@ -75,9 +75,9 @@ class Model
 
         }
 
-        Telem* telem;
         bool isInit = false;
-        stateMap* state;
+        Telem* telem = 0;
+        stateMap* state = 0;
         std::set<Model*> depModels; // std::set enforces unique elements
 
         // TODO: track which state fields are necessary to satisfy model

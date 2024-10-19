@@ -7,6 +7,7 @@
 
 // Project headers
 #include "model.h"
+#include "telem.h"
 #include "util_model.h"
 
 //---------------------------------------------------------------------------//
