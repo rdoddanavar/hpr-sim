@@ -9,11 +9,11 @@ set(SRC "./model/model_bind.cpp"
         "./model/aerodynamics.cpp"
         "./model/eom.cpp"
         "./model/flight.cpp"
-        "./exec/telem.cpp"
+        "./model/telem.cpp"
         )
 
 set(HDR "./model/model.h"
-        "./exec/telem.h")
+        "./model/telem.h")
 
 set(DEP util_model
         gsl
