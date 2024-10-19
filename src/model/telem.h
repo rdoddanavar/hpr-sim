@@ -56,7 +56,7 @@ class Telem
         telemMap      stateTelemMax;
 
         std::string   telemMode;
-        std::FILE*    telemFile;
+        std::FILE*    telemFile = nullptr;
 
         std::string metaStr;
 
