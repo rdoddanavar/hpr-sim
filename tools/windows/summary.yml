@@ -1,0 +1,234 @@
+# 2024-10-19 21:30:32
+# hpr-sim v0.0.0
+# Input: input\unit_test.yml
+# Run: 5/5
+---
+time:
+    Units: s
+    Min:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+    Max:
+        Min: 62.691
+        Max: 71.563
+        Mean: 65.888
+        Std: 3.198
+thrust:
+    Units: N
+    Min:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+    Max:
+        Min: 541.26
+        Max: 541.26
+        Mean: 541.26
+        Std: 0.0
+massEng:
+    Units: kg
+    Min:
+        Min: 0.713
+        Max: 0.713
+        Mean: 0.713
+        Std: 0.0
+    Max:
+        Min: 1.223
+        Max: 1.223
+        Mean: 1.223
+        Std: 0.0
+mass:
+    Units: kg
+    Min:
+        Min: 2.739
+        Max: 3.152
+        Mean: 2.998
+        Std: 0.148
+    Max:
+        Min: 3.249
+        Max: 3.662
+        Mean: 3.508
+        Std: 0.148
+gravity:
+    Units: m/s^2
+    Min:
+        Min: 9.776
+        Max: 9.781
+        Mean: 9.779
+        Std: 0.002
+    Max:
+        Min: 9.795
+        Max: 9.795
+        Mean: 9.795
+        Std: 0.0
+temperature:
+    Units: K
+    Min:
+        Min: 248.802
+        Max: 258.074
+        Mean: 254.795
+        Std: 3.347
+    Max:
+        Min: 288.15
+        Max: 288.15
+        Mean: 288.15
+        Std: 0.0
+pressure:
+    Units: Pa
+    Min:
+        Min: 46878.434
+        Max: 56806.069
+        Mean: 53218.535
+        Std: 3578.193
+    Max:
+        Min: 101325.0
+        Max: 101325.0
+        Mean: 101325.0
+        Std: 0.0
+density:
+    Units: kg/m^3
+    Min:
+        Min: 0.656
+        Max: 0.767
+        Mean: 0.727
+        Std: 0.04
+    Max:
+        Min: 1.225
+        Max: 1.225
+        Mean: 1.225
+        Std: 0.0
+dynamicPressure:
+    Units: Pa
+    Min:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+    Max:
+        Min: 55517.388
+        Max: 72631.233
+        Mean: 61568.632
+        Std: 6179.642
+mach:
+    Units: null
+    Min:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+    Max:
+        Min: 0.885
+        Max: 1.012
+        Mean: 0.931
+        Std: 0.046
+alphaT:
+    Units: rad
+    Min:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+    Max:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+dragCoeff:
+    Units: null
+    Min:
+        Min: 0.454
+        Max: 0.455
+        Mean: 0.455
+        Std: 0.0
+    Max:
+        Min: 0.522
+        Max: 0.751
+        Mean: 0.585
+        Std: 0.088
+dragForce:
+    Units: N
+    Min:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+    Max:
+        Min: 235.157
+        Max: 441.944
+        Mean: 296.441
+        Std: 77.354
+liftForce:
+    Units: N
+    Min:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+    Max:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+forceZ:
+    Units: N
+    Min:
+        Min: -30.876
+        Max: -26.828
+        Mean: -29.363
+        Std: 1.455
+    Max:
+        Min: 507.72
+        Max: 511.767
+        Mean: 509.233
+        Std: 1.455
+linAccZ:
+    Units: m/s^2
+    Min:
+        Min: -9.795
+        Max: -9.795
+        Mean: -9.795
+        Std: 0.0
+    Max:
+        Min: 150.247
+        Max: 172.699
+        Mean: 158.336
+        Std: 8.093
+linVelZ:
+    Units: m/s
+    Min:
+        Min: -344.368
+        Max: -301.071
+        Mean: -316.676
+        Std: 15.606
+    Max:
+        Min: 289.972
+        Max: 333.255
+        Mean: 305.571
+        Std: 15.601
+linPosZ:
+    Units: m
+    Min:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+    Max:
+        Min: 4630.395
+        Max: 6059.293
+        Mean: 5135.737
+        Std: 515.857
+isBurnout:
+    Units: null
+    Min:
+        Min: 0.0
+        Max: 0.0
+        Mean: 0.0
+        Std: 0.0
+    Max:
+        Min: 1.0
+        Max: 1.0
+        Mean: 1.0
+        Std: 0.0
+...
