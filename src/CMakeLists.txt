@@ -41,7 +41,6 @@ target_link_libraries(util_model PUBLIC ${DEP})
 
 # Expose all modules to library headers
 include_directories("${CMAKE_SOURCE_DIR}/lib"
-                    "./exec/"
                     "./model/"
                     "./util/"
                     )
