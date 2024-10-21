@@ -1,36 +1,34 @@
-import sys
 import os
 import difflib
 import filecmp
 import pathlib
 import shutil
+import argparse
 
-def regression_test(dir1: pathlib.Path, dir2: pathlib.Path) -> None:
+def regression_test(dirComp1: pathlib.Path, dirComp2: pathlib.Path, dirOut: pathlib.Path) -> None:
 
-    dcmp = filecmp.dircmp(dir1, dir2)
+    dcmp = filecmp.dircmp(dirComp1, dirComp2)
 
-    outputPath = pathlib.Path("output/diff")
+    if os.path.exists(dirOut):
+        shutil.rmtree(dirOut)
 
-    if os.path.exists(outputPath):
-        shutil.rmtree(outputPath)
-
-    os.mkdir(outputPath)
+    os.mkdir(dirOut)
 
     # Compare files
 
     for file in dcmp.diff_files:
-        diff_files(dir1 / file, dir2 / file, outputPath / file)
+        diff_files(dirComp1 / file, dirComp2 / file, dirOut / file)
 
     # Compare subdirectories; assume one (1) nested level
 
     for subdir in dcmp.subdirs:
 
-        os.mkdir(outputPath / subdir)
+        os.mkdir(dirOut / subdir)
 
         for file in dcmp.subdirs[subdir].diff_files:
-            diff_files(dir1 / subdir / file, dir2 / subdir / file, outputPath / subdir / file)
+            diff_files(dirComp1 / subdir / file, dirComp2 / subdir / file, dirOut / subdir / file)
 
-def diff_files(filePath1, filePath2, outputPath):
+def diff_files(filePath1, filePath2, dirOut):
 
     file1 = open(filePath1, 'r')
     file2 = open(filePath2, 'r')
@@ -41,13 +39,25 @@ def diff_files(filePath1, filePath2, outputPath):
 
     diff = difflib.HtmlDiff().make_file(lines1, lines2, "Before", "After")
 
-    fileDiff = open(outputPath.as_posix() + ".html", 'w')
+    fileDiff = open(dirOut.as_posix() + ".html", 'w')
     fileDiff.write(diff)
     fileDiff.close()
 
+    print()
+    print(f"Regression: {filePath1.as_posix()} --> {filePath2.as_posix()}")
+    print(f"Diff: {dirOut.as_posix()}.html")
+
 if __name__ == "__main__":
 
-    dir1 = pathlib.Path("tools/unit_test")
-    dir2 = pathlib.Path("output/unit_test")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("dirComp1", type=str, help="Compare directory 1")
+    parser.add_argument("dirComp2", type=str, help="Compare directory 2")
+    parser.add_argument("dirOut"  , type=str, help="Output directory"   )
 
-    regression_test(dir1, dir2)
+    args = parser.parse_args()
+
+    dirComp1 = pathlib.Path(args.dirComp1)
+    dirComp2 = pathlib.Path(args.dirComp2)
+    dirOut   = pathlib.Path(args.dirOut  )
+
+    regression_test(dirComp1, dirComp2, dirOut)

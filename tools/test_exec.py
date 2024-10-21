@@ -2,11 +2,9 @@
 
 # System modules
 import sys
-import argparse
 import pathlib
 import multiprocessing as mp
 import colorama
-from datetime import datetime
 
 # Path modifications
 paths = ["build/src", "src/exec", "src/gui", "src/preproc", "src/postproc", "src/util"]
@@ -24,6 +22,17 @@ import util_misc
 
 #------------------------------------------------------------------------------#
 
+def cli_intro():
+
+    colorama.init()
+
+    print(colorama.Fore.CYAN)
+    print(f"{util_misc.get_timestamp()}")
+    print(f"hpr-sim v{util_misc.get_version()}")
+    print(colorama.Style.RESET_ALL)
+
+#------------------------------------------------------------------------------#
+
 if __name__ == "__main__":
 
     # Multiprocessing support for PyInstaller
@@ -32,22 +41,14 @@ if __name__ == "__main__":
     inputPath  = pathlib.Path("input/unit_test.yml")
     outputPath = pathlib.Path("output")
 
-    # CLI intro
-    colorama.init()
-
-    timeStamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    version   = util_misc.get_cmake_cache("CMAKE_PROJECT_VERSION")
-
-    print(f"{colorama.Fore.CYAN}")
-    print(f"{timeStamp}")
-    print(f"hpr-sim v{version}")
-    print(colorama.Style.RESET_ALL)
-
     # Run program
 
-    print(f"Reading input file: {colorama.Fore.YELLOW}{inputPath.resolve()}{colorama.Style.RESET_ALL}")
+    # Run CLI (headless)
+    util_misc.set_timestamp()
+    cli_intro()
 
+    outputPath = outputPath / inputPath.stem # Add subdirectory
+    print(f"Reading input file: {colorama.Fore.YELLOW}{inputPath.resolve()}{colorama.Style.RESET_ALL}")
     inputParams = util_yaml.load(inputPath)
-    inputParams["meta"] = {"timeStamp": timeStamp, "version": version, "inputPath": str(inputPath.resolve())}
 
     exec.run(inputParams, outputPath)
