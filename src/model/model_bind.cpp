@@ -6,6 +6,7 @@
 
 // Project headers
 #include "model.h"
+#include "telem.h"
 
 namespace py = pybind11;
 
@@ -22,6 +23,7 @@ void bind_Atmosphere   (py::module_ &);
 void bind_Aerodynamics (py::module_ &);
 void bind_EOM          (py::module_ &);
 void bind_Flight       (py::module_ &);
+void bind_Telem        (py::module_ &);
 
 PYBIND11_MODULE(model, m)
 {
@@ -44,6 +46,7 @@ PYBIND11_MODULE(model, m)
     bind_Aerodynamics (m);
     bind_EOM          (m);
     bind_Flight       (m);
+    bind_Telem        (m);
 
 }
 
@@ -133,9 +136,14 @@ void bind_Flight(py::module_ &m)
 
     py::class_<Flight, Model>(m, "Flight")
         .def(py::init<>())
-        .def("init", &Flight::init)
-        .def_readonly_static("telemFieldsDefault", &Flight::telemFieldsDefault)
-        .def_readonly_static("telemUnitsDefault", &Flight::telemUnitsDefault)
-        .def("set_telem", &Flight::set_telem);
+        .def("init", &Flight::init);
 
+}
+
+//---------------------------------------------------------------------------//
+
+void bind_Telem(py::module_ &m)
+{
+    py::class_<Telem>(m, "Telem")
+        .def(py::init<const std::string&, const int&, const std::string&, const std::string&>());
 }

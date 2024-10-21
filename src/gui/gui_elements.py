@@ -30,6 +30,7 @@ import pyqtgraph as pg
 import exec
 import gui_common
 import postproc_flight
+import util_yaml
 import util_misc
 
 #------------------------------------------------------------------------------#
@@ -193,9 +194,12 @@ class TabInput(QWidget):
 
         inputPath  = pathlib.Path(self.lineInput.text())
         outputPath = pathlib.Path(self.lineOutput.text())
-        subdir     = "_internal" if util_misc.is_bundled() else "."
-        configPath = pathlib.Path(subdir) / "config"
-        exec.run(inputPath, outputPath, configPath)
+
+        inputParams = util_yaml.load(inputPath)
+        outputPath  = outputPath / inputPath.stem # Add subdirectory
+
+        util_misc.set_timestamp()
+        exec.run(inputParams, outputPath)
 
 #------------------------------------------------------------------------------#
 

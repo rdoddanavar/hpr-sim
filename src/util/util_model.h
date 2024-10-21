@@ -76,7 +76,8 @@ double interp2d_eval(gsl_spline2d*     spline,
 
 const std::map<std::string, const gsl_odeiv2_step_type*> odeMethods = 
 {
-    
+
+    // Explicit solvers only
     {"rk2"  , gsl_odeiv2_step_rk2  },
     {"rk4"  , gsl_odeiv2_step_rk4  },
     {"rkf45", gsl_odeiv2_step_rkf45},
@@ -89,7 +90,7 @@ const std::map<std::string, const gsl_odeiv2_step_type*> odeMethods =
 
 struct OdeSolver
 {
-    
+
     gsl_odeiv2_system  sys;
     gsl_odeiv2_driver* driver;
 
