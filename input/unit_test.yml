@@ -11,9 +11,11 @@ exec:
     numMC: 5
     procMode: parallel
     numProc: 4
-flight:
     telemMode: text
-    precision: 3
+    telemPrec: 3
+flight:
+    solverMethod: rkf45
+    solverStep: 0.01
 engine:
     inputPath: input/AeroTech_J450DM.eng
 mass:

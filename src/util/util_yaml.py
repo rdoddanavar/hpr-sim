@@ -31,19 +31,16 @@ Dependencies:
 """
 
 # System modules
-import sys  # System utilities
-import pdb  # Python debugger
 import yaml # YAML parser
 
 #------------------------------------------------------------------------------#
 
-def load(filePath):
+def load(filePath: str) -> dict:
 
     """
-    Parses YAML document using filepath, returns dict.
+    Parses YAML document using filepath, returns dictionary.
 
-    Input(s): filePath (str) \n
-    Output(s): yamlDict (dict)
+    :param filePath:
     """
 
     with open(filePath, 'r', encoding="utf8") as stream:
@@ -53,13 +50,15 @@ def load(filePath):
 
 #------------------------------------------------------------------------------#
 
-def process(yamlDict, subDict=None, path=[], first=True):
+def process(yamlDict: dict, subDict: dict=None, path: str=[], first: bool=True) -> None:
 
     """
     Processes pyYAML output; resolves references and evaluates arithmetic expressions.
 
-    Input(s): yamlDict (dict), subDict=None (dict), path=[] (str), first=True (bool) \n
-    Output(s): <none>
+    :param yamlDict:
+    :param subDict:
+    :param path:
+    :param first:
     """
 
     if subDict is None:
@@ -107,13 +106,13 @@ def process(yamlDict, subDict=None, path=[], first=True):
 
 #------------------------------------------------------------------------------#
 
-def get_value(nested, path):
+def get_value(nested: dict, path: list[str]) -> str:
 
     '''
     Fetches value in arbitrarily nested dict given list of keys.
 
-    Input(s): nested (dict), path (list(str)) \n
-    Output(s): value (str)
+    :param nested:
+    :param path:
     '''
 
     value = nested
@@ -125,13 +124,14 @@ def get_value(nested, path):
 
 #------------------------------------------------------------------------------#
 
-def set_value(nested, value, path):
+def set_value(nested: dict, value: str, path: list[str]) -> None:
 
     '''
     Sets value in arbitrarily nested dict given list of keys.
 
-    Input(s): nested (dict), value (str), path (list(str)) \n
-    Outputs(s): <none>
+    :param nested:
+    :param value:
+    :param path:
     '''
 
     sub = nested[path[0]]
@@ -146,13 +146,12 @@ def set_value(nested, value, path):
 
 #------------------------------------------------------------------------------#
 
-def math_eval(value):
+def math_eval(value: str) -> float:
 
     """
     Evaluates arithmetic string expressions for a limited set of operators, returns float.
 
-    Inputs(s): value (str) \n
-    Output(s): value (float)
+    :param value:
     """
     
     # Allowed: decimals, arithmetic operators, scientific notation, whitespace, parentheses
@@ -164,7 +163,10 @@ def math_eval(value):
         test = test.replace(char, "")
 
     if test.isnumeric():
-        return eval(value) # Evaluate original expression if valid
+        try:
+            return eval(value) # Evaluate original expression if valid
+        except:
+            return value
     else:
         return value
 

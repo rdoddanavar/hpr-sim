@@ -25,26 +25,49 @@ import pathlib
 # Project modules
 import util_yaml
 import util_unit
+import util_misc
+
+# Module variables
+configInput = None
 
 #------------------------------------------------------------------------------#
 
-def process(inputDict, configDict):
+def config() -> None:
+
+    '''
+    Parses YAML config file, creates global dict for input parameter validation
+    '''
+
+    global configInput # Necessary for reassignment
+
+    if configInput is None:
+
+        if util_misc.is_bundled():
+            configPath = pathlib.Path("_internal") / "config_input.yml"
+        else:
+            configPath = pathlib.Path(__file__).parent / "config_input.yml"
+
+        configInput = util_yaml.load(configPath)
+        util_yaml.process(configInput)
+
+#------------------------------------------------------------------------------#
+
+def process(inputParams: dict) -> None:
 
     '''
     Populates input parameters via YAML input; converts and validates parameters.
 
-    Input(s): inputDict (dict), configDict (dict) \n
-    Output(s): <none>
-    ''' 
+    :param inputParams: Input parameters and their values
+    '''
 
     # Validate input groups
-    groupValid   = configDict.keys()
-    groupInvalid = set(inputDict.keys()) - set(groupValid)
+    groupValid   = configInput.keys()
+    groupInvalid = set(inputParams.keys()) - set(groupValid)
 
     for key in groupInvalid:
-        inputDict.pop(key)
+        inputParams.pop(key)
 
-    groupMissing = set(groupValid) - set(inputDict.keys())
+    groupMissing = set(groupValid) - set(inputParams.keys())
 
     if groupMissing:
         raise ValueError("Missing input groups(s)", groupMissing)
@@ -52,61 +75,59 @@ def process(inputDict, configDict):
     # Validate input parameters in each input group
 
     for group in groupValid:
-        
-        paramValid   = configDict[group].keys()
-        paramInvalid = set(inputDict[group].keys()) - set(paramValid)
-        
-        for key in paramInvalid:
-            inputDict[group].pop(key)
 
-        paramMissing = set(paramValid) - set(inputDict[group].keys())
+        paramValid   = configInput[group].keys()
+        paramInvalid = set(inputParams[group].keys()) - set(paramValid)
+
+        for key in paramInvalid:
+            inputParams[group].pop(key)
+
+        paramMissing = set(paramValid) - set(inputParams[group].keys())
 
         if paramMissing:
             raise ValueError("Missing input parameter(s)", group, paramMissing)
 
     # Input parameter value processing & validation
 
-    for group in inputDict.keys():
+    for group in inputParams.keys():
 
-        for param in inputDict[group].keys():
-            
+        for param in inputParams[group].keys():
+
             # Get input parameter value & properties
 
-            temp = inputDict[group][param]
+            temp = inputParams[group][param]
 
             if type(temp) is dict:
 
                 props = temp.keys()
 
-                if "value" in props:
-                    value = inputDict[group][param]["value"]
-                else:
+                if "value" not in props:
                     raise ValueError("Nominal parameter value missing", param)
 
             else:
-                
+
                 # Implied parameter value
-                inputDict[group][param]          = {}
-                inputDict[group][param]["value"] = temp
+                inputParams[group][param]          = {}
+                inputParams[group][param]["value"] = temp
 
             # Process input parameter by type
-            paramType = configDict[group][param]["type"]
+            paramType = configInput[group][param]["type"]
 
             if (paramType == "int") or (paramType == "float"):
-                process_number(inputDict, configDict, group, param)
+                process_number(inputParams, group, param)
 
             elif paramType == "str":
-                process_string(inputDict, configDict, group, param)
+                process_string(inputParams, group, param)
 
             else:
                 raise ValueError("Invalid input parameter type; see config files", param)
 
 #------------------------------------------------------------------------------#
 
-def process_number(inputDict, configDict, group, param):
-    
-    value     = inputDict[group][param]["value"]
-    paramType = configDict[group][param]["type"]
+def process_number(inputParams, group, param):
+
+    value     = inputParams[group][param]["value"]
+    paramType = configInput[group][param]["type"]
 
     # Check if numeric
 
@@ -121,75 +142,62 @@ def process_number(inputDict, configDict, group, param):
         raise ValueError("Input parameter is not integer", param, value)
 
     # Convert units if specified by user
-    props = inputDict[group][param].keys()
+    props = inputParams[group][param].keys()
 
     if "unit" in props:
-        
-        quantity = configDict[group][param]["quantity"]
-        unit     = inputDict[group][param]["unit"]
+
+        quantity = configInput[group][param]["quantity"]
+        unit     = inputParams[group][param]["unit"]
 
         if quantity:
             value = util_unit.convert(value, quantity, unit)
 
     # Check parameter value bounds
-    paramMin = configDict[group][param]["min"]
-    paramMax = configDict[group][param]["max"]
+    paramMin = configInput[group][param]["min"]
+    paramMax = configInput[group][param]["max"]
 
-    check_bounds(param, value, paramMin, paramMax)
+    if (value < paramMin) or (value > paramMax):
+        raise ValueError("Input parameter violates bounds", param, value)
+
+    # Check if parameter can be randomly sampled 
+    paramRand = configInput[group][param]["isRand"]
+
+    if (not paramRand) and ("dist" in props):
+        raise ValueError("Input parameter does not allow a random distribution", param)
 
     # Finalize parameter value
 
     if paramType == "int":
         value = int(value)
 
-    inputDict[group][param]["value"] = value
+    inputParams[group][param]["value"] = value
 
 #------------------------------------------------------------------------------#
 
-def process_string(inputDict, configDict, group, param):
+def process_string(inputParams, group, param):
 
-    value = inputDict[group][param]["value"]
-    
+    value = inputParams[group][param]["value"]
+
     # Validate path
 
-    if configDict[group][param]["isPath"]:
-        check_path(value)
+    if configInput[group][param]["isPath"]:
+        if not os.path.exists(value):
+            raise FileNotFoundError(value)
 
     # Validate string choice
 
-    if "valid" in configDict[group][param].keys():
-        if value not in configDict[group][param]["valid"]:
+    if "valid" in configInput[group][param].keys():
+        if value not in configInput[group][param]["valid"]:
             raise ValueError("Invalid choice for input parameter", param, value)
-            
-#------------------------------------------------------------------------------#
+        
+    # Ensure that string parameter doesn't have random distribution
 
-def check_bounds(param, value, paramMin, paramMax):
-
-    '''
-    Checks value against lower & upper bounds.
-
-    Inputs(s): parameter (str), value (float), paramMin (float), paramMax (float)
-    '''
-
-    if (value < paramMin) or (value > paramMax):
-        raise ValueError("Input parameter violates bounds", param, value)
-
-#------------------------------------------------------------------------------#
-
-def check_path(value):
-
-    '''
-    Checks for file path existence.
-
-    Input(s): value (str)
-    '''
-    
-    if not os.path.exists(value):
-        raise FileNotFoundError(value)
+    if "dist" in inputParams[group][param].keys():
+        raise ValueError("Input parameter does not allow a random distribution", param)
 
 #------------------------------------------------------------------------------#
 
 if __name__ == "__main__":
-
-    # CLI argument
     pass
+else:
+    config()

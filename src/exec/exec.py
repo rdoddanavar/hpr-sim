@@ -6,11 +6,9 @@ import copy
 import multiprocessing as mp
 import numpy as np
 import yaml
-from dataclasses import dataclass
 import functools
 import tqdm
 import colorama
-from datetime import datetime
 
 # Project modules (python)
 import exec_rand
@@ -27,126 +25,66 @@ import model
 
 #------------------------------------------------------------------------------#
 
-@dataclass
-class Metadata:
-    timeStamp: str
-    version: str
-
-@dataclass
-class SimConfig:
-    input: dict
-    output: dict
-    inputPath: pathlib.Path
-    outputPath2: pathlib.Path
-    metadata: str
-
-@dataclass
-class SimData:
-    machData: dict
-    alphaData: dict
-    aeroData: dict
-    timeEng: np.ndarray
-    thrustEng: np.ndarray
-    massEng: np.ndarray
-
-#------------------------------------------------------------------------------#
-
-def cli_intro(metadata):
-
-    colorama.init()
-
-    print(f"{colorama.Fore.CYAN}")
-    print(f"{metadata.timeStamp}")
-    print(f"hpr-sim v{metadata.version}")
-    print(colorama.Style.RESET_ALL)
-
-#------------------------------------------------------------------------------#
-
-def run(inputPath, outputPath, configPath):
+def run(inputParams: dict, outputPath: pathlib.Path) -> None:
 
     """
-    Executes simluation using paramters defined in input file
+    Executes simluation using input parameters and outputs artifacts to specified directory.
 
-    :param inputPath: File path to \*.yml input file
-    :type inputPath: str
+    :param inputParams: Input parameter dictionary
+    :type inputParams: dict
 
     :param outputPath: File path for simulation data output
-    :type outputPath: str
+    :type outputPath: pathlib.Path
     """
 
-    # Metadata
-    timeStamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    version   = util_misc.get_cmake_cache("CMAKE_PROJECT_VERSION")
-    metadata  = Metadata(timeStamp, version)
-
-    cli_intro(metadata)
-
     # Pre-processing
-    configInput = util_yaml.load(configPath / "config_input.yml")
-    util_yaml.process(configInput)
-
-    print(f"Reading input file: {colorama.Fore.YELLOW}{inputPath.resolve()}{colorama.Style.RESET_ALL}")
-    simInput = util_yaml.load(inputPath)
-    util_yaml.process(simInput)                  # Validate raw input file, resolve references
-    preproc_input.process(simInput, configInput) # Validate input parameter values
-    exec_rand.check_dist(simInput)               # Validate random distribution choice, parameters
+    util_yaml.process(inputParams)     # Validate raw input file, resolve references
+    preproc_input.process(inputParams) # Validate input parameter values
+    exec_rand.check_dist(inputParams)  # Validate random distribution choice, parameters
 
     # Output setup
-    outputPath2 = outputPath / inputPath.stem
 
-    if os.path.exists(outputPath2):
-        shutil.rmtree(outputPath2)
+    if os.path.exists(outputPath):
+        shutil.rmtree(outputPath)
 
-    os.mkdir(outputPath2)
-
-    # Validate telemetry output fields
-    configOutput = util_yaml.load(configPath / "config_output.yml")
-    telemInvalid = set(configOutput["telem"]) - set(model.Flight.telemFieldsDefault)
-
-    configOutput["telemUnits"] = []
-
-    if telemInvalid:
-        raise ValueError("Invalid telemetry fields", telemInvalid)
-    else:
-        for i in range(len(model.Flight.telemFieldsDefault)):
-            if configOutput["telem"][i] in model.Flight.telemFieldsDefault:
-                configOutput["telemUnits"].append(model.Flight.telemUnitsDefault[i])
-
-    simConfig = SimConfig(configInput, configOutput, inputPath, outputPath2, metadata)
-
-    # TODO: if issues with config_ouput.yml, resort to default fields
-    # Also, populate output stats fields
+    os.mkdir(outputPath)
 
     # Motor data
-    enginePath = pathlib.Path(simInput["engine"]["inputPath"]["value"])
+    enginePath = pathlib.Path(inputParams["engine"]["inputPath"]["value"])
     print(f"Reading propulsion data: {colorama.Fore.YELLOW}{enginePath.resolve()}{colorama.Style.RESET_ALL}")
     timeEng, thrustEng, massEng = preproc_engine.load(enginePath)
 
     # Aeromodel data
-    aeroPath = pathlib.Path(simInput["aerodynamics"]["inputPath"]["value"])
+    aeroPath = pathlib.Path(inputParams["aerodynamics"]["inputPath"]["value"])
     print(f"Reading aerodynamic data: {colorama.Fore.YELLOW}{aeroPath.resolve()}{colorama.Style.RESET_ALL}")
     (machData, alphaData, aeroData) = preproc_aerodynamics.load_csv(aeroPath)
 
     # Collect all sim data
-    simData = SimData(machData, alphaData, aeroData, timeEng, thrustEng, massEng)
+    modelData = {}
+
+    # TODO: Refactor this into "independent" and "dependent" lookup data
+    modelData["engine"] = {"time": timeEng, "thrust": thrustEng, "mass" : massEng}
+
+    # TODO: Refactor this into "independent" and "dependent" lookup data
+    modelData["aerodynamics"] = {"mach": machData, "alpha": alphaData, "aero": aeroData }
 
     # Sim execution
-    mcMode   = simInput["exec"]["mcMode"]["value"]
-    numMC    = simInput["exec"]["numMC"]["value"]
-    procMode = simInput["exec"]["procMode"]["value"]
-    numProc  = simInput["exec"]["numProc"]["value"]
+    mcMode   = inputParams["exec"]["mcMode"]["value"]
+    numMC    = inputParams["exec"]["numMC"]["value"]
+    procMode = inputParams["exec"]["procMode"]["value"]
+    numProc  = inputParams["exec"]["numProc"]["value"]
 
     print()
-    print(f"Simulation output available at: {colorama.Fore.YELLOW}{simConfig.outputPath2.resolve()}{colorama.Style.RESET_ALL}")
+    print(f"Simulation output available at: {colorama.Fore.YELLOW}{outputPath.resolve()}{colorama.Style.RESET_ALL}")
 
     if mcMode == "nominal":
 
         print("Executing nominal run")
-        run_sim(simInput, simConfig, simData, 0)
+        run_sim(inputParams, outputPath, modelData, iRun=0)
 
     elif mcMode == "montecarlo":
 
-        summaryPath = simConfig.outputPath2 / "summary.yml"
+        summaryPath = outputPath / "summary.yml"
         print(f"Monte Carlo summary available at: {colorama.Fore.YELLOW}{summaryPath.resolve()}{colorama.Style.RESET_ALL}")
         print()
         print("Executing Monte Carlo runs:")
@@ -161,7 +99,7 @@ def run(inputPath, outputPath, configPath):
         if procMode == "serial":
 
             for iRun in range(numMC):
-                run_sim_mc(simInput, simConfig, simData, iRun)
+                run_sim_mc(inputParams, outputPath, modelData, iRun)
                 callback_serial()
 
         elif procMode == "parallel":
@@ -170,14 +108,14 @@ def run(inputPath, outputPath, configPath):
 
                 # Execute parallel runs
                 for iRun in range(numMC):
-                    pool.apply_async(run_sim_mc, (simInput, simConfig, simData, iRun), callback=callback_parallel)
+                    pool.apply_async(run_sim_mc, (inputParams, outputPath, modelData, iRun), callback=callback_parallel)
 
                 # Pool cleanup
                 pool.close()
                 pool.join()
 
         # Write summary *.yml
-        write_mc_summary(simConfig, simInput)
+        write_mc_summary(inputParams, outputPath)
 
 #------------------------------------------------------------------------------#
 
@@ -186,22 +124,22 @@ def cli_status(pBar, result):
 
 #------------------------------------------------------------------------------#
 
-def run_sim_mc(simInput, simConfig, simData, iRun):
+def run_sim_mc(inputParams, outputPath, modelData, iRun):
 
-    simInputMC = copy.deepcopy(simInput)
+    inputParamsMC = copy.deepcopy(inputParams)
 
-    seedMaster = simInput["exec"]["seed"]["value"]
+    seedMaster = inputParams["exec"]["seed"]["value"]
     seedRun    = seedMaster + iRun
 
-    simInputMC["exec"]["seed"]["value"] = seedRun
+    inputParamsMC["exec"]["seed"]["value"] = seedRun
 
-    exec_rand.mc_draw(simInputMC, simConfig.input)
+    exec_rand.mc_draw(inputParamsMC)
 
-    run_sim(simInputMC, simConfig, simData, iRun)
+    run_sim(inputParamsMC, outputPath, modelData, iRun)
 
 #------------------------------------------------------------------------------#
 
-def run_sim(simInput, simConfig, simData, iRun):
+def run_sim(inputParams, outputPath, modelData, iRun):
 
     # Create model instances
     engine       = model.Engine()
@@ -219,105 +157,123 @@ def run_sim(simInput, simConfig, simData, iRun):
     eom.add_deps([engine, mass, geodetic, aerodynamics])
     flight.add_deps([eom])
 
-    # Initialize state from top-level model
-    flight.init_state()
+    # Setup telemetry
+    numMC     = inputParams["exec"]["numMC"]["value"]
+    telemMode = inputParams["exec"]["telemMode"]["value"]
+    telemPrec = inputParams["exec"]["telemPrec"]["value"]
 
+    # Setup run output folder
+    outputPath = outputPath / f"run{iRun+1}"
+    os.mkdir(outputPath)
+
+    # Echo input file for specific run
+    write_input(inputParams, outputPath, iRun)
+
+    # Make header string for metadata
+    metaStr0 = f"# {util_misc.get_timestamp()}\n"
+    metaStr1 = f"# hpr-sim v{util_misc.get_version()}\n"
+    metaStr2 = f"# Run: {iRun+1}/{numMC}"
+    metaStr  = metaStr0 + metaStr1 + metaStr2
+
+    telem = model.Telem(telemMode, telemPrec, outputPath.resolve().as_posix(), metaStr)
+
+    # Initialize state from top-level model
+    flight.init_state(telem)
+    
     # Initialize models
 
-    engine.init(simData.timeEng, simData.thrustEng, simData.massEng)
+    engine.init(modelData["engine"]["time"]  ,
+                modelData["engine"]["thrust"],
+                modelData["engine"]["mass"]  )
 
-    massBody = simInput["mass"]["massBody"]["value"]
+    massBody = inputParams["mass"]["massBody"]["value"]
     mass.init(massBody)
 
-    latitude = simInput["geodetic"]["latitude"]["value"]
-    altitude = simInput["geodetic"]["altitude"]["value"]
+    latitude = inputParams["geodetic"]["latitude"]["value"]
+    altitude = inputParams["geodetic"]["altitude"]["value"]
     geodetic.init(latitude, altitude)
 
-    temperature = simInput["atmosphere"]["temperature"]["value"]
-    pressure    = simInput["atmosphere"]["pressure"]["value"]
+    temperature = inputParams["atmosphere"]["temperature"]["value"]
+    pressure    = inputParams["atmosphere"]["pressure"]["value"]
     atmosphere.init(temperature, pressure)
 
-    refArea = simInput["aerodynamics"]["refArea"]["value"]
-    aerodynamics.init(refArea, simData.machData, simData.alphaData, simData.aeroData["cpTotal"], simData.aeroData["clPowerOff"], simData.aeroData["cdPowerOff"], simData.aeroData["clPowerOn"], simData.aeroData["cdPowerOn"])
+    refArea = inputParams["aerodynamics"]["refArea"]["value"]
+    aerodynamics.init(refArea, 
+                      modelData["aerodynamics"]["mach"]              ,
+                      modelData["aerodynamics"]["alpha"]             ,
+                      modelData["aerodynamics"]["aero"]["cpTotal"]   ,
+                      modelData["aerodynamics"]["aero"]["clPowerOff"],
+                      modelData["aerodynamics"]["aero"]["cdPowerOff"],
+                      modelData["aerodynamics"]["aero"]["clPowerOn"] ,
+                      modelData["aerodynamics"]["aero"]["cdPowerOn"] )
 
     eom.init()
 
-    flight.set_telem(simConfig.output["telem"], simConfig.output["telemUnits"])
-
-    telemMode = simInput["flight"]["telemMode"]["value"]
-    nPrec     = simInput["flight"]["precision"]["value"]
-    numMC     = simInput["exec"]["numMC"]["value"]
-
-    # Setup run output folder
-    outputPath3 = simConfig.outputPath2 / f"run{iRun}"
-    os.mkdir(outputPath3)
-
-    # Make header string for metadata
-    metaStr0 = f"# {simConfig.metadata.timeStamp}\n"
-    metaStr1 = f"# hpr-sim v{simConfig.metadata.version}\n"
-    metaStr2 = f"# Input: {simConfig.inputPath}\n"
-    metaStr3 = f"# Run: {iRun}/{numMC}"
-    metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
-
-    flight.init(telemMode, nPrec, outputPath3.resolve().as_posix(), metaStr)
+    solverMethod = inputParams["flight"]["solverMethod"]["value"]
+    solverStep   = inputParams["flight"]["solverStep"]["value"]
+    flight.init(solverMethod, solverStep)
 
     # Execute flight
     flight.update()
-    write_input(simInput, simConfig, iRun)
 
 #------------------------------------------------------------------------------#
 
-def write_input(simInput, simConfig, iRun):
+def write_input(inputParams, outputPath, iRun):
 
     # Write input *.yml
     # Archives montecarlo draw for run recreation
-    simInput["exec"]["mcMode"]["value"] = "nominal"
+    inputParamsEcho = copy.deepcopy(inputParams)
 
-    for group in simInput.keys():
-        for param in simInput[group].keys():
+    # Settings for individual run recreation
+    inputParamsEcho["exec"]["mcMode"]["value"]   = "nominal"
+    inputParamsEcho["exec"]["numMC"]["value"]    = 1
+    inputParamsEcho["exec"]["procMode"]["value"] = "serial"
+    inputParamsEcho["exec"]["numProc"]["value"]  = 1
 
-            props = simInput[group][param].keys()
+    for group in inputParamsEcho.keys():
+        for param in inputParamsEcho[group].keys():
+
+            props = inputParamsEcho[group][param].keys()
 
             if "unit" in props:
 
-                value    = simInput[group][param]["value"]
-                quantity = simConfig.input[group][param]["quantity"]
-                unit     = simInput[group][param]["unit"]
+                value    = inputParamsEcho[group][param]["value"]
+                quantity = preproc_input.configInput[group][param]["quantity"]
+                unit     = inputParamsEcho[group][param]["unit"]
 
                 # Convert values back to original units specified by user
 
                 if quantity:
                     value = util_unit.convert(value, quantity, "default", unit)
-                    simInput[group][param]["value"] = value
+                    inputParamsEcho[group][param]["value"] = value
 
-    outputPath3 = simConfig.outputPath2 / f"run{iRun}"
-    outputInput = outputPath3 / "input.yml"
+    filePath = outputPath / "input.yml"
 
-    with open(outputInput, 'w') as file:
+    with open(filePath, 'w') as file:
 
-        numMC = simInput["exec"]["numMC"]["value"]
+        # Get MC count from original parameter set
+        numMC = inputParams["exec"]["numMC"]["value"]
 
         # Make header string for metadata
-        metaStr0 = f"# {simConfig.metadata.timeStamp}\n"
-        metaStr1 = f"# hpr-sim v{simConfig.metadata.version}\n"
-        metaStr2 = f"# Input: {simConfig.inputPath}\n"
-        metaStr3 = f"# Run: {iRun}/{numMC}"
-        metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
+        metaStr0 = f"# {util_misc.get_timestamp()}\n"
+        metaStr1 = f"# hpr-sim v{util_misc.get_version()}\n"
+        metaStr2 = f"# Run: {iRun+1}/{numMC}"
+        metaStr  = metaStr0 + metaStr1 + metaStr2
 
         file.write(f"{metaStr}\n")
 
-        yaml.dump(simInput, file, indent=4, explicit_start=True, explicit_end=True, sort_keys=False)
+        yaml.dump(inputParamsEcho, file, indent=4, explicit_start=True, explicit_end=True, sort_keys=False)
 
 #------------------------------------------------------------------------------#
 
-def write_mc_summary(simConfig, simInput):
+def write_mc_summary(inputParams, outputPath):
 
-    filePath = simConfig.outputPath2 / "summary.yml"
+    filePath = outputPath / "summary.yml"
     dir      = filePath.parent
     subdirs  = [subdir for subdir in dir.iterdir() if subdir.is_dir()]
     nSubdir  = len(subdirs)
-    nPrec    = simInput["flight"]["precision"]["value"]
-    numMC    = simInput["exec"]["numMC"]["value"]
+    nPrec    = inputParams["exec"]["telemPrec"]["value"]
+    numMC    = inputParams["exec"]["numMC"]["value"]
 
     first = True
 
@@ -367,11 +323,10 @@ def write_mc_summary(simConfig, simInput):
     with open(filePath, 'w', encoding="utf8") as stream:
 
         # Make header string for metadata
-        metaStr0 = f"# {simConfig.metadata.timeStamp}\n"
-        metaStr1 = f"# hpr-sim v{simConfig.metadata.version}\n"
-        metaStr2 = f"# Input: {simConfig.inputPath}\n"
-        metaStr3 = f"# Run: {numMC}/{numMC}"
-        metaStr  = metaStr0 + metaStr1 + metaStr2 + metaStr3
+        metaStr0 = f"# {util_misc.get_timestamp()}\n"
+        metaStr1 = f"# hpr-sim v{util_misc.get_version()}\n"
+        metaStr2 = f"# Run: {numMC}/{numMC}"
+        metaStr  = metaStr0 + metaStr1 + metaStr2
 
         stream.write(f"{metaStr}\n")
 

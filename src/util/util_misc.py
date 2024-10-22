@@ -1,6 +1,10 @@
 import sys
 import os
 import pathlib
+from datetime import datetime
+
+# Module variables
+timestamp = None
 
 #------------------------------------------------------------------------------#
 
@@ -17,8 +21,8 @@ def is_bundled():
 
 def get_cmake_cache(field):
 
-    subdir   = "_internal" if is_bundled() else "."
-    filePath = pathlib.Path(subdir) / "build/CMakeCache.txt"
+    subdir   = "_internal" if is_bundled() else "build"
+    filePath = pathlib.Path(subdir) / "CMakeCache.txt"
 
     with open(filePath, 'r') as cacheFile:
 
@@ -33,11 +37,18 @@ def get_cmake_cache(field):
 
 def pybind11_setup():
 
-    if (os.name == "nt") and not(is_bundled()):
+    if os.name == "nt":
 
-        # Explicitly add path to libstdc++
-        compilerPath = get_cmake_cache("CMAKE_CXX_COMPILER")
-        os.add_dll_directory(pathlib.Path(compilerPath).parent)
+        if is_bundled():
+
+            # Add path to pybind11 module(s)
+            sys.path.append(pathlib.Path("_internal").resolve().as_posix())
+
+        else:
+
+            # Add path to libstdc++
+            compilerPath = get_cmake_cache("CMAKE_CXX_COMPILER")
+            os.add_dll_directory(pathlib.Path(compilerPath).parent)
 
 #------------------------------------------------------------------------------#
 
@@ -50,6 +61,29 @@ def qt_setup():
 
     elif os.name == "nt":
         pass
+
+#------------------------------------------------------------------------------#
+
+def get_version():
+    return get_cmake_cache("CMAKE_PROJECT_VERSION")
+
+#------------------------------------------------------------------------------#
+
+def set_timestamp():
+
+    global timestamp
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+#------------------------------------------------------------------------------#
+
+def get_timestamp():
+
+    global timestamp
+
+    if timestamp is None:
+        set_timestamp()
+
+    return timestamp
 
 #------------------------------------------------------------------------------#
 

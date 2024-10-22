@@ -1,0 +1,55 @@
+# 2024-10-14 22:25:41
+# hpr-sim v0.0.0
+# Run: 1/5
+---
+exec:
+    mcMode:
+        value: nominal
+    seed:
+        value: 0
+    numMC:
+        value: 1
+    procMode:
+        value: serial
+    numProc:
+        value: 1
+    telemMode:
+        value: text
+    telemPrec:
+        value: 3
+flight:
+    solverMethod:
+        value: rkf45
+    solverStep:
+        value: 0.01
+engine:
+    inputPath:
+        value: input/AeroTech_J450DM.eng
+mass:
+    massBody:
+        value: 4.897012985685388
+        unit: lbm
+        dist:
+            name: normal
+            param:
+            - 5.0
+            - 0.5
+geodetic:
+    latitude:
+        value: 32.269798
+        unit: deg
+    altitude:
+        value: 0.0
+atmosphere:
+    temperature:
+        value: 288.15
+    pressure:
+        value: 1.0
+        unit: atm
+aerodynamics:
+    inputPath:
+        value: input/patriot_aerodynamics.csv
+    refArea:
+        value: 12.566
+        unit: in^2
+...
