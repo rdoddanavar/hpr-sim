@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [master]
 jobs:
+  debug:
+    runs-on: ubuntu-22.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
   build-ubuntu:
     runs-on: ubuntu-22.04
     steps:
