@@ -1,13 +1,21 @@
+import sys
 import os
 import shutil
 import pathlib
 import PyInstaller.__main__
 
+utilPath = pathlib.Path(__file__).parent.parent / "src" / "util"
+sys.path.append(utilPath.resolve().as_posix())
+
+import util_misc
+
+#------------------------------------------------------------------------------#
+
 # PyInstaller setup
 name       = "hpr-sim"
 workPath   = pathlib.Path("build/pyinstaller")
 distPath   = workPath / "dist"
-outputPath = distPath / "hpr-sim/output"
+outputPath = distPath / "hpr-sim" / "output"
 
 # Set import search paths
 paths = ["src/exec", "src/gui", "src/preproc", "src/postproc", "src/util"]
@@ -15,55 +23,73 @@ paths = ["src/exec", "src/gui", "src/preproc", "src/postproc", "src/util"]
 # Set binary files and bundled locations: ("filePath", "location")
 
 if os.name == "posix":
+
+    # Bundle pybind11 module
     binaries = [("build/src/model.cpython-310-x86_64-linux-gnu.so", ".")]
+
 elif os.name == "nt":
+
+    # Bundle pybind11 module
     binaries = [("build/src/model.cp310-win_amd64.pyd", ".")]
 
+    # Bundle libstdc++ from mingw64
+    compilerPath = util_misc.get_cmake_cache("CMAKE_CXX_COMPILER")
+    libPath      = pathlib.Path(compilerPath).parent / "libstdc++-6.dll"
+    binaries    += [(libPath.resolve().as_posix(), ".")]
+
 # Set data files and bundled locations: ("filePath", "location")
-datas = [("build/CMakeCache.txt"        , "."), 
-         ("src/preproc/config_input.yml", "."), 
-         ("src/util/config_unit.yml"    , ".")]
+data = [("build/CMakeCache.txt"        , "."), 
+        ("src/preproc/config_input.yml", "."), 
+        ("src/util/config_unit.yml"    , ".")]
 
 # Excluded modules from bundle
 excludes = ["PySide2", "PySide6", "PyQt6"] # Using PyQt5; Qt bindings conflict with each other
 
-# Execute PyInstaller commands
-PyInstaller.__main__.run([
-    f"{name}.py",
-    "--workpath",
-    workPath.resolve().as_posix(),
-    "--distpath",
-    distPath.resolve().as_posix(),
-    "--noconfirm",
-    "--paths",
-    paths[0],
-    "--paths",
-    paths[1],
-    "--paths",
-    paths[2],
-    "--paths",
-    paths[3],
-    "--paths",
-    paths[4],
-    "--add-binary",
-    f"{binaries[0][0]}:{binaries[0][1]}",
-    "--add-data",
-    f"{datas[0][0]}:{datas[0][1]}",
-    "--add-data",
-    f"{datas[1][0]}:{datas[1][1]}",
-    "--add-data",
-    f"{datas[2][0]}:{datas[2][1]}",
-    "--exclude-module",
-    f"{excludes[0]}",
-    "--exclude-module",
-    f"{excludes[1]}",
-    "--exclude-module",
-    f"{excludes[2]}",
-    "--hidden-import",
-    "scipy.special._special_ufuncs",
-    "--hidden-import",
-    "scipy._lib.array_api_compat.numpy.fft"
-])
+# Hidden imports to resolve python environment inconsistencies
+if os.name == "posix":
+    hiddenImports = ["scipy.special._special_ufuncs"        ,
+                     "scipy._lib.array_api_compat.numpy.fft"]
+elif os.name == "nt":
+    hiddenImports = []
 
+#------------------------------------------------------------------------------#
+
+# Gather PyInstaller arguments
+args = []
+
+args += [f"{name}.py"]
+args += ["--noconfirm"]
+
+args += ["--workpath"]
+args += [workPath.resolve().as_posix()]
+args += ["--distpath"]
+args += [distPath.resolve().as_posix()]
+
+for path in paths:
+    args += ["--paths"]
+    args += [path]
+
+for binInfo in binaries:
+    args += ["--add-binary"]
+    args += [f"{binInfo[0]}:{binInfo[1]}"]
+
+for dataInfo in data:
+    args += ["--add-data"]
+    args += [f"{dataInfo[0]}:{dataInfo[1]}"]
+
+for exclude in excludes:
+    args += ["--exclude-module"]
+    args += [exclude]
+
+for hidden in hiddenImports:
+    args += ["--hidden-import"]
+    args += [hidden]
+
+# Execute PyInstaller
+PyInstaller.__main__.run(args)
+
+#------------------------------------------------------------------------------#
+
+# Copy necessary directories
 outputPath.mkdir(parents=True, exist_ok=True)
-shutil.copytree("input", distPath / "hpr-sim/input")
+shutil.copytree("input", distPath / "hpr-sim" / "input")
