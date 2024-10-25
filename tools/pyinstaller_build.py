@@ -15,22 +15,27 @@ import util_misc
 name       = "hpr-sim"
 workPath   = pathlib.Path("build/pyinstaller")
 distPath   = workPath / "dist"
-outputPath = distPath / "hpr-sim/output"
+outputPath = distPath / "hpr-sim" / "output"
 
 # Set import search paths
 paths = ["src/exec", "src/gui", "src/preproc", "src/postproc", "src/util"]
 
 # Set binary files and bundled locations: ("filePath", "location")
 
-if os.name == "posix":
+if os.name == "posix": # Linux build
+
+    # Bundle pybind11 module
     binaries = [("build/src/model.cpython-310-x86_64-linux-gnu.so", ".")]
-elif os.name == "nt":
+
+elif os.name == "nt": # Windows build
+
+    # Bundle pybind11 module
     binaries = [("build/src/model.cp310-win_amd64.pyd", ".")]
+
+    # Bundle libstdc++ from mingw64
     compilerPath = util_misc.get_cmake_cache("CMAKE_CXX_COMPILER")
     libPath      = pathlib.Path(compilerPath).parent / "libstdc++-6.dll"
     binaries    += [(libPath.resolve().as_posix(), ".")]
-
-print(libPath.resolve().as_posix())
 
 # Set data files and bundled locations: ("filePath", "location")
 data = [("build/CMakeCache.txt"        , "."), 
@@ -40,11 +45,14 @@ data = [("build/CMakeCache.txt"        , "."),
 # Excluded modules from bundle
 excludes = ["PySide2", "PySide6", "PyQt6"] # Using PyQt5; Qt bindings conflict with each other
 
+#------------------------------------------------------------------------------#
+
 # Gather PyInstaller arguments
 args = []
 
 args += [f"{name}.py"]
 args += ["--noconfirm"]
+
 args += ["--workpath"]
 args += [workPath.resolve().as_posix()]
 args += ["--distpath"]
@@ -69,6 +77,8 @@ for exclude in excludes:
 # Execute PyInstaller
 PyInstaller.__main__.run(args)
 
+#------------------------------------------------------------------------------#
+
 # Copy necessary directories
 outputPath.mkdir(parents=True, exist_ok=True)
-shutil.copytree("input", distPath / "hpr-sim/input")
+shutil.copytree("input", distPath / "hpr-sim" / "input")
