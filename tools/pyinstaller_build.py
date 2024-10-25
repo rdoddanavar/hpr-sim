@@ -22,12 +22,12 @@ paths = ["src/exec", "src/gui", "src/preproc", "src/postproc", "src/util"]
 
 # Set binary files and bundled locations: ("filePath", "location")
 
-if os.name == "posix": # Linux build
+if os.name == "posix":
 
     # Bundle pybind11 module
     binaries = [("build/src/model.cpython-310-x86_64-linux-gnu.so", ".")]
 
-elif os.name == "nt": # Windows build
+elif os.name == "nt":
 
     # Bundle pybind11 module
     binaries = [("build/src/model.cp310-win_amd64.pyd", ".")]
@@ -44,6 +44,13 @@ data = [("build/CMakeCache.txt"        , "."),
 
 # Excluded modules from bundle
 excludes = ["PySide2", "PySide6", "PyQt6"] # Using PyQt5; Qt bindings conflict with each other
+
+# Hidden imports to resolve python environment inconsistencies
+if os.name == "posix":
+    hiddenImports = ["scipy.special._special_ufuncs"        ,
+                     "scipy._lib.array_api_compat.numpy.fft"]
+elif os.name == "nt":
+    hiddenImports = []
 
 #------------------------------------------------------------------------------#
 
@@ -73,6 +80,10 @@ for dataInfo in data:
 for exclude in excludes:
     args += ["--exclude-module"]
     args += [exclude]
+
+for hidden in hiddenImports:
+    args += ["--hidden-import"]
+    args += [hidden]
 
 # Execute PyInstaller
 PyInstaller.__main__.run(args)
