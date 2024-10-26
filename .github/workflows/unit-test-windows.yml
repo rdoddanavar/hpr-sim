@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ github.workflow }}-${{ github.event.pull_request.head.sha }}
+          key: ${{ github.workflow }}-${{ github.sha }}
   test-windows:
     runs-on: windows-2022
     defaults:
@@ -42,7 +42,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ github.workflow }}-${{ github.event.pull_request.head.sha }}
+          key: ${{ github.workflow }}-${{ github.sha }}
       - name: Setup python environment
         uses: actions/setup-python@v5
         with:
@@ -64,7 +64,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build
-          key: ${{ github.workflow }}-${{ github.event.pull_request.head.sha }}
+          key: ${{ github.workflow }}-${{ github.sha }}
       - name: Setup python environment
         uses: actions/setup-python@v5
         with:
