@@ -22,6 +22,7 @@ class Telem
     public:
 
         Telem(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn);
+        ~Telem();
 
         void init();
         void update(int iStep);

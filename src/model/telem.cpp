@@ -74,7 +74,6 @@ void Telem::finalize()
 
     // Finalize telem output
     write_output();
-    std::fclose(telemFile);
 
     // Finalize stats output
     update_stats();
@@ -296,6 +295,11 @@ void Telem::interp_boundary(std::string targetField, double targetPoint)
 
     }
 
+}
+
+Telem::~Telem()
+{
+    std::fclose(telemFile);
 }
 
 //----------------------------------------------------------------------------//

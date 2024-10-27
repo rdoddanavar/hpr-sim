@@ -18,7 +18,6 @@ set(HDR "./model/model.h"
 set(DEP util_model
         gsl
         fmt
-        -static-libstdc++
         )
 
 pybind11_add_module(model MODULE ${SRC} ${HDR})
