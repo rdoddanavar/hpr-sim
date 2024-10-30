@@ -18,6 +18,7 @@ import util_misc
 import preproc_input
 import preproc_engine
 import preproc_aerodynamics
+import postproc_flight
 
 # Project modules (pybind11)
 util_misc.pybind11_setup()
@@ -114,8 +115,11 @@ def run(inputParams: dict, outputPath: pathlib.Path) -> None:
                 pool.close()
                 pool.join()
 
-        # Write summary *.yml
+        # Write summary statistics
         write_mc_summary(inputParams, outputPath)
+
+    # Plot time histories
+    postproc_flight.plot_pdf(outputPath)
 
 #------------------------------------------------------------------------------#
 
