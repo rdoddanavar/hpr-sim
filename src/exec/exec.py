@@ -81,6 +81,7 @@ def run(inputParams: dict, outputPath: pathlib.Path) -> None:
     if mcMode == "nominal":
 
         print("Executing nominal run")
+        inputParams["exec"]["numMC"]["value"] = 1 # Fix for meta str
         run_sim(inputParams, outputPath, modelData, iRun=0)
 
     elif mcMode == "montecarlo":
