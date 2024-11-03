@@ -6,12 +6,6 @@ on:
   pull_request:
     branches: [master]
 jobs:
-  debug:
-    runs-on: ubuntu-22.04
-    steps:
-    - uses: actions/checkout@v4
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
   build-ubuntu:
     runs-on: ubuntu-22.04
     steps:
@@ -75,4 +69,4 @@ jobs:
       - name: Run unit test
         run: cd build/pyinstaller/dist/hpr-sim && ./hpr-sim -i input/unit_test.yml -o output/ && ls -l output/*/*
       - name: Run regression test
-        run: pwd
+        run: python tools/regression_test.py tools/unit_test/ubuntu build/pyinstaller/dist/hpr-sim/output/unit_test build/pyinstaller/dist/hpr-sim/output/diff

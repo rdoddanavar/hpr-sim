@@ -51,6 +51,8 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run unit test
         run: ./hpr-sim.py -i input/unit_test.yml -o output/ && ls -l output/*/*
+      - name: Run regression test
+        run: python tools/regression_test.py tools/unit_test/windows output/unit_test output/diff
   pyinstaller-windows:
     runs-on: windows-2022
     defaults:
@@ -75,3 +77,5 @@ jobs:
         run: python tools/pyinstaller_build.py
       - name: Run unit test
         run: cd build/pyinstaller/dist/hpr-sim && ./hpr-sim -i input/unit_test.yml -o output/ && ls -l output/*/*
+      - name: Run regression test
+        run: python tools/regression_test.py tools/unit_test/windows build/pyinstaller/dist/hpr-sim/output/unit_test build/pyinstaller/dist/hpr-sim/output/diff
