@@ -20,11 +20,11 @@ engine:
     inputPath: input/AeroTech_J450DM.eng
 mass:
     massBody:
-        value: 5.0
+        value: 6
         unit: lbm
         dist:
             name: normal
-            param: [5.0, 0.5]
+            param: [6.0, 0.5]
 geodetic:
     latitude:
         value: 32.269798 # SARA launch site: (32.269798, -111.274751)
