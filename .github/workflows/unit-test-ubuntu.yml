@@ -51,6 +51,8 @@ jobs:
         run: pip install -r requirements.txt
       - name: Run unit test
         run: ./hpr-sim.py -i input/unit_test.yml -o output/ && ls -l output/*/*
+      - name: Run regression test
+        run: python tools/regression_test.py tools/unit_test/ubuntu output/unit_test output/diff
   pyinstaller-ubuntu:
     runs-on: ubuntu-22.04
     needs: build-ubuntu
@@ -72,3 +74,5 @@ jobs:
         run: python tools/pyinstaller_build.py
       - name: Run unit test
         run: cd build/pyinstaller/dist/hpr-sim && ./hpr-sim -i input/unit_test.yml -o output/ && ls -l output/*/*
+      - name: Run regression test
+        run: pwd
