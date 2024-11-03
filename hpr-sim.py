@@ -42,8 +42,8 @@ if __name__ == "__main__":
 
     # Parse CLI arguments
     parser = argparse.ArgumentParser()
-    parser.add_argument("-i", "--input", type=str, help="Input file")
-    parser.add_argument("-o", "--output", type=str, help="Output directory")
+    parser.add_argument("-i", "--input", type=str, help="Input file; if none given, user interface will launch")
+    parser.add_argument("-o", "--output", type=str, help="Output directory; if none given, assumed to be output/")
 
     args = parser.parse_args()
 
