@@ -1,8 +1,8 @@
+import pathlib
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
 patches = []
-lines   = []
 
 # Patch: rocket body
 xy = [
@@ -12,7 +12,7 @@ xy = [
     (0, 1)
 ]
 
-patches.append(Polygon(xy, facecolor='0.5', edgecolor='0.5'))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Patch: letter "h"
 xy = [
@@ -28,13 +28,7 @@ xy = [
     (0, 4)
 ]
 
-patches.append(Polygon(xy, facecolor='k'))
-
-# Line: "h" -> "p"
-x = [3, 3]
-y = [1, 3]
-
-lines.append((x, y))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Patch: letter "p"
 xy = [
@@ -46,13 +40,19 @@ xy = [
     (3, 3)
 ]
 
-patches.append(Polygon(xy, facecolor='k'))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
-# Line: "p" -> "r"
-x = [5, 5]
-y = [1, 3]
+# Patch: letter "p" hole
+# Center is at (4, 2)
+d  = 0.5 # Hole diameter
+xy = [
+    (4-d/2, 2-d/2),
+    (4+d/2, 2-d/2),
+    (4+d/2, 2+d/2),
+    (4-d/2, 2+d/2)
+]
 
-lines.append((x, y))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Letter "r"
 xy = [
@@ -65,13 +65,7 @@ xy = [
     (5, 1)
 ]
 
-patches.append(Polygon(xy, facecolor='k'))
-
-# Line: "r" -> "s"
-x = [7, 7]
-y = [1, 3]
-
-lines.append((x, y))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Letter "s"
 xy = [
@@ -87,7 +81,7 @@ xy = [
     (6, 1)
 ]
 
-patches.append(Polygon(xy, facecolor='k'))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Letter "i"
 xy = [
@@ -100,7 +94,7 @@ xy = [
     ( 9, 3)
 ]
 
-patches.append(Polygon(xy, facecolor='k'))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Letter "m"
 xy = [
@@ -116,16 +110,16 @@ xy = [
     (10, 3)
 ]
 
-patches.append(Polygon(xy, facecolor='k'))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Rocket nosecone
 xy = [
     (6, 0),
-    (8, 0.5),
+    (8.5, 0.5),
     (6, 1)
 ]
 
-patches.append(Polygon(xy, facecolor='r'))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Rocket fin bottom
 xy = [
@@ -135,7 +129,7 @@ xy = [
     (0, 0)
 ]
 
-patches.append(Polygon(xy, facecolor='r'))
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Rocket fin top
 xy = [
@@ -145,26 +139,21 @@ xy = [
     (0, 1.5)
 ]
 
-patches.append(Polygon(xy, facecolor='r'))
-
-# Rocket fin middle
-x = [0, 2]
-y = [0.5, 0.5]
+patches.append(Polygon(xy, facecolor='k', edgecolor='w'))
 
 # Apply patches
 
 (fig, ax) = plt.subplots()
+fig.set_size_inches(6, 2)
 
 for p in patches:
     ax.add_patch(p)
 
-#ax.plot(x, y, color='r')
-
-for l in lines:
-    ax.plot(l[0], l[1], color='w', linewidth=0.5)
-
-#ax.set_xlim(-2, 14)
-#ax.set_ylim(-2, 5)
+ax.set_xlim(0, 13)
+ax.set_ylim(-0.5, 4)
 ax.axis("equal")
-#ax.set_axis_off()
+ax.set_axis_off()
+filePath = pathlib.Path(__file__).parent / "logo.svg"
+plt.savefig(filePath, format="svg", transparent=True, bbox_inches='tight', pad_inches=0) # Must be before plt.show()
 plt.show()
+

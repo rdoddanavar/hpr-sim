@@ -3,6 +3,8 @@
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-sim.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-sim.svg)
 
+![](doc/logo.svg)
+
 - [Overview](#overview)
 - [Usage](#usage)
 - [Benchmarking](#benchmarking)
