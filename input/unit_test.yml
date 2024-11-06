@@ -20,7 +20,7 @@ engine:
     inputPath: input/AeroTech_J450DM.eng
 mass:
     massBody:
-        value: 5
+        value: 5.0
         unit: lbm
         dist:
             name: normal

@@ -2,6 +2,8 @@ import pathlib
 import matplotlib.pyplot as plt
 from matplotlib.patches import Polygon
 
+#------------------------------------------------------------------------------#
+
 patches = []
 
 # Patch: rocket body
@@ -156,4 +158,3 @@ ax.set_axis_off()
 filePath = pathlib.Path(__file__).parent / "logo.svg"
 plt.savefig(filePath, format="svg", transparent=True, bbox_inches='tight', pad_inches=0) # Must be before plt.show()
 plt.show()
-
