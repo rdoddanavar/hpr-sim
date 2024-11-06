@@ -5,9 +5,7 @@ import pathlib
 import shutil
 import argparse
 
-def regression_test(dirComp1: pathlib.Path, dirComp2: pathlib.Path, dirOut: pathlib.Path) -> None:
-
-    dcmp = filecmp.dircmp(dirComp1, dirComp2)
+def regression_test(dirCmp1: pathlib.Path, dirCmp2: pathlib.Path, dirOut: pathlib.Path) -> bool:
 
     if os.path.exists(dirOut):
         shutil.rmtree(dirOut)
@@ -15,9 +13,11 @@ def regression_test(dirComp1: pathlib.Path, dirComp2: pathlib.Path, dirOut: path
     os.mkdir(dirOut)
 
     # Compare files
+    dcmp   = filecmp.dircmp(dirCmp1, dirCmp2)
+    isDiff = False
 
     for file in dcmp.diff_files:
-        diff_files(dirComp1 / file, dirComp2 / file, dirOut / file)
+        isDiff += diff_files(dirCmp1 / file, dirCmp2 / file, dirOut)
 
     # Compare subdirectories; assume one (1) nested level
 
@@ -26,38 +26,65 @@ def regression_test(dirComp1: pathlib.Path, dirComp2: pathlib.Path, dirOut: path
         os.mkdir(dirOut / subdir)
 
         for file in dcmp.subdirs[subdir].diff_files:
-            diff_files(dirComp1 / subdir / file, dirComp2 / subdir / file, dirOut / subdir / file)
+            isDiff += diff_files(dirCmp1 / subdir / file, dirCmp2 / subdir / file, dirOut / subdir)
 
-def diff_files(filePath1, filePath2, dirOut):
+    # Pass test if no file differences
+    return not(isDiff)
 
-    file1 = open(filePath1, 'r')
-    file2 = open(filePath2, 'r')
+def diff_files(filePath1, filePath2, dirOut) -> bool:
 
     # Burn first line to skip time stamp (always expected to differ)
-    lines1 = file1.read().splitlines()[1:]
-    lines2 = file2.read().splitlines()[1:]
 
-    diff = difflib.HtmlDiff().make_file(lines1, lines2, "Before", "After")
+    with open(filePath1, 'r') as file1:
+        lines1 = file1.read().splitlines()[1:]
 
-    fileDiff = open(dirOut.as_posix() + ".html", 'w')
-    fileDiff.write(diff)
-    fileDiff.close()
+    with open(filePath2, 'r') as file2:
+        lines2 = file2.read().splitlines()[1:]
 
-    print()
-    print(f"Regression: {filePath1.as_posix()} --> {filePath2.as_posix()}")
-    print(f"Diff: {dirOut.as_posix()}.html")
+    # Compare file contents
+
+    if lines1 == lines2:
+
+        isDiff = False
+
+    elif filePath1.suffix == ".csv":
+
+        # Files are too large for difflib to process in a reasonable time
+        print(f"Regression: {filePath1.as_posix()} --> {filePath2.as_posix()}")
+        print(f"Diff: <diff too large>")
+        print()
+        isDiff = True
+
+    else:
+
+        # Generate HTML diff report
+        diff = difflib.HtmlDiff().make_file(lines1, lines2, "Before", "After")
+
+        diffPath = (dirOut / filePath1.stem).as_posix() + ".html"
+
+        with open(diffPath, 'w') as diffFile:
+            diffFile.write(diff)
+
+        print(f"Regression: {filePath1.as_posix()} --> {filePath2.as_posix()}")
+        print(f"Diff: {diffPath}")
+        print()
+
+        isDiff = True
+
+    return isDiff
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("dirComp1", type=str, help="Compare directory 1")
-    parser.add_argument("dirComp2", type=str, help="Compare directory 2")
-    parser.add_argument("dirOut"  , type=str, help="Output directory"   )
+    parser.add_argument("dirCmp1", type=str, help="Compare directory 1")
+    parser.add_argument("dirCmp2", type=str, help="Compare directory 2")
+    parser.add_argument("dirOut" , type=str, help="Output directory"   )
 
     args = parser.parse_args()
 
-    dirComp1 = pathlib.Path(args.dirComp1)
-    dirComp2 = pathlib.Path(args.dirComp2)
-    dirOut   = pathlib.Path(args.dirOut  )
+    dirCmp1 = pathlib.Path(args.dirCmp1)
+    dirCmp2 = pathlib.Path(args.dirCmp2)
+    dirOut  = pathlib.Path(args.dirOut )
 
-    regression_test(dirComp1, dirComp2, dirOut)
+    passTest = regression_test(dirCmp1, dirCmp2, dirOut)
+    assert passTest, f"Regression test failed! See artifacts at: {dirOut.resolve().as_posix()}"

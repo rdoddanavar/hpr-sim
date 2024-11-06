@@ -320,7 +320,7 @@ class TabOutput(QWidget):
     def action_load_data(self):
 
         outputPath = pathlib.Path(self.lineOutput.text())
-        self.telem = postproc_flight.load_mc(outputPath)
+        self.telem = postproc_flight.load_dir(outputPath)
 
         # Populate metadata
         metaStr = ", ".join(self.telem[0]["meta"])
