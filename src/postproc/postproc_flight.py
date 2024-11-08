@@ -35,7 +35,9 @@ def plot_pdf(outputPath: pathlib.Path) -> None:
 
         pdfOut.savefig(fig)
 
+    # Cleanup
     pdfOut.close()
+    plt.close('all')
 
 #------------------------------------------------------------------------------#
 
