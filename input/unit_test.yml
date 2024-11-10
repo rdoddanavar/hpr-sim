@@ -9,7 +9,7 @@ exec:
     mcMode: montecarlo
     seed: 0
     numMC: 5
-    procMode: serial #parallel
+    procMode: parallel
     numProc: 4
     telemMode: text
     telemPrec: 3
