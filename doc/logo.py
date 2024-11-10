@@ -4,6 +4,11 @@ from matplotlib.patches import Polygon
 
 #------------------------------------------------------------------------------#
 
+# Parameters
+fc = 'w'
+ec = 'k'
+lw = 4
+
 patches = []
 
 # Patch: rocket body
@@ -14,7 +19,7 @@ xy = [
     (0, 1)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Patch: letter "h"
 xy = [
@@ -30,7 +35,7 @@ xy = [
     (0, 4)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Patch: letter "p"
 xy = [
@@ -42,7 +47,7 @@ xy = [
     (3, 3)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Patch: letter "p" hole
 # Center is at (4, 2)
@@ -54,7 +59,7 @@ xy = [
     (4-d/2, 2+d/2)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Letter "r"
 xy = [
@@ -67,7 +72,7 @@ xy = [
     (5, 1)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Letter "s"
 xy = [
@@ -83,7 +88,7 @@ xy = [
     (6, 1)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Letter "i"
 xy = [
@@ -96,7 +101,7 @@ xy = [
     ( 9, 3)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Letter "m"
 xy = [
@@ -112,7 +117,7 @@ xy = [
     (10, 3)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Rocket nosecone
 xy = [
@@ -121,7 +126,7 @@ xy = [
     (6, 1)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Rocket fin bottom
 xy = [
@@ -131,7 +136,7 @@ xy = [
     (0, 0)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Rocket fin top
 xy = [
@@ -141,7 +146,7 @@ xy = [
     (0, 1.5)
 ]
 
-patches.append(Polygon(xy, facecolor='w', edgecolor='k', linewidth=4))
+patches.append(Polygon(xy, facecolor=fc, edgecolor=ec, linewidth=lw))
 
 # Apply patches
 
