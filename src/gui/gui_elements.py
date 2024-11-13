@@ -158,9 +158,9 @@ class TabInput(QWidget):
         self.spinNumProc  = gui_common.SpinBox(1, os.cpu_count())
 
         self.progressBar = QProgressBar()
-        self.progressBar.setValue(50)
+        self.progressBar.setValue(0)
 
-        self.labelRun = gui_common.Label("50/100")
+        self.labelRun = gui_common.Label("")
 
         self.buttonRun = gui_common.PushButton("RUN")
         self.buttonRun.clicked.connect(self.action_run_exec)
@@ -190,7 +190,18 @@ class TabInput(QWidget):
 
         self.setLayout(self.layoutTab)
 
+    def action_set_progressBar(self, params):
+
+        percent = 100 * (params[0]/params[1])
+
+        # Label update must occur before progressBar for consistency
+        self.labelRun.setText(f"{params[0]}/{params[1]}")
+        self.progressBar.setValue(int(percent))
+
     def action_run_exec(self):
+
+        self.labelRun.setText(f"{0}/{self.spinNumMC.value()}")
+        self.progressBar.setValue(0)    
 
         inputPath  = pathlib.Path(self.lineInput.text())
         outputPath = pathlib.Path(self.lineOutput.text())
@@ -199,7 +210,7 @@ class TabInput(QWidget):
         outputPath  = outputPath / inputPath.stem # Add subdirectory
 
         util_misc.set_timestamp()
-        exec.run(inputParams, outputPath)
+        exec.run(inputParams, outputPath, self.action_set_progressBar)
 
 #------------------------------------------------------------------------------#
 

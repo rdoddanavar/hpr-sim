@@ -26,7 +26,7 @@ import model
 
 #------------------------------------------------------------------------------#
 
-def run(inputParams: dict, outputPath: pathlib.Path) -> None:
+def run(inputParams: dict, outputPath: pathlib.Path, callback=None) -> None:
 
     """
     Executes simluation using input parameters and outputs artifacts to specified directory.
@@ -92,10 +92,10 @@ def run(inputParams: dict, outputPath: pathlib.Path) -> None:
         print("Executing Monte Carlo runs:")
 
         # Setup progress bar
-        pBar = tqdm.tqdm(total=numMC, unit="run", dynamic_ncols=True, colour="green")
+        progBar = ProgBar(numMC, callback)
 
         # Callback functions to update progress bar
-        callback_parallel = functools.partial(cli_status, pBar)
+        callback_parallel = functools.partial(cli_status, progBar)
         callback_serial   = functools.partial(callback_parallel, None)
 
         if procMode == "serial":
@@ -124,8 +124,22 @@ def run(inputParams: dict, outputPath: pathlib.Path) -> None:
 
 #------------------------------------------------------------------------------#
 
-def cli_status(pBar, result):
-    pBar.update()
+class ProgBar(tqdm.tqdm):
+
+    # TODO: tqdm async?
+
+    def __init__(self, total, callback):
+
+        super().__init__(total=total, unit="run", dynamic_ncols=True, colour="green")
+
+        self.callback = callback
+
+def cli_status(progBar, result):
+
+    progBar.update()
+
+    if progBar.callback is not None:
+        progBar.callback((progBar.n, progBar.total))
 
 #------------------------------------------------------------------------------#
 
