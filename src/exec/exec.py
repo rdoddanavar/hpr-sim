@@ -26,7 +26,7 @@ import model
 
 #------------------------------------------------------------------------------#
 
-def run(inputParams: dict, outputPath: pathlib.Path, callback_gui=None) -> None:
+def run(inputParams: dict, outputPath: pathlib.Path, callback=None) -> None:
 
     """
     Executes simluation using input parameters and outputs artifacts to specified directory.
@@ -92,7 +92,7 @@ def run(inputParams: dict, outputPath: pathlib.Path, callback_gui=None) -> None:
         print("Executing Monte Carlo runs:")
 
         # Setup progress bar
-        progBar = ProgBar(numMC, callback_gui)
+        progBar = ProgBar(numMC, callback)
 
         # Callback functions to update progress bar
         callback_parallel = functools.partial(cli_status, progBar)
@@ -139,7 +139,7 @@ def cli_status(progBar, result):
     progBar.update()
 
     if progBar.callback is not None:
-        progBar.callback(progBar.n, progBar.total)
+        progBar.callback((progBar.n, progBar.total))
 
 #------------------------------------------------------------------------------#
 

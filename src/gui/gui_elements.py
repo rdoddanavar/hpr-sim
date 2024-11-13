@@ -190,14 +190,18 @@ class TabInput(QWidget):
 
         self.setLayout(self.layoutTab)
 
-    def action_set_progressBar(self, n, total):
-        percent = 100 * (n/total)
+    def action_set_progressBar(self, params):
+
+        percent = 100 * (params[0]/params[1])
+
+        # Label update must occur before progressBar for consistency
+        self.labelRun.setText(f"{params[0]}/{params[1]}")
         self.progressBar.setValue(int(percent))
-        self.labelRun.setText(f"{n}/{total}")
 
     def action_run_exec(self):
 
-        self.progressBar.setValue(0)
+        self.labelRun.setText(f"{0}/{self.spinNumMC.value()}")
+        self.progressBar.setValue(0)    
 
         inputPath  = pathlib.Path(self.lineInput.text())
         outputPath = pathlib.Path(self.lineOutput.text())
