@@ -106,7 +106,7 @@ void Telem::init_output()
 void Telem::init_output_text(const std::string& filePath)
 {
 
-    telemFile = std::fopen(filePath.c_str(), "w+");
+    telemFile = std::fopen(filePath.c_str(), "w");
     // TODO: Error catching here?
 
     // Write data fields & units
@@ -206,7 +206,7 @@ void Telem::write_stats()
 {
 
     const std::string filePath  = outputDir + "/stats.yml";
-    std::FILE*        statsFile = std::fopen(filePath.c_str(), "w+");
+    std::FILE*        statsFile = std::fopen(filePath.c_str(), "w");
     // Error handling here?
 
     auto out = fmt::memory_buffer();
