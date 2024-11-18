@@ -19,7 +19,8 @@
             "displayName": "Windows 10 x64 debug",
             "generator": "MinGW Makefiles",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_CONFIGURATION_TYPES": "Debug;Release"
             }
         }
     ]
