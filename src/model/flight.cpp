@@ -86,7 +86,7 @@ void Flight::update()
 
     flightTerm = true; // TODO: better handling for flight termination
     telem->interp_boundary("linPosZ", 0.0);
-    telem->finalize();
+    telem->finalize(iStep);
 
 }
 

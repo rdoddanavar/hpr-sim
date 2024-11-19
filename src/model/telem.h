@@ -27,7 +27,7 @@ class Telem
         void init();
         void update(int iStep);
         void interp_boundary(std::string targetField, double targetPoint);
-        void finalize();
+        void finalize(int iStep);
 
         void init_output();
 
@@ -47,6 +47,8 @@ class Telem
         void write_output();
         void update_stats();
         void write_stats();
+
+        void finalize_output_binary(int iStep);
 
         std::string outputDir;
 

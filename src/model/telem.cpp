@@ -69,11 +69,19 @@ void Telem::update(int iStep)
 
 //----------------------------------------------------------------------------//
 
-void Telem::finalize()
+void Telem::finalize(int iStep)
 {
 
     // Finalize telem output
-    write_output();
+    if (telemMode == "text")
+    {
+        write_output();
+    }
+    else if (telemMode == "binary")
+    {
+        write_output();
+        finalize_output_binary(iStep);
+    }
 
     // Finalize stats output
     update_stats();
@@ -122,7 +130,35 @@ void Telem::init_output_text(const std::string& filePath)
 
 void Telem::init_output_binary(const std::string& filePath)
 {
-    ;
+
+    /*
+    NPT Format v1.0
+    https://numpy.org/devdocs/reference/generated/numpy.lib.format.html
+
+    1. 6 bytes : Magic string = 0x93 + "NUMPY"
+    2. 1 byte  : Major version = 0x01
+    3. 1 byte  : Minor version = 0x00
+    4. 2 bytes : Length of header data (uint16 LE)
+    5  D bytes : ACII string (python dict) describing array's format
+    6. P bytes : Padding w/ spaces (0x20) ending with newline '\n' (0x0A)
+    7. (Array data)
+
+    Total bytes in header = 128
+    Length of header data = D + P = 128 - (6+1+1+2) = 118
+    Length of padding     = 128 - (6+1+1+2) - D
+    */
+
+    //------------------------------------------------------------------------//
+
+    telemFile = std::fopen(filePath.c_str(), "wb");
+
+    const std::size_t nHdr = 128; // No. bytes
+    std::array<uint8_t, nHdr> header{0x00}; // Initialize header with NULL
+
+    // Initialize header with NULL
+    // Why? Array size not known ahead of time
+    std::fwrite(header.data(), 1, nHdr, telemFile);
+
 }
 
 //----------------------------------------------------------------------------//
@@ -175,7 +211,72 @@ void Telem::write_output_text() // TODO: maybe return bool for success/error sta
 
 void Telem::write_output_binary()
 {
-    ;
+
+    // Write data values
+    std::vector<double> out(nTelemFields, 0.0);
+    int iField;
+
+    for (int iStep = 0; iStep < (iTelem + 1); iStep++)
+    {
+
+        iField = 0;
+
+        for (const auto& field : telemFields)
+        {
+            out[iField] = stateTelem[field][iStep];
+            iField += 1;
+        }
+
+        std::fwrite(out.data(), 4, nTelemFields, telemFile);
+
+    }
+
+    // Need to track number of rows and need to write header
+
+}
+
+//----------------------------------------------------------------------------//
+
+void Telem::finalize_output_binary(int iStep)
+{
+
+    const std::size_t nHdr = 128; // No. bytes
+    const std::size_t nMag = 6;   //
+    const std::size_t nVer = 2;   // ""
+    const std::size_t nLen = 2;   // ""
+    const std::size_t nFlt = 4;   // "" floating point, float (4) or double (8)
+
+    std::array<uint8_t, nMag> magic = {0x93, 'N', 'U', 'M', 'P', 'Y'};
+    std::array<uint8_t, nVer> version = {0x01, 0x00};
+    std::array<std::uint16_t, 1> dataLen = {0x0076};
+
+    // Go back and populate header
+    std::rewind(telemFile);
+
+    // 1. Magic string
+    std::fwrite(magic.data(), 1, nMag, telemFile); // nMag elements, 1 byte each
+
+    // 2. & 3. Format version
+    std::fwrite(version.data(), 1, nVer, telemFile); // nVer elements, 1 byte each
+
+    // 4. Header data length
+    std::fwrite(dataLen.data(), nLen, 1, telemFile); // 1 element, nLen bytes each
+
+    // 5. Python dict string
+    // Example: "{'descr': '<f8', 'fortran_order': False, 'shape': (2, 2), }"
+    uint32_t nRow = static_cast<uint32_t>(iStep) + 1;
+    uint32_t nCol = static_cast<uint32_t>(nTelemFields);
+    std::string dictStr = fmt::format("{{'descr': '<f{:d}', 'fortran_order': False, 'shape': ({:d}, {:d}), }}", nFlt, nRow, nCol);
+    std::size_t nDict   = dictStr.length();
+
+    std::fwrite(dictStr.data(), 1, nDict, telemFile);
+
+    // 6. Padding
+    const std::size_t nPad = nHdr  - (nMag + nVer + nLen + nDict);
+    std::vector<uint8_t> space(nPad, 0x20);
+    space[nPad-1] = 0x0A; // Set let element as new line
+    std::fwrite(space.data(), 1, nPad, telemFile);
+
 }
 
 //----------------------------------------------------------------------------//
@@ -296,6 +397,8 @@ void Telem::interp_boundary(std::string targetField, double targetPoint)
     }
 
 }
+
+//----------------------------------------------------------------------------//
 
 Telem::~Telem()
 {
