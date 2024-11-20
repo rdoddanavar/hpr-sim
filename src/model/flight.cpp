@@ -95,7 +95,7 @@ void Flight::update()
 int ode_update(double t, const double y[], double f[], void *params)
 {
 
-    Model*    flight = static_cast<Model*>(params);
+    Model*    flight = static_cast<Model*>(params); // TODO: use correct cast (dynamic_cast?)
     stateMap* state  = flight->state;
 
     // Set current state
