@@ -39,11 +39,11 @@ def regression_plot(dirCmp1: pathlib.Path, dirCmp2: pathlib.Path, dirOut: pathli
 
         lines2[0].set_label("after")
 
-        idx   = fields.index(field)
-        units = telem1[0]["units"][idx]
+        idx  = fields.index(field)
+        unit = telem1[0]["units"][idx]
 
         ax.set_xlabel("time [s]")
-        ax.set_ylabel(f"{field} [{units}]")
+        ax.set_ylabel(f"{field} [{unit}]")
         ax.set_title(f"{dirCmp1} -> {dirCmp2}: {field}")
         ax.legend()
 

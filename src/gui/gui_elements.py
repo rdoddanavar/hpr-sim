@@ -259,7 +259,7 @@ class TabOutput(QWidget):
         self.listFields.currentItemChanged.connect(self.action_plot_update)
         # TODO: resize to fit list contents
 
-        self.labelUnits = gui_common.Label("Units:")
+        self.labelUnits = gui_common.Label("Unit:")
         self.comboUnits = QComboBox()
         self.comboUnits.currentIndexChanged.connect(self.action_plot_update_units)
 
@@ -364,9 +364,9 @@ class TabOutput(QWidget):
         # Plot new data
         field  = self.listFields.currentItem().text()
         iField = self.telem[0]["fields"].index(field)
-        units  = self.telem[0]["units"][iField]
+        unit   = self.telem[0]["units"][iField]
         self.comboUnits.clear()
-        self.comboUnits.addItems([units])
+        self.comboUnits.addItems([unit])
         iRun   = self.spinRunNum.value() - 1
         runAll = self.checkRunAll.isChecked()
 
@@ -388,7 +388,7 @@ class TabOutput(QWidget):
             plot = self.plotTelem.plot(x, y, pen=self.penTelem)
 
         self.plotTelem.setLabel("bottom", "Time", "s")
-        self.plotTelem.setLabel("left", field, units)
+        self.plotTelem.setLabel("left", field, unit)
 
         # Reset axis limits
         self.plotTelem.enableAutoRange()

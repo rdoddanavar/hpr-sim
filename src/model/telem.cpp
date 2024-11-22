@@ -259,23 +259,23 @@ void Telem::write_stats()
     fmt::format_to(std::back_inserter(out), "---\n");
 
     std::string field;
-    std::string units;
+    std::string unit;
 
     for (int iField = 0; iField < nTelemFields; iField++)
     {
 
         field = telemFields[iField];
-        units = telemUnits[iField];
+        unit  = telemUnits[iField];
 
-        if (units.empty())
+        if (unit.empty())
         {
-            units = "null";
+            unit = "null";
         }
 
        fmt::format_to(std::back_inserter(out), "{}:\n", field);
-       fmt::format_to(std::back_inserter(out), "{}Units: {}\n", tab, units);
-       fmt::format_to(std::back_inserter(out), "{}Min: {:.{}f}\n", tab, stateTelemMin[field], nPrec);
-       fmt::format_to(std::back_inserter(out), "{}Max: {:.{}f}\n", tab, stateTelemMax[field], nPrec);
+       fmt::format_to(std::back_inserter(out), "{}unit: {}\n", tab, unit);
+       fmt::format_to(std::back_inserter(out), "{}min: {:.{}f}\n", tab, stateTelemMin[field], nPrec);
+       fmt::format_to(std::back_inserter(out), "{}max: {:.{}f}\n", tab, stateTelemMax[field], nPrec);
 
     }
 

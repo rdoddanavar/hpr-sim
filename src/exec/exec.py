@@ -260,7 +260,7 @@ def write_input(inputParams, outputPath, iRun):
                 quantity = preproc_input.configInput[group][param]["quantity"]
                 unit     = inputParamsEcho[group][param]["unit"]
 
-                # Convert values back to original units specified by user
+                # Convert values back to original unit specified by user
 
                 if quantity:
                     value = util_unit.convert(value, quantity, "default", unit)
@@ -312,32 +312,32 @@ def write_mc_summary(inputParams, outputPath):
             summary = copy.deepcopy(stats)
 
             for key in keys:
-                data[key]["Min"] = np.zeros(nSubdir)
-                data[key]["Max"] = np.zeros(nSubdir)
+                data[key]["min"] = np.zeros(nSubdir)
+                data[key]["max"] = np.zeros(nSubdir)
 
         for key in keys:
-            data[key]["Min"][iDir] = stats[key]["Min"]
-            data[key]["Max"][iDir] = stats[key]["Max"]
+            data[key]["min"][iDir] = stats[key]["min"]
+            data[key]["max"][iDir] = stats[key]["max"]
 
     for key in keys:
 
         summaryMin = {}
 
-        summaryMin["Min"]  = float(data[key]["Min"].min().round(decimals=nPrec))
-        summaryMin["Max"]  = float(data[key]["Min"].max().round(decimals=nPrec))
-        summaryMin["Mean"] = float(data[key]["Min"].mean().round(decimals=nPrec))
-        summaryMin["Std"]  = float(data[key]["Min"].std().round(decimals=nPrec))
+        summaryMin["min"]  = float(data[key]["min"].min().round(decimals=nPrec))
+        summaryMin["max"]  = float(data[key]["min"].max().round(decimals=nPrec))
+        summaryMin["mean"] = float(data[key]["min"].mean().round(decimals=nPrec))
+        summaryMin["std"]  = float(data[key]["min"].std().round(decimals=nPrec))
 
-        summary[key]["Min"] = summaryMin
+        summary[key]["min"] = summaryMin
 
         summaryMax = {}
 
-        summaryMax["Min"]  = float(data[key]["Max"].min().round(decimals=nPrec))
-        summaryMax["Max"]  = float(data[key]["Max"].max().round(decimals=nPrec))
-        summaryMax["Mean"] = float(data[key]["Max"].mean().round(decimals=nPrec))
-        summaryMax["Std"]  = float(data[key]["Max"].std().round(decimals=nPrec))
+        summaryMax["min"]  = float(data[key]["max"].min().round(decimals=nPrec))
+        summaryMax["max"]  = float(data[key]["max"].max().round(decimals=nPrec))
+        summaryMax["mean"] = float(data[key]["max"].mean().round(decimals=nPrec))
+        summaryMax["std"]  = float(data[key]["max"].std().round(decimals=nPrec))
 
-        summary[key]["Max"] = summaryMax
+        summary[key]["max"] = summaryMax
 
     with open(filePath, 'w', encoding="utf8") as stream:
 
