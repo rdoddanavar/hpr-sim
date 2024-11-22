@@ -1,9 +1,11 @@
 # System modules
-import sys
 import numpy as np
 import pathlib
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+
+# Project modules
+import util_yaml
 
 #------------------------------------------------------------------------------#
 
@@ -26,11 +28,11 @@ def plot_pdf(outputPath: pathlib.Path) -> None:
             y = run["data"][field]
             ax.plot(x, y, color='b')
 
-        idx   = fields.index(field)
-        units = telem[0]["units"][idx]
+        idx  = fields.index(field)
+        unit = telem[0]["units"][idx]
 
         ax.set_xlabel("time [s]")
-        ax.set_ylabel(f"{field} [{units}]")
+        ax.set_ylabel(f"{field} [{unit}]")
         ax.set_title(f"{outputPath.stem}: {field}")
 
         pdfOut.savefig(fig)
@@ -48,8 +50,14 @@ def load_dir(outputPath: pathlib.Path) -> list[dict]:
 
     for iRun, subdir in enumerate(subdirs):
 
-        filePath    = subdir / "telem.csv"
-        telem[iRun] = load_csv(filePath)
+        for item in subdir.iterdir():
+
+            if item.stem == "telem":
+
+                if item.suffix == ".csv":
+                    telem[iRun] = load_csv(item)
+                elif item.suffix == ".npy":
+                    telem[iRun] = load_npy(item)
 
     return telem
 
@@ -85,6 +93,47 @@ def load_csv(filePath: pathlib.Path) -> dict:
     for field in fields:
         data[field] = np.array(data[field])
 
+    # Pack telemetry dict for single run
+    telem = {
+        "meta"   : meta  ,
+        "fields" : fields,
+        "units"  : units ,
+        "data"   : data  ,
+    }
+
+    return telem
+
+#------------------------------------------------------------------------------#
+
+def load_npy(npyPath: pathlib.Path) -> dict:
+
+    statsPath = npyPath.parent / "stats.yml"
+    
+    # Load stats dict to get field names and units
+    stats  = util_yaml.load(statsPath)
+    fields = list(stats.keys())
+    units  = []
+
+    for field in fields:
+        units.append(stats[field]["unit"])
+
+    # Load binary *.npy data (2D float array)
+    npyArr = np.load(npyPath)
+    data   = {}
+
+    for iCol, field in enumerate(fields):
+        data[field] = npyArr[:, iCol]
+
+    # Get metadata from stats file
+    meta = []
+
+    with open(statsPath, 'r') as statsFile:
+        lines = statsFile.read().splitlines()
+
+    while lines[0][0] == '#':
+        meta.append(lines.pop(0).strip("# "))
+
+    # Pack telemetry dict for single run
     telem = {
         "meta"   : meta  ,
         "fields" : fields,
