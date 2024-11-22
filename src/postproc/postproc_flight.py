@@ -14,7 +14,7 @@ def plot_pdf(outputPath: pathlib.Path) -> None:
     telem  = load_dir(outputPath)
     fields = telem[0]["fields"]
 
-    pdfOut = PdfPages(outputPath / "plot.pdf")
+    pdfOut = PdfPages(outputPath / "plots.pdf")
 
     for field in fields:
 
