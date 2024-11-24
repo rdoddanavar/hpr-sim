@@ -122,6 +122,9 @@ def run(inputParams: dict, outputPath: pathlib.Path, callback=None) -> None:
     # Plot time histories
     postproc_flight.plot_pdf(outputPath)
 
+    # Export MATLAB *.mat file
+    postproc_flight.save_mat(outputPath)
+
 #------------------------------------------------------------------------------#
 
 class ProgBar(tqdm.tqdm):

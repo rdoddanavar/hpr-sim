@@ -1,6 +1,7 @@
 # System modules
-import numpy as np
 import pathlib
+import numpy as np
+import scipy
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
@@ -108,14 +109,16 @@ def load_csv(filePath: pathlib.Path) -> dict:
 def load_npy(npyPath: pathlib.Path) -> dict:
 
     statsPath = npyPath.parent / "stats.yml"
-    
+
     # Load stats dict to get field names and units
     stats  = util_yaml.load(statsPath)
     fields = list(stats.keys())
     units  = []
 
     for field in fields:
-        units.append(stats[field]["unit"])
+        unit = stats[field]["unit"]
+        unit = '' if unit is None else unit
+        units.append(unit)
 
     # Load binary *.npy data (2D float array)
     npyArr = np.load(npyPath)
@@ -142,3 +145,14 @@ def load_npy(npyPath: pathlib.Path) -> dict:
     }
 
     return telem
+
+#------------------------------------------------------------------------------#
+
+def save_mat(outputPath: pathlib.Path) -> None:
+
+    subdirs = [subdir for subdir in outputPath.iterdir() if subdir.is_dir()]
+    telem   = load_dir(outputPath)
+
+    for iRun in range(len(telem)):
+        matPath = subdirs[iRun] / "telem.mat"
+        scipy.io.savemat(matPath, telem[iRun], oned_as="column")
