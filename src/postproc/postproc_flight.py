@@ -13,8 +13,7 @@ import util_yaml
 def plot_pdf(outputPath: pathlib.Path) -> None:
 
     telem  = load_dir(outputPath)
-    fields = telem[0]["fields"]
-
+    fields = telem[0]["data"].keys()
     pdfOut = PdfPages(outputPath / "plots.pdf")
 
     for field in fields:
@@ -29,8 +28,7 @@ def plot_pdf(outputPath: pathlib.Path) -> None:
             y = run["data"][field]
             ax.plot(x, y, color='b')
 
-        idx  = fields.index(field)
-        unit = telem[0]["units"][idx]
+        unit = telem[0]["units"][field]
 
         ax.set_xlabel("time [s]")
         ax.set_ylabel(f"{field} [{unit}]")
@@ -69,12 +67,14 @@ def load_csv(filePath: pathlib.Path) -> dict:
     with open(filePath, 'r') as file:
         lines = file.read().splitlines()
 
-    # Remove comment lines in header
-    meta = []
+    # Remove comment lines in headerand get metadata
+    meta = {
+        "datetime" : lines.pop(0).strip("# "),
+        "version"  : lines.pop(0).strip("# "),
+        "run"      : lines.pop(0).strip("# "),
+    }
 
-    while lines[0][0] == '#':
-        meta.append(lines.pop(0).strip("# "))
-
+    # Parse data array
     fields = lines[0].split(',')
     units  = lines[1].split(',')
     data   = {}
@@ -96,10 +96,9 @@ def load_csv(filePath: pathlib.Path) -> dict:
 
     # Pack telemetry dict for single run
     telem = {
-        "meta"   : meta  ,
-        "fields" : fields,
-        "units"  : units ,
-        "data"   : data  ,
+        "meta"   : meta ,
+        "data"   : data ,
+        "units"  : units,
     }
 
     return telem
@@ -113,12 +112,12 @@ def load_npy(npyPath: pathlib.Path) -> dict:
     # Load stats dict to get field names and units
     stats  = util_yaml.load(statsPath)
     fields = list(stats.keys())
-    units  = []
+    units  = {}
 
     for field in fields:
         unit = stats[field]["unit"]
         unit = '' if unit is None else unit
-        units.append(unit)
+        units[field] = unit
 
     # Load binary *.npy data (2D float array)
     npyArr = np.load(npyPath)
@@ -128,20 +127,21 @@ def load_npy(npyPath: pathlib.Path) -> dict:
         data[field] = npyArr[:, iCol]
 
     # Get metadata from stats file
-    meta = []
 
     with open(statsPath, 'r') as statsFile:
         lines = statsFile.read().splitlines()
 
-    while lines[0][0] == '#':
-        meta.append(lines.pop(0).strip("# "))
+    meta = {
+        "datetime" : lines[0].strip("# "),
+        "version"  : lines[1].strip("# "),
+        "run"      : lines[2].strip("# "),
+    }
 
     # Pack telemetry dict for single run
     telem = {
-        "meta"   : meta  ,
-        "fields" : fields,
-        "units"  : units ,
-        "data"   : data  ,
+        "meta"   : meta ,
+        "data"   : data ,
+        "units"  : units,
     }
 
     return telem
