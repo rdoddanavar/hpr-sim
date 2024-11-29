@@ -3,6 +3,9 @@
 ![](https://img.shields.io/github/license/rdoddanavar/hpr-sim.svg)
 ![](https://img.shields.io/github/repo-size/rdoddanavar/hpr-sim.svg)
 
+
+> **NOTE: This project is still in development and not yet in a release state**
+
 ![](doc/logo.svg)
 
 - [Overview](#overview)
@@ -13,8 +16,6 @@
 - [FAQ](#faq)
 
 ## Overview
-
-> **NOTE: This project is still in development and not yet in a release state**
 
 The goal of this project is to build a robust, extensible flight simulation package for high power rocketry, with open-source dependencies.
 

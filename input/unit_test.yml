@@ -11,7 +11,7 @@ exec:
     numMC: 5
     procMode: parallel
     numProc: 4
-    telemMode: text
+    telemMode: binary
     telemPrec: 3
 flight:
     solverMethod: rkf45

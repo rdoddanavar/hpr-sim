@@ -9,7 +9,7 @@
 
 // Macros
 #define N_TELEM_ARRAY 1000
-#define TELEM_TYPE    double
+#define TELEM_TYPE    float
 
 // Type aliases
 using stateMap      = std::unordered_map<std::string, double*>;
