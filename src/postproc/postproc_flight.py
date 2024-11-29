@@ -67,7 +67,7 @@ def load_csv(filePath: pathlib.Path) -> dict:
     with open(filePath, 'r') as file:
         lines = file.read().splitlines()
 
-    # Remove comment lines in headerand get metadata
+    # Remove comment lines in header and get metadata
     meta = {
         "datetime" : lines.pop(0).strip("# "),
         "version"  : lines.pop(0).strip("# "),
@@ -76,13 +76,15 @@ def load_csv(filePath: pathlib.Path) -> dict:
 
     # Parse data array
     fields = lines[0].split(',')
-    units  = lines[1].split(',')
+    unitsL = lines[1].split(',')
+    unitsD = {}
     data   = {}
 
     nField = len(fields)
 
-    for field in fields:
-        data[field] = []
+    for iFld, field in enumerate(fields):
+        unitsD[field] = unitsL[iFld]
+        data[field]   = []
 
     for line in lines[2:]:
 
@@ -96,9 +98,9 @@ def load_csv(filePath: pathlib.Path) -> dict:
 
     # Pack telemetry dict for single run
     telem = {
-        "meta"   : meta ,
-        "data"   : data ,
-        "units"  : units,
+        "meta"   : meta  ,
+        "data"   : data  ,
+        "units"  : unitsD,
     }
 
     return telem
