@@ -259,7 +259,7 @@ class TabOutput(QWidget):
         self.listFields.currentItemChanged.connect(self.action_plot_update)
         # TODO: resize to fit list contents
 
-        self.labelUnits = gui_common.Label("Units:")
+        self.labelUnits = gui_common.Label("Unit:")
         self.comboUnits = QComboBox()
         self.comboUnits.currentIndexChanged.connect(self.action_plot_update_units)
 
@@ -334,16 +334,13 @@ class TabOutput(QWidget):
         self.telem = postproc_flight.load_dir(outputPath)
 
         # Populate metadata
-        metaStr = ", ".join(self.telem[0]["meta"])
-        self.editMeta.setText(metaStr)
+        self.editMeta.setText(self.telem[0]["meta"]["datetime"])
 
         # Update telemetry fields
         self.listFields.clear()
-        fields = self.telem[0]["fields"]
-        units = self.telem[0]["units"]
+        fields = list(self.telem[0]["data"].keys())
         iPop = fields.index("time")
         fields.pop(iPop)
-        units.pop(iPop)
         self.listFields.addItems(fields)
         iRow = fields.index("linPosZ")
         self.listFields.setCurrentRow(iRow)
@@ -363,10 +360,9 @@ class TabOutput(QWidget):
 
         # Plot new data
         field  = self.listFields.currentItem().text()
-        iField = self.telem[0]["fields"].index(field)
-        units  = self.telem[0]["units"][iField]
+        unit   = self.telem[0]["units"][field]
         self.comboUnits.clear()
-        self.comboUnits.addItems([units])
+        self.comboUnits.addItems([unit])
         iRun   = self.spinRunNum.value() - 1
         runAll = self.checkRunAll.isChecked()
 
@@ -388,7 +384,7 @@ class TabOutput(QWidget):
             plot = self.plotTelem.plot(x, y, pen=self.penTelem)
 
         self.plotTelem.setLabel("bottom", "Time", "s")
-        self.plotTelem.setLabel("left", field, units)
+        self.plotTelem.setLabel("left", field, unit)
 
         # Reset axis limits
         self.plotTelem.enableAutoRange()

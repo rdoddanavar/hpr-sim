@@ -48,9 +48,10 @@ excludes = ["PySide2", "PySide6", "PyQt6"] # Using PyQt5; Qt bindings conflict w
 # Hidden imports to resolve python environment inconsistencies
 if os.name == "posix":
     hiddenImports = ["scipy.special._special_ufuncs"        ,
-                     "scipy._lib.array_api_compat.numpy.fft"]
+                     "scipy._lib.array_api_compat.numpy.fft",
+                     "scipy.io"                             ]
 elif os.name == "nt":
-    hiddenImports = []
+    hiddenImports = ["scipy.io"]
 
 #------------------------------------------------------------------------------#
 
