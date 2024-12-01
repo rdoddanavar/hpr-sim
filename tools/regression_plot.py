@@ -4,9 +4,12 @@ import argparse
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 
-postprocPath = pathlib.Path(__file__).parent.parent / "src" / "postproc"
+# Path modifications
+paths = ["build/src", "src/exec", "src/gui", "src/preproc", "src/postproc", "src/util"]
 
-sys.path.append(postprocPath.resolve().as_posix())
+for item in paths:
+    addPath = pathlib.Path(__file__).parent.parent / item
+    sys.path.append(addPath.resolve().as_posix())
 
 import postproc_flight
 
@@ -16,7 +19,7 @@ def regression_plot(dirCmp1: pathlib.Path, dirCmp2: pathlib.Path, dirOut: pathli
     telem2 = postproc_flight.load_dir(dirCmp2)
 
     pdfOut = PdfPages((dirOut / "plot_reg.pdf").resolve())
-    fields = telem1[0]["fields"]
+    fields = telem1[0]["data"].keys()
 
     for field in fields:
 
@@ -38,10 +41,7 @@ def regression_plot(dirCmp1: pathlib.Path, dirCmp2: pathlib.Path, dirOut: pathli
             lines2 = ax.plot(x, y, color='r')
 
         lines2[0].set_label("after")
-
-        idx  = fields.index(field)
-        unit = telem1[0]["units"][idx]
-
+        unit = telem1[0]["units"][field]
         ax.set_xlabel("time [s]")
         ax.set_ylabel(f"{field} [{unit}]")
         ax.set_title(f"{dirCmp1} -> {dirCmp2}: {field}")
