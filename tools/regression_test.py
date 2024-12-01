@@ -4,6 +4,7 @@ import filecmp
 import pathlib
 import shutil
 import argparse
+import numpy as np
 
 def regression_test(dirCmp1: pathlib.Path, dirCmp2: pathlib.Path, dirOut: pathlib.Path) -> bool:
 
@@ -33,43 +34,57 @@ def regression_test(dirCmp1: pathlib.Path, dirCmp2: pathlib.Path, dirOut: pathli
 
 def diff_files(filePath1, filePath2, dirOut) -> bool:
 
-    # Burn first line to skip time stamp (always expected to differ)
+    if filePath1.suffix == ".npy": # Compare binary files
 
-    with open(filePath1, 'r') as file1:
-        lines1 = file1.read().splitlines()[1:]
+        data1 = np.load(filePath1)
+        data2 = np.load(filePath2)
 
-    with open(filePath2, 'r') as file2:
-        lines2 = file2.read().splitlines()[1:]
+        # Compare 2D numpy arrays
 
-    # Compare file contents
+        if data1.shape == data2.shape:
+            if data1 == data2:
+                isDiff = False
+            else:
+                isDiff = True
+        else:
+            isDiff = True
 
-    if lines1 == lines2:
+        if isDiff:
+            print(f"Regression: {filePath1.as_posix()} --> {filePath2.as_posix()}")
+            print(f"Diff: (none, binary files)")
+            print()
 
-        isDiff = False
+    else: # Compare text files
 
-    elif filePath1.suffix == ".csv":
+        # Burn first line to skip time stamp (always expected to differ)
 
-        # Files are too large for difflib to process in a reasonable time
-        print(f"Regression: {filePath1.as_posix()} --> {filePath2.as_posix()}")
-        print(f"Diff: <diff too large>")
-        print()
-        isDiff = True
+        with open(filePath1, 'r') as file1:
+            lines1 = file1.read().splitlines()[1:]
 
-    else:
+        with open(filePath2, 'r') as file2:
+            lines2 = file2.read().splitlines()[1:]
 
-        # Generate HTML diff report
-        diff = difflib.HtmlDiff().make_file(lines1, lines2, "Before", "After")
+        # Compare file contents
 
-        diffPath = (dirOut / filePath1.stem).as_posix() + ".html"
+        if lines1 == lines2:
 
-        with open(diffPath, 'w') as diffFile:
-            diffFile.write(diff)
+            isDiff = False
 
-        print(f"Regression: {filePath1.as_posix()} --> {filePath2.as_posix()}")
-        print(f"Diff: {diffPath}")
-        print()
+        else:
 
-        isDiff = True
+            isDiff = True
+
+            # Generate HTML diff report
+            diff = difflib.HtmlDiff().make_file(lines1, lines2, "Before", "After")
+
+            diffPath = (dirOut / filePath1.stem).as_posix() + ".html"
+
+            with open(diffPath, 'w') as diffFile:
+                diffFile.write(diff)
+
+            print(f"Regression: {filePath1.as_posix()} --> {filePath2.as_posix()}")
+            print(f"Diff: {diffPath}")
+            print()
 
     return isDiff
 
