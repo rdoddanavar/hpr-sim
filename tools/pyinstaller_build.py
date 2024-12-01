@@ -51,7 +51,7 @@ if os.name == "posix":
                      "scipy._lib.array_api_compat.numpy.fft",
                      "scipy.io"                             ]
 elif os.name == "nt":
-    hiddenImports = []
+    hiddenImports = ["scipy.io"]
 
 #------------------------------------------------------------------------------#
 
