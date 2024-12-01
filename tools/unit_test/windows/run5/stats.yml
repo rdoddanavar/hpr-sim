@@ -1,81 +1,81 @@
-# 2024-10-20 21:10:16
+# 2024-11-30 20:01:27
 # hpr-sim v0.0.0
 # Run: 5/5
 ---
 time:
-    Units: s
-    Min: 0.000
-    Max: 64.578
+    unit: s
+    min: 0.000
+    max: 64.578
 thrust:
-    Units: N
-    Min: 0.000
-    Max: 541.260
+    unit: N
+    min: 0.000
+    max: 541.260
 massEng:
-    Units: kg
-    Min: 0.713
-    Max: 1.223
+    unit: kg
+    min: 0.713
+    max: 1.223
 mass:
-    Units: kg
-    Min: 3.055
-    Max: 3.565
+    unit: kg
+    min: 3.055
+    max: 3.565
 gravity:
-    Units: m/s^2
-    Min: 9.780
-    Max: 9.795
+    unit: m/s^2
+    min: 9.780
+    max: 9.795
 temperature:
-    Units: K
-    Min: 256.206
-    Max: 288.150
+    unit: K
+    min: 256.206
+    max: 288.150
 pressure:
-    Units: Pa
-    Min: 54679.823
-    Max: 101325.000
+    unit: Pa
+    min: 54679.824
+    max: 101325.000
 density:
-    Units: kg/m^3
-    Min: 0.743
-    Max: 1.225
+    unit: kg/m^3
+    min: 0.743
+    max: 1.225
 dynamicPressure:
-    Units: Pa
-    Min: 0.000
-    Max: 58961.731
+    unit: Pa
+    min: 0.000
+    max: 58961.730
 mach:
-    Units: null
-    Min: 0.000
-    Max: 0.912
+    unit: null
+    min: 0.000
+    max: 0.912
 alphaT:
-    Units: rad
-    Min: 0.000
-    Max: 0.000
+    unit: rad
+    min: 0.000
+    max: 0.000
 dragCoeff:
-    Units: null
-    Min: 0.454
-    Max: 0.530
+    unit: null
+    min: 0.454
+    max: 0.530
 dragForce:
-    Units: N
-    Min: 0.000
-    Max: 253.258
+    unit: N
+    min: 0.000
+    max: 253.258
 liftForce:
-    Units: N
-    Min: 0.000
-    Max: 0.000
+    unit: N
+    min: 0.000
+    max: 0.000
 forceZ:
-    Units: N
-    Min: -29.923
-    Max: 508.672
+    unit: N
+    min: -29.923
+    max: 508.672
 linAccZ:
-    Units: m/s^2
-    Min: -9.795
-    Max: 155.018
+    unit: m/s^2
+    min: -9.795
+    max: 155.018
 linVelZ:
-    Units: m/s
-    Min: -310.283
-    Max: 299.179
+    unit: m/s
+    min: -310.283
+    max: 299.179
 linPosZ:
-    Units: m
-    Min: 0.000
-    Max: 4918.300
+    unit: m
+    min: 0.000
+    max: 4918.300
 isBurnout:
-    Units: null
-    Min: 0.000
-    Max: 1.000
+    unit: null
+    min: 0.000
+    max: 1.000
 ...

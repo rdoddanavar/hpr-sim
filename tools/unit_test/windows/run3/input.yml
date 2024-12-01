@@ -1,4 +1,4 @@
-# 2024-10-20 21:10:16
+# 2024-11-30 20:01:27
 # hpr-sim v0.0.0
 # Run: 3/5
 ---
@@ -14,7 +14,7 @@ exec:
     numProc:
         value: 1
     telemMode:
-        value: text
+        value: binary
     telemPrec:
         value: 3
 flight:
