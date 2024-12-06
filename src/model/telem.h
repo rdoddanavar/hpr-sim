@@ -22,11 +22,10 @@ class Telem
 
     public:
 
-        Telem(const std::string& telemModeIn,  const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn);
+        Telem(const std::string& outputDirIn, const std::string& metaStrIn, const int& nPrecIn);
         ~Telem();
 
         void init();
-        void init_output();
         void update(int iStep);
         void interp_boundary(std::string targetField, double targetPoint);
         void finalize(int iStep);
@@ -38,17 +37,13 @@ class Telem
 
     private:
 
-        void init_output_text(const std::string& filePath);
-        void init_output_binary(const std::string& filePath);
-
+        void init_output();
         void write_output();
-        void write_output_text();
-        void write_output_binary();
 
         void update_stats();
         void write_stats();
 
-        void finalize_output_binary(int iStep);
+        void finalize_output(int iStep);
 
         telemArrayMap stateTelem;
         telemMap      stateTelemMin;

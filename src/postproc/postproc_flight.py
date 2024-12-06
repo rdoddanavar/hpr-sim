@@ -150,7 +150,7 @@ def load_npy(npyPath: pathlib.Path) -> dict:
 
 #------------------------------------------------------------------------------#
 
-def save_mat(outputPath: pathlib.Path) -> None:
+def export_mat(outputPath: pathlib.Path) -> None:
 
     subdirs = [subdir for subdir in outputPath.iterdir() if subdir.is_dir()]
     telem   = load_dir(outputPath)

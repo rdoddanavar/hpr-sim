@@ -119,12 +119,15 @@ def process(inputParams: dict) -> None:
             elif paramType == "str":
                 process_string(inputParams, group, param)
 
+            elif paramType == "bool":
+                process_bool(inputParams, group, param)
+
             else:
                 raise ValueError("Invalid input parameter type; see config files", param)
 
 #------------------------------------------------------------------------------#
 
-def process_number(inputParams, group, param):
+def process_number(inputParams: dict, group: str, param: str) -> None:
 
     value     = inputParams[group][param]["value"]
     paramType = configInput[group][param]["type"]
@@ -174,7 +177,7 @@ def process_number(inputParams, group, param):
 
 #------------------------------------------------------------------------------#
 
-def process_string(inputParams, group, param):
+def process_string(inputParams: dict, group: str, param: str) -> None:
 
     value = inputParams[group][param]["value"]
 
@@ -194,6 +197,17 @@ def process_string(inputParams, group, param):
 
     if "dist" in inputParams[group][param].keys():
         raise ValueError("Input parameter does not allow a random distribution", param)
+
+#------------------------------------------------------------------------------#
+
+def process_bool(inputParams: dict, group: str, param: str) -> None:
+
+    value = inputParams[group][param]["value"]
+
+    if (value is True) or (value is False):
+        pass # Valid, do nothing
+    else:
+        raise ValueError("Input parameter must be one of: True, true, False, false", param)
 
 #------------------------------------------------------------------------------#
 

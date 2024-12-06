@@ -10,14 +10,13 @@
 
 //----------------------------------------------------------------------------//
 
-Telem::Telem(const std::string& telemModeIn, const int& nPrecIn, const std::string& outputDirIn, const std::string& metaStrIn)
+Telem::Telem(const std::string& outputDirIn, const std::string& metaStrIn, const int& nPrecIn)
 {
 
     // Telemetry setup
-    telemMode = telemModeIn;
-    nPrec     = nPrecIn;
     outputDir = outputDirIn;
     metaStr   = metaStrIn;
+    nPrec     = nPrecIn;
 
     nTelemFields = telemFields.size();
 
@@ -54,45 +53,6 @@ void Telem::init()
 void Telem::init_output()
 {
 
-    std::string filePath = outputDir + "/telem";
-
-    if (telemMode == "text")
-    {
-        filePath += ".csv";
-        init_output_text(filePath);
-    }
-    else if (telemMode == "binary")
-    {
-        filePath += ".npy";
-        init_output_binary(filePath);
-    }
-
-}
-
-//----------------------------------------------------------------------------//
-
-void Telem::init_output_text(const std::string& filePath)
-{
-
-    telemFile = std::fopen(filePath.c_str(), "w");
-    // TODO: Error catching here?
-
-    // Write data fields & units
-    auto out = fmt::memory_buffer();
-    const char* delim = ",";
-
-    fmt::format_to(std::back_inserter(out), "{}\n", metaStr);
-    fmt::format_to(std::back_inserter(out), "{}\n", fmt::join(telemFields, delim));
-    fmt::format_to(std::back_inserter(out), "{}\n", fmt::join(telemUnits , delim));
-    fmt::print(telemFile, fmt::to_string(out));
-
-}
-
-//----------------------------------------------------------------------------//
-
-void Telem::init_output_binary(const std::string& filePath)
-{
-
     /*
     NPY Format v1.0
     https://numpy.org/devdocs/reference/generated/numpy.lib.format.html
@@ -113,6 +73,7 @@ void Telem::init_output_binary(const std::string& filePath)
 
     //------------------------------------------------------------------------//
 
+    const std::string filePath = outputDir + "/telem.npy";
     telemFile = std::fopen(filePath.c_str(), "wb");
 
     const std::size_t nHdr = 128; // No. bytes
@@ -170,53 +131,8 @@ void Telem::update_stats()
 
 //----------------------------------------------------------------------------//
 
+
 void Telem::write_output()
-{
-
-    if (telemMode == "text")
-    {
-        write_output_text();
-    }
-    else if (telemMode == "binary")
-    {
-        write_output_binary();
-    }
-
-}
-
-//----------------------------------------------------------------------------//
-
-void Telem::write_output_text() // TODO: maybe return bool for success/error status?
-{
-
-    // Write data values
-    auto out = fmt::memory_buffer();
-    std::string delim;
-    int iField;
-
-    for (int iStep = 0; iStep < (iTelem + 1); iStep++)
-    {
-
-        iField = 0;
-
-        for (const auto& field : telemFields)
-        {
-            delim = (++iField < nTelemFields) ? "," : "";
-            fmt::format_to(std::back_inserter(out), "{:.{}f}{}", stateTelem[field][iStep], nPrec, delim);
-        }
-
-        fmt::format_to(std::back_inserter(out), "\n");
-
-    }
-
-    fmt::print(telemFile, fmt::to_string(out));
-
-}
-
-//----------------------------------------------------------------------------//
-
-
-void Telem::write_output_binary()
 {
 
     // See Telem::init_output_binary for NPY file format
@@ -345,15 +261,8 @@ void Telem::finalize(int iStep)
 {
 
     // Finalize telem output
-    if (telemMode == "text")
-    {
-        write_output();
-    }
-    else if (telemMode == "binary")
-    {
-        write_output();
-        finalize_output_binary(iStep);
-    }
+    write_output();
+    finalize_output(iStep);
 
     // Finalize stats output
     update_stats();
@@ -363,7 +272,7 @@ void Telem::finalize(int iStep)
 
 //----------------------------------------------------------------------------//
 
-void Telem::finalize_output_binary(int iStep)
+void Telem::finalize_output(int iStep)
 {
 
     // See Telem::init_output_binary for NPY file format
