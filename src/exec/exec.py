@@ -119,11 +119,17 @@ def run(inputParams: dict, outputPath: pathlib.Path, callback=None) -> None:
         # Write summary statistics
         write_mc_summary(inputParams, outputPath)
 
-    # Plot time histories
-    postproc_flight.plot_pdf(outputPath)
+    if inputParams["exec"]["telemMode"]["value"] == "csv":
+        # Export test *.csv file
+        telemPrec = inputParams["exec"]["telemPrec"]["value"]
+        postproc_flight.export_csv(outputPath, telemPrec)
+    elif inputParams["exec"]["telemMode"]["value"] == "mat":
+        # Export MATLAB *.mat file
+        postproc_flight.export_mat(outputPath)
 
-    # Export MATLAB *.mat file
-    postproc_flight.save_mat(outputPath)
+    if inputParams["exec"]["telemPlot"]["value"]:
+        # Plot time histories
+        postproc_flight.plot_pdf(outputPath)
 
 #------------------------------------------------------------------------------#
 
@@ -181,7 +187,6 @@ def run_sim(inputParams, outputPath, modelData, iRun):
 
     # Setup telemetry
     numMC     = inputParams["exec"]["numMC"]["value"]
-    telemMode = inputParams["exec"]["telemMode"]["value"]
     telemPrec = inputParams["exec"]["telemPrec"]["value"]
 
     # Setup run output folder
@@ -197,7 +202,7 @@ def run_sim(inputParams, outputPath, modelData, iRun):
     metaStr2 = f"# Run: {iRun+1}/{numMC}"
     metaStr  = metaStr0 + metaStr1 + metaStr2
 
-    telem = model.Telem(telemMode, telemPrec, outputPath.resolve().as_posix(), metaStr)
+    telem = model.Telem(outputPath.resolve().as_posix(), metaStr, telemPrec)
 
     # Initialize state from top-level model
     flight.init_state(telem)

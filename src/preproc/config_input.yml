@@ -58,7 +58,7 @@ exec:
     telemMode:
         type: str
         isPath: false
-        valid: [text, binary]
+        valid: [npy, csv, mat]
     telemPrec:
         type: int
         quantity: null
@@ -66,6 +66,8 @@ exec:
         min: 0
         max: 10
         isRand: false
+    telemPlot:
+        type: bool
 flight:
     solverMethod:
         type: str

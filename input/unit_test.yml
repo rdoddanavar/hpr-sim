@@ -11,8 +11,9 @@ exec:
     numMC: 5
     procMode: parallel
     numProc: 4
-    telemMode: binary
+    telemMode: npy
     telemPrec: 3
+    telemPlot: true
 flight:
     solverMethod: rkf45
     solverStep: 0.01

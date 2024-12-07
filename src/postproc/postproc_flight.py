@@ -48,60 +48,9 @@ def load_dir(outputPath: pathlib.Path) -> list[dict]:
     telem   = [None]*len(subdirs)
 
     for iRun, subdir in enumerate(subdirs):
-
         for item in subdir.iterdir():
-
-            if item.stem == "telem":
-
-                if item.suffix == ".csv":
-                    telem[iRun] = load_csv(item)
-                elif item.suffix == ".npy":
-                    telem[iRun] = load_npy(item)
-
-    return telem
-
-#------------------------------------------------------------------------------#
-
-def load_csv(filePath: pathlib.Path) -> dict:
-
-    with open(filePath, 'r') as file:
-        lines = file.read().splitlines()
-
-    # Remove comment lines in header and get metadata
-    meta = {
-        "datetime" : lines.pop(0).strip("# "),
-        "version"  : lines.pop(0).strip("# "),
-        "run"      : lines.pop(0).strip("# "),
-    }
-
-    # Parse data array
-    fields = lines[0].split(',')
-    unitsL = lines[1].split(',')
-    unitsD = {}
-    data   = {}
-
-    nField = len(fields)
-
-    for iFld, field in enumerate(fields):
-        unitsD[field] = unitsL[iFld]
-        data[field]   = []
-
-    for line in lines[2:]:
-
-        lineData = line.split(',')
-
-        for iField in range(nField):
-            data[fields[iField]].append(float(lineData[iField]))
-
-    for field in fields:
-        data[field] = np.array(data[field])
-
-    # Pack telemetry dict for single run
-    telem = {
-        "meta"   : meta  ,
-        "data"   : data  ,
-        "units"  : unitsD,
-    }
+            if item.name == "telem.npy":
+                telem[iRun] = load_npy(item)
 
     return telem
 
@@ -150,7 +99,34 @@ def load_npy(npyPath: pathlib.Path) -> dict:
 
 #------------------------------------------------------------------------------#
 
-def save_mat(outputPath: pathlib.Path) -> None:
+def export_csv(outputPath: pathlib.Path, telemPrec: int) -> None:
+
+    subdirs = [subdir for subdir in outputPath.iterdir() if subdir.is_dir()]
+    telem   = load_dir(outputPath)
+
+    for iRun in range(len(telem)):
+
+        csvPath = subdirs[iRun] / "telem.csv"
+        fields  = telem[iRun]["data"].keys()
+
+        nRow   = len(telem[iRun]["data"]["time"])
+        nCol   = len(fields)
+        csvArr = np.zeros((nRow, nCol))
+
+        for iCol, field in enumerate(fields):
+            csvArr[:,iCol] = telem[iRun]["data"][field]
+
+        headerStr = "# " + telem[iRun]["meta"]["datetime"] + "\n" \
+                    "# " + telem[iRun]["meta"]["version"]  + "\n" \
+                    "# " + telem[iRun]["meta"]["run"]      + "\n"
+
+        headerStr += ','.join(fields) + "\n" + ','.join(telem[iRun]["units"].values())
+
+        np.savetxt(csvPath, csvArr, fmt=f"%.{telemPrec}f", delimiter=',', header=headerStr, comments='')
+
+#------------------------------------------------------------------------------#
+
+def export_mat(outputPath: pathlib.Path) -> None:
 
     subdirs = [subdir for subdir in outputPath.iterdir() if subdir.is_dir()]
     telem   = load_dir(outputPath)
