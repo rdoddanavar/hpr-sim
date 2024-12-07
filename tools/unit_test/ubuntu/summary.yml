@@ -1,4 +1,4 @@
-# 2024-12-07 10:28:49
+# 2024-12-07 14:52:10
 # hpr-sim v0.0.0
 # Run: 5/5
 ---
@@ -10,10 +10,10 @@ time:
         mean: 0.0
         std: 0.0
     max:
-        min: 62.691
-        max: 71.563
-        mean: 65.888
-        std: 3.198
+        min: 62.129
+        max: 71.015
+        mean: 65.976
+        std: 3.538
 thrust:
     unit: N
     min:
@@ -41,19 +41,19 @@ massEng:
 mass:
     unit: kg
     min:
-        min: 2.739
-        max: 3.152
-        mean: 2.998
-        std: 0.148
+        min: 2.761
+        max: 3.182
+        mean: 2.995
+        std: 0.169
     max:
-        min: 3.249
-        max: 3.662
-        mean: 3.508
-        std: 0.148
+        min: 3.271
+        max: 3.692
+        mean: 3.505
+        std: 0.169
 gravity:
     unit: m/s^2
     min:
-        min: 9.776
+        min: 9.777
         max: 9.781
         mean: 9.779
         std: 0.002
@@ -65,10 +65,10 @@ gravity:
 temperature:
     unit: K
     min:
-        min: 248.802
-        max: 258.074
-        mean: 254.795
-        std: 3.347
+        min: 249.41
+        max: 258.62
+        mean: 254.687
+        std: 3.651
     max:
         min: 288.15
         max: 288.15
@@ -77,10 +77,10 @@ temperature:
 pressure:
     unit: Pa
     min:
-        min: 46878.434
-        max: 56806.07
-        mean: 53218.523
-        std: 3578.189
+        min: 47482.652
+        max: 57439.551
+        mean: 53120.337
+        std: 3968.057
     max:
         min: 101325.0
         max: 101325.0
@@ -89,10 +89,10 @@ pressure:
 density:
     unit: kg/m^3
     min:
-        min: 0.656
-        max: 0.767
-        mean: 0.727
-        std: 0.04
+        min: 0.663
+        max: 0.774
+        mean: 0.726
+        std: 0.044
     max:
         min: 1.225
         max: 1.225
@@ -106,10 +106,10 @@ dynamicPressure:
         mean: 0.0
         std: 0.0
     max:
-        min: 55517.391
-        max: 72631.234
-        mean: 61568.642
-        std: 6179.638
+        min: 54504.676
+        max: 71507.781
+        mean: 61768.181
+        std: 6740.077
 mach:
     unit: null
     min:
@@ -118,10 +118,10 @@ mach:
         mean: 0.0
         std: 0.0
     max:
-        min: 0.885
-        max: 1.012
-        mean: 0.931
-        std: 0.046
+        min: 0.877
+        max: 1.004
+        mean: 0.932
+        std: 0.051
 alphaT:
     unit: rad
     min:
@@ -137,15 +137,15 @@ alphaT:
 dragCoeff:
     unit: null
     min:
-        min: 0.454
+        min: 0.455
         max: 0.455
         mean: 0.455
         std: 0.0
     max:
         min: 0.522
-        max: 0.751
-        mean: 0.585
-        std: 0.088
+        max: 0.732
+        mean: 0.598
+        std: 0.083
 dragForce:
     unit: N
     min:
@@ -154,10 +154,10 @@ dragForce:
         mean: 0.0
         std: 0.0
     max:
-        min: 235.157
-        max: 441.944
-        mean: 296.442
-        std: 77.354
+        min: 230.512
+        max: 424.312
+        mean: 303.753
+        std: 75.848
 liftForce:
     unit: N
     min:
@@ -173,15 +173,15 @@ liftForce:
 forceZ:
     unit: N
     min:
-        min: -30.876
-        max: -26.828
-        mean: -29.363
-        std: 1.455
+        min: -31.171
+        max: -27.049
+        mean: -29.34
+        std: 1.656
     max:
-        min: 507.72
-        max: 511.767
-        mean: 509.233
-        std: 1.455
+        min: 507.425
+        max: 511.547
+        mean: 509.256
+        std: 1.656
 linAccZ:
     unit: m/s^2
     min:
@@ -190,22 +190,22 @@ linAccZ:
         mean: -9.795
         std: 0.0
     max:
-        min: 150.247
-        max: 172.699
-        mean: 158.336
-        std: 8.093
+        min: 148.825
+        max: 171.313
+        mean: 158.559
+        std: 8.954
 linVelZ:
     unit: m/s
     min:
-        min: -344.368
-        max: -301.071
-        mean: -316.676
-        std: 15.606
+        min: -341.698
+        max: -298.327
+        mean: -317.105
+        std: 17.271
     max:
-        min: 289.972
-        max: 333.255
-        mean: 305.571
-        std: 15.601
+        min: 287.23
+        max: 330.586
+        mean: 306.0
+        std: 17.265
 linPosZ:
     unit: m
     min:
@@ -214,10 +214,10 @@ linPosZ:
         mean: 0.0
         std: 0.0
     max:
-        min: 4630.395
-        max: 6059.293
-        mean: 5135.739
-        std: 515.857
+        min: 4546.311
+        max: 5965.625
+        mean: 5152.424
+        std: 562.71
 isBurnout:
     unit: null
     min:
