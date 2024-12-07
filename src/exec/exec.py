@@ -121,7 +121,8 @@ def run(inputParams: dict, outputPath: pathlib.Path, callback=None) -> None:
 
     if inputParams["exec"]["telemMode"]["value"] == "csv":
         # Export test *.csv file
-        postproc_flight.export_csv(outputPath)
+        telemPrec = inputParams["exec"]["telemPrec"]["value"]
+        postproc_flight.export_csv(outputPath, telemPrec)
     elif inputParams["exec"]["telemMode"]["value"] == "mat":
         # Export MATLAB *.mat file
         postproc_flight.export_mat(outputPath)
