@@ -98,10 +98,16 @@ def run(inputParams: dict, outputPath: pathlib.Path, callback=None) -> None:
         callback_parallel = functools.partial(cli_status, progBar)
         callback_serial   = functools.partial(callback_parallel, None)
 
+        # Get RNG seeds
+        seedMaster = inputParams["exec"]["seed"]["value"]
+        philox     = np.random.Philox(seedMaster)
+        rng        = np.random.Generator(philox)
+        seedRuns   = [int(seed) for seed in rng.integers(2**63,size=numMC)]
+
         if procMode == "serial":
 
             for iRun in range(numMC):
-                run_sim_mc(inputParams, outputPath, modelData, iRun)
+                run_sim_mc(inputParams, outputPath, modelData, iRun, seedRuns[iRun])
                 callback_serial()
 
         elif procMode == "parallel":
@@ -110,7 +116,7 @@ def run(inputParams: dict, outputPath: pathlib.Path, callback=None) -> None:
 
                 # Execute parallel runs
                 for iRun in range(numMC):
-                    pool.apply_async(run_sim_mc, (inputParams, outputPath, modelData, iRun), callback=callback_parallel)
+                    pool.apply_async(run_sim_mc, (inputParams, outputPath, modelData, iRun, seedRuns[iRun]), callback=callback_parallel)
 
                 # Pool cleanup
                 pool.close()
@@ -152,17 +158,11 @@ def cli_status(progBar, result):
 
 #------------------------------------------------------------------------------#
 
-def run_sim_mc(inputParams, outputPath, modelData, iRun):
+def run_sim_mc(inputParams, outputPath, modelData, iRun, seedRun):
 
     inputParamsMC = copy.deepcopy(inputParams)
-
-    seedMaster = inputParams["exec"]["seed"]["value"]
-    seedRun    = seedMaster + iRun
-
     inputParamsMC["exec"]["seed"]["value"] = seedRun
-
     exec_rand.mc_draw(inputParamsMC)
-
     run_sim(inputParamsMC, outputPath, modelData, iRun)
 
 #------------------------------------------------------------------------------#

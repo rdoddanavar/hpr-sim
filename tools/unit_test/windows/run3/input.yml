@@ -1,4 +1,4 @@
-# 2024-12-07 10:40:32
+# 2024-12-07 18:43:34
 # hpr-sim v0.0.0
 # Run: 3/5
 ---
@@ -6,7 +6,7 @@ exec:
     mcMode:
         value: nominal
     seed:
-        value: 2
+        value: 4349422948805191298
     numMC:
         value: 1
     procMode:
@@ -29,7 +29,7 @@ engine:
         value: input/AeroTech_J450DM.eng
 mass:
     massBody:
-        value: 4.466468913532913
+        value: 4.516166478011944
         unit: lbm
         dist:
             name: normal
