@@ -25,12 +25,12 @@ paths = ["src/exec", "src/gui", "src/preproc", "src/postproc", "src/util"]
 if os.name == "posix":
 
     # Bundle pybind11 module
-    binaries = [("build/src/model.cpython-310-x86_64-linux-gnu.so", ".")]
+    binaries = [("build/src/model.cpython-312-x86_64-linux-gnu.so", ".")]
 
 elif os.name == "nt":
 
     # Bundle pybind11 module
-    binaries = [("build/src/model.cp310-win_amd64.pyd", ".")]
+    binaries = [("build/src/model.cp312-win_amd64.pyd", ".")]
 
     # Bundle libstdc++ from mingw64
     compilerPath = util_misc.get_cmake_cache("CMAKE_CXX_COMPILER")
