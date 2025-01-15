@@ -1,7 +1,7 @@
 # System modules
 import pathlib
 import functools
-from PyQt5.QtWidgets import(
+from PySide6.QtWidgets import(
     QLabel,
     QPushButton,
     QSpinBox,
@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import(
     QSizePolicy
 )
 
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import Qt
 import pyqtgraph as pg
 
 #------------------------------------------------------------------------------#

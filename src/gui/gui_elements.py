@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pathlib
 
-from PyQt5.QtWidgets import(
+from PySide6.QtWidgets import(
     QLabel,
     QMainWindow,
     QPushButton,
@@ -19,11 +19,11 @@ from PyQt5.QtWidgets import(
     QListWidget,
 )
 
-from PyQt5.QtGui import (
+from PySide6.QtGui import (
     QDoubleValidator
 )
 
-from PyQt5.QtCore import Qt
+from PySide6.QtCore import Qt
 import pyqtgraph as pg
 
 # Project modules

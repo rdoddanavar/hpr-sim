@@ -1,6 +1,6 @@
 # System modules
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QFont
+from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QFont
 
 # Project modules
 import util_misc

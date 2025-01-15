@@ -43,7 +43,7 @@ data = [("build/CMakeCache.txt"        , "."),
         ("src/util/config_unit.yml"    , ".")]
 
 # Excluded modules from bundle
-excludes = ["PySide2", "PySide6", "PyQt6"] # Using PyQt5; Qt bindings conflict with each other
+excludes = ["PySide2", "PyQt5", "PyQt6"] # Using PySide6; Qt bindings conflict with each other
 
 # Hidden imports to resolve python environment inconsistencies
 if os.name == "posix":
