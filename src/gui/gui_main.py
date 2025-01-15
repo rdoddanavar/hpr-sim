@@ -1,6 +1,8 @@
 # System modules
-from PyQt5.QtWidgets import QApplication
-from PyQt5.QtGui import QFont
+import sys
+import os
+from PySide6.QtWidgets import QApplication
+from PySide6.QtGui import QFont
 
 # Project modules
 import util_misc
@@ -12,7 +14,10 @@ def exec():
 
     util_misc.qt_setup()
 
-    app = QApplication([])
+    if os.name == "nt":
+        sys.argv += ['-platform', 'windows:darkmode=0'] # Disable dark mode PySide6
+
+    app = QApplication(sys.argv)
     font = QFont()
     font.setPointSize(14)
     app.setFont(font)
