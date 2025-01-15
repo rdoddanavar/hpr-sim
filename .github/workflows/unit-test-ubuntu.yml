@@ -44,7 +44,7 @@ jobs:
       - name: Install python packages
         run: pip install -r requirements.txt
       - name: Install dependencies
-        run: apt install libegl1 # Fix for PySide6
+        run: sudo apt install libegl1 # Fix for PySide6
       - name: Run unit test
         run: ./hpr-sim.py -i input/unit_test.yml -o output/ && ls -l output/*/*
       - name: Run regression test
@@ -67,7 +67,7 @@ jobs:
       - name: Install python packages
         run: pip install -r requirements.txt
       - name: Install dependencies
-        run: apt install libegl1 # Fix for PySide6
+        run: sudo apt install libegl1 # Fix for PySide6
       - name: PyInstaller build
         run: python tools/pyinstaller_build.py
       - name: Run unit test
