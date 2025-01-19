@@ -44,11 +44,11 @@ def plot_pdf(outputPath: pathlib.Path) -> None:
 
 def load_dir(outputPath: pathlib.Path) -> list[dict]:
 
-    subdirs = [subdir for subdir in outputPath.iterdir() if subdir.is_dir()]
+    subdirs = [subdir for subdir in sorted(outputPath.iterdir()) if subdir.is_dir()]
     telem   = [None]*len(subdirs)
 
     for iRun, subdir in enumerate(subdirs):
-        for item in subdir.iterdir():
+        for item in sorted(subdir.iterdir()):
             if item.name == "telem.npy":
                 telem[iRun] = load_npy(item)
 
@@ -101,7 +101,7 @@ def load_npy(npyPath: pathlib.Path) -> dict:
 
 def export_csv(outputPath: pathlib.Path, telemPrec: int) -> None:
 
-    subdirs = [subdir for subdir in outputPath.iterdir() if subdir.is_dir()]
+    subdirs = [subdir for subdir in sorted(outputPath.iterdir()) if subdir.is_dir()]
     telem   = load_dir(outputPath)
 
     for iRun in range(len(telem)):
@@ -128,7 +128,7 @@ def export_csv(outputPath: pathlib.Path, telemPrec: int) -> None:
 
 def export_mat(outputPath: pathlib.Path) -> None:
 
-    subdirs = [subdir for subdir in outputPath.iterdir() if subdir.is_dir()]
+    subdirs = [subdir for subdir in sorted(outputPath.iterdir()) if subdir.is_dir()]
     telem   = load_dir(outputPath)
 
     for iRun in range(len(telem)):

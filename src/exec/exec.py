@@ -297,7 +297,7 @@ def write_mc_summary(inputParams, outputPath):
 
     filePath = outputPath / "summary.yml"
     dir      = filePath.parent
-    subdirs  = [subdir for subdir in dir.iterdir() if subdir.is_dir()]
+    subdirs  = [subdir for subdir in sorted(dir.iterdir()) if subdir.is_dir()]
     nSubdir  = len(subdirs)
     nPrec    = inputParams["exec"]["telemPrec"]["value"]
     numMC    = inputParams["exec"]["numMC"]["value"]
