@@ -1,25 +1,33 @@
 import argparse
 import pathlib
+import hashlib
 
-def regression_checksum(dirIn: pathlib.Path, dirOut: pathlib.Path) -> None:
+def regression_checksum(dirIn: pathlib.Path) -> None:
     
+    # Generate MD5 checksum for all binary telemetry files (*.npy)
     subdirs = [subdir for subdir in sorted(dirIn.iterdir()) if subdir.is_dir()]
-    telem   = [None]*len(subdirs)
 
-    for iRun, subdir in enumerate(subdirs):
+    for subdir in enumerate(subdirs):
         for item in sorted(subdir.iterdir()):
-            #if item.name == "telem.npy":
-            print(item)
+
+            if item.name == "telem.npy":
+
+                with open(item, "rb") as fileIn:
+
+                    hash = hashlib.md5()
+
+                    while chunk := fileIn.read(8192): # Arbitrary chunk size
+                        hash.update(chunk)
+
+                with open(subdir / "telem_md5.txt", 'w') as fileOut:
+                    fileOut.write(hash.hexdigest())
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("dirIn" , type=str, help="Input directory" )
-    parser.add_argument("dirOut", type=str, help="Output directory")
 
-    args = parser.parse_args()
+    args  = parser.parse_args()
+    dirIn = pathlib.Path(args.dirIn)
 
-    dirIn  = pathlib.Path(args.dirIn )
-    dirOut = pathlib.Path(args.dirOut)
-
-    regression_checksum(dirIn, dirOut)
+    regression_checksum(dirIn)
