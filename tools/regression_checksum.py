@@ -7,7 +7,7 @@ def regression_checksum(dirIn: pathlib.Path) -> None:
     # Generate MD5 checksum for all binary telemetry files (*.npy)
     subdirs = [subdir for subdir in sorted(dirIn.iterdir()) if subdir.is_dir()]
 
-    for subdir in enumerate(subdirs):
+    for subdir in subdirs:
         for item in sorted(subdir.iterdir()):
 
             if item.name == "telem.npy":
