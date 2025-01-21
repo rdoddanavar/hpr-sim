@@ -75,7 +75,7 @@ def diff_files(filePath1, filePath2, dirOut) -> bool:
             isDiff = True
 
             # Generate HTML diff report
-            diff = difflib.HtmlDiff().make_file(lines1, lines2, "Before", "After")
+            diff = difflib.HtmlDiff().make_file(lines1, lines2, dirCmp1, dirCmp2)
 
             diffPath = (dirOut / filePath1.stem).as_posix() + ".html"
 
