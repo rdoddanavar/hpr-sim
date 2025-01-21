@@ -5,12 +5,16 @@ import hashlib
 def regression_checksum(dirIn: pathlib.Path) -> None:
     
     # Generate MD5 checksum for all binary telemetry files (*.npy)
+    # Checksum is more efficient to version control for CI testing
+
     subdirs = [subdir for subdir in sorted(dirIn.iterdir()) if subdir.is_dir()]
 
     for subdir in subdirs:
         for item in sorted(subdir.iterdir()):
 
             if item.name == "telem.npy":
+
+                # Get checksum
 
                 with open(item, "rb") as fileIn:
 
@@ -19,8 +23,17 @@ def regression_checksum(dirIn: pathlib.Path) -> None:
                     while chunk := fileIn.read(8192): # Arbitrary chunk size
                         hash.update(chunk)
 
+                # Get metadata
+
+                with open(subdir / "input.yml", 'r') as metaIn:
+                    metaData = metaIn.read().splitlines()[:3]
+                    metaStr  = "\n".join(metaData)
+
+                # Write metadata & hash string
+
                 with open(subdir / "telem_md5.txt", 'w') as fileOut:
-                    fileOut.write(hash.hexdigest())
+                    fileOut.write(f"{metaStr}\n")
+                    fileOut.write(f"{hash.hexdigest()}\n")
 
 if __name__ == "__main__":
 
