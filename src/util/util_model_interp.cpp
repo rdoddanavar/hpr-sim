@@ -1,4 +1,6 @@
 // System libraries
+#include <cmath>
+#include <algorithm>
 
 // External libraries
 #include "gsl/interpolation/gsl_interp.h"
@@ -8,6 +10,7 @@
 
 // Project headers
 #include "util_model.h"
+#include "interp.h"
 
 //---------------------------------------------------------------------------//
 
@@ -185,3 +188,188 @@ double interp2d_eval(gsl_spline2d*     spline,
     return zq;
 
 }
+
+//----------------------------------------------------------------------------//
+
+void Interp::init(indvec dataInd, depvec dataDep, interpMethod method)
+{
+
+    dataInd_ = dataInd;
+    dataDep_ = dataDep;
+    method_  = method;
+
+    nDim_ = dataInd_.size();
+
+    xMin_ = std::vector<double>(nDim_, 0.0);
+    xMax_ = std::vector<double>(nDim_, 0.0);
+
+    iSearch_ = std::vector<std::size_t>(nDim_, 0);
+
+    // TODO: error catching for dimension/method mismatch
+
+    switch (method_)
+    {
+        case LINEAR:
+            init_linear();
+            break;
+        case PCHIP:
+            //init_pchip();
+            break;
+        case BILINEAR:
+            //init_bilinear();
+            break;
+    }
+
+}
+
+void Interp::init_linear()
+{
+    xMin_[0] = *std::min_element(dataInd_[0].begin(), dataInd_[0].end());
+    xMax_[0] = *std::max_element(dataInd_[0].begin(), dataInd_[0].end());
+}
+
+double Interp::update(std::vector<double> xq)
+{
+    double yq;
+    switch (method_)
+    {
+        case LINEAR:
+            yq = update_linear(xq);
+            break;
+        case PCHIP:
+            //init_pchip();
+            break;
+        case BILINEAR:
+            //init_bilinear();
+            break;
+    }
+    return yq;
+}
+
+double Interp::update_linear(std::vector<double> xq)
+{
+    
+    const std::size_t iDim = 0;
+    double yq;
+
+    if (xq[iDim] < xMin_[iDim]) // No extrapolation, use min y value
+    {
+        yq = dataDep_[0];
+    }
+    else if (xq[iDim] > xMax_[iDim]) // No extrapolation, use max y value
+    {
+        yq = dataDep_.back();
+    }
+    else // Evaluate on valid interval
+    {
+
+        iSearch_[iDim] = search(iDim, xq[iDim]);
+
+        double x0 = dataDep_[iSearch_[iDim]+0];
+        double x1 = dataDep_[iSearch_[iDim]+1];
+        double y0 = dataDep_[iSearch_[iDim]+0];
+        double y1 = dataDep_[iSearch_[iDim]+1];
+
+        double dx = x1 - x0;
+        double dy = y1 - y0;
+
+        yq = y0 + (dy/dx)*(xq[iDim] - x0);
+
+    }
+
+    return yq;
+
+}
+
+void Interp::search(std::size_t iDim, double xq)
+{
+
+    // Performs a binary search to find 
+    // the index of the first point in x
+    // that satisfies x[i] <= xq;
+    // Additional logic is used to accelerate the search
+    // using edge cases or the previous result
+
+    const std::vector<double>& x = dataInd_[iDim];
+
+    std::size_t iLo = 1;
+    std::size_t iHi = x.size();
+
+    // Check bounds
+
+    if (xq == x[iLo])
+    {
+        iSearch_[iDim] = iLo;
+        return;
+    }
+    else if (xq == x[iHi])
+    {
+        iSearch_[iDim] = iHi;
+        return;
+    }
+
+    // Initialize search from last point
+
+    if iMem <= 0
+        iMd = floor((iLo + iHi)/2);
+    else
+        iMd = iMem;
+    end
+
+    // Check immediately before and after last point
+
+    if (iMd > iLo) && (xq >= x(iMd-1)) && (xq < x(iMd))
+        iMd = iMd - 1;
+        return
+    elseif (iMd < (iHi-1)) && (xq >= x(iMd+1)) && (xq < x(iMd+2))
+        iMd = iMd + 1;
+        return
+    end
+
+    // Finally, perform binary search
+
+    while (true)
+    {    
+        // xq < x(iLo+1)
+        // goal: find index of (floor) closest x point)
+    
+        if (xq >= x(iMd)) && (xq < x(iMd+1))
+            return
+        else
+            if xq < x(iMd)
+                iHi = iMd;
+            elseif xq > x(iMd)
+                iLo = iMd;
+            end
+            iMd = floor((iLo + iHi)/2);
+            iter = iter + 1;
+        end
+    
+    }
+
+}
+
+/*
+
+void Interp::init_pchip()
+{
+    ;
+}
+
+void Interp::update_phip()
+{
+    ;
+}
+
+void Interp::init_bilinear()
+{
+    ;
+}
+
+void Interp::update_bilinear()
+{
+    ;
+}
+*/
+
+
