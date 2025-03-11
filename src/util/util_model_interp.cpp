@@ -205,6 +205,13 @@ void Interp::init(indvec dataInd, depvec dataDep, interpMethod method)
 
     iSearch_ = std::vector<std::size_t>(nDim_, 0);
 
+    for (std::size_t iDim=0; iDim<nDim_; iDim++)
+    {
+        std::size_t iLo = 0;
+        std::size_t iHi = dataInd_[iDim].size() - 1;
+        iSearch_[iDim]  = floor((iLo + iHi)/2);
+    }
+
     // TODO: error catching for dimension/method mismatch
 
     switch (method_)
@@ -237,10 +244,10 @@ double Interp::update(std::vector<double> xq)
             yq = update_linear(xq);
             break;
         case PCHIP:
-            //init_pchip();
+            //update_pchip();
             break;
         case BILINEAR:
-            //init_bilinear();
+            //update_bilinear();
             break;
     }
     return yq;
@@ -263,7 +270,7 @@ double Interp::update_linear(std::vector<double> xq)
     else // Evaluate on valid interval
     {
 
-        iSearch_[iDim] = search(iDim, xq[iDim]);
+        search(iDim, xq[iDim]);
 
         double x0 = dataDep_[iSearch_[iDim]+0];
         double x1 = dataDep_[iSearch_[iDim]+1];
@@ -290,61 +297,61 @@ void Interp::search(std::size_t iDim, double xq)
     // Additional logic is used to accelerate the search
     // using edge cases or the previous result
 
-    const std::vector<double>& x = dataInd_[iDim];
+    const std::vector<double>& x       = dataInd_[iDim];
+          std::size_t&         iSearch = iSearch_[iDim];
 
-    std::size_t iLo = 1;
-    std::size_t iHi = x.size();
+    std::size_t iLo = 0;
+    std::size_t iHi = x.size() - 1;
 
     // Check bounds
 
     if (xq == x[iLo])
     {
-        iSearch_[iDim] = iLo;
+        iSearch = iLo;
         return;
     }
     else if (xq == x[iHi])
     {
-        iSearch_[iDim] = iHi;
+        iSearch = iHi;
         return;
     }
 
-    // Initialize search from last point
+    // Check immediately before and after current index
 
-    if iMem <= 0
-        iMd = floor((iLo + iHi)/2);
-    else
-        iMd = iMem;
-    end
-
-    // Check immediately before and after last point
-
-    if (iMd > iLo) && (xq >= x(iMd-1)) && (xq < x(iMd))
-        iMd = iMd - 1;
-        return
-    elseif (iMd < (iHi-1)) && (xq >= x(iMd+1)) && (xq < x(iMd+2))
-        iMd = iMd + 1;
-        return
-    end
+    if ((iSearch > iLo) && (xq >= x[iSearch-1]) && (xq < x[iSearch]))
+    {
+        iSearch -= 1;
+        return;
+    }
+    else if ((iSearch < (iHi-1)) && (xq >= x[iSearch+1]) && (xq < x[iSearch+2]))
+    {
+        iSearch += 1;
+        return;
+    }
 
     // Finally, perform binary search
 
     while (true)
-    {    
-        // xq < x(iLo+1)
+    {
+
+        // xq < x[iLo+1]
         // goal: find index of (floor) closest x point)
-    
-        if (xq >= x(iMd)) && (xq < x(iMd+1))
-            return
+
+        if ((xq >= x[iSearch]) && (xq < x[iSearch+1]))
+            return;
         else
-            if xq < x(iMd)
-                iHi = iMd;
-            elseif xq > x(iMd)
-                iLo = iMd;
-            end
-            iMd = floor((iLo + iHi)/2);
-            iter = iter + 1;
-        end
-    
+        {
+            if (xq < x[iSearch])
+            {
+                iHi = iSearch;
+            }
+            else if (xq > x[iSearch])
+            {
+                iLo = iSearch;
+            }
+            iSearch = floor((iLo + iHi)/2);
+        }
+
     }
 
 }
