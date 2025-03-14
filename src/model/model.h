@@ -18,6 +18,7 @@
 // Project headers
 #include "telem.h"
 #include "util_model.h"
+#include "interp.h"
 
 //---------------------------------------------------------------------------//
 
@@ -120,8 +121,6 @@ class Engine : public Model
         void set_state_fields() override;
         void update() override;
 
-        ~Engine(); // Destructor
-
     private:
 
         // State variables
@@ -130,12 +129,10 @@ class Engine : public Model
         double isBurnout;
 
         // Miscellaneous
-        gsl_spline* thrustSpline;
-        gsl_spline* massSpline;
+        double timeMax;
 
-        gsl_interp_accel* timeAcc;
-
-        double timeMax; 
+        Interp thrustInterp;
+        Interp massInterp;
 
 };
 

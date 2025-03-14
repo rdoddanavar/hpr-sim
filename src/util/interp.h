@@ -20,12 +20,13 @@ class Interp
     public:
 
         void init(indvec dataInd, depvec dataDep, interpMethod method);
+        double update(double xq);
         double update(std::vector<double> xq);
 
     private:
 
         void init_linear();
-        double update_linear(std::vector<double> xq);
+        double update_linear(double xq);
         void search(std::size_t iDim, double xq);
 
         indvec dataInd_;

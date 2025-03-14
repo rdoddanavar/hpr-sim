@@ -37,11 +37,15 @@ void Engine::init(numpyArray& timeInit  ,
     double* thrustData = (double*) thrustBuff.ptr;
     double* massData   = (double*) massBuff.ptr;
 
-    interp1d_init(thrustSpline, timeData, thrustData, nTime, timeAcc);
-    interp1d_init(massSpline  , timeData, massData  , nTime, timeAcc);
+    indvec tmp1 = {std::vector<double>(timeData, timeData + timeBuff.size)};
+    depvec tmp2 = std::vector<double>(thrustData, thrustData + thrustBuff.size);
+    depvec tmp3 = std::vector<double>(massData, massData + massBuff.size);
 
-    thrust  = interp1d_eval(thrustSpline, 0.0, timeAcc);
-    massEng = interp1d_eval(massSpline  , 0.0, timeAcc);
+    thrustInterp.init(tmp1, tmp2, LINEAR);
+    massInterp.init(tmp1, tmp3, LINEAR);    
+
+    thrust  = thrustInterp.update(0.0);
+    massEng = massInterp.update(0.0);
 
     timeMax = timeData[nTime-1];
 
@@ -72,8 +76,8 @@ void Engine::update()
     if (!isBurnout)
     {
 
-        thrust  = interp1d_eval(thrustSpline, time, timeAcc);
-        massEng = interp1d_eval(massSpline  , time, timeAcc);
+        thrust  = thrustInterp.update(time);
+        massEng = massInterp.update(time);
 
         if (time >= timeMax)
         {
@@ -84,23 +88,6 @@ void Engine::update()
     else
     {
         thrust = 0.0;
-    }
-
-}
-
-//---------------------------------------------------------------------------//
-
-Engine::~Engine()
-{
-
-    if (isInit)
-    {
-        
-        gsl_spline_free(thrustSpline);
-        gsl_spline_free(massSpline);
-
-        gsl_interp_accel_free(timeAcc);
-
     }
 
 }

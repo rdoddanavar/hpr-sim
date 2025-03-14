@@ -235,7 +235,7 @@ void Interp::init_linear()
     xMax_[0] = *std::max_element(dataInd_[0].begin(), dataInd_[0].end());
 }
 
-double Interp::update(std::vector<double> xq)
+double Interp::update(double xq)
 {
     double yq;
     switch (method_)
@@ -244,33 +244,42 @@ double Interp::update(std::vector<double> xq)
             yq = update_linear(xq);
             break;
         case PCHIP:
-            //update_pchip();
-            break;
-        case BILINEAR:
-            //update_bilinear();
+            //yq = update_pchip(xq[0]);
             break;
     }
     return yq;
 }
 
-double Interp::update_linear(std::vector<double> xq)
+double Interp::update(std::vector<double> xq)
+{
+    double yq;
+    switch (method_)
+    {
+        case BILINEAR:
+            //yq = update_bilinear(xq);
+            break;
+    }
+    return yq;
+}
+
+double Interp::update_linear(double xq)
 {
     
     const std::size_t iDim = 0;
     double yq;
 
-    if (xq[iDim] < xMin_[iDim]) // No extrapolation, use min y value
+    if (xq < xMin_[iDim]) // No extrapolation, use min y value
     {
         yq = dataDep_[0];
     }
-    else if (xq[iDim] > xMax_[iDim]) // No extrapolation, use max y value
+    else if (xq > xMax_[iDim]) // No extrapolation, use max y value
     {
         yq = dataDep_.back();
     }
     else // Evaluate on valid interval
     {
 
-        search(iDim, xq[iDim]);
+        search(iDim, iDim);
 
         double x0 = dataDep_[iSearch_[iDim]+0];
         double x1 = dataDep_[iSearch_[iDim]+1];
@@ -280,7 +289,7 @@ double Interp::update_linear(std::vector<double> xq)
         double dx = x1 - x0;
         double dy = y1 - y0;
 
-        yq = y0 + (dy/dx)*(xq[iDim] - x0);
+        yq = y0 + (dy/dx)*(xq - x0);
 
     }
 
