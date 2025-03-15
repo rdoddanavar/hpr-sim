@@ -145,5 +145,6 @@ void bind_Flight(py::module_ &m)
 void bind_Telem(py::module_ &m)
 {
     py::class_<Telem>(m, "Telem")
-        .def(py::init<const std::string&, const std::string&, const int&>());
+        .def(py::init<>())
+        .def("init", &Telem::init);
 }

@@ -25,18 +25,19 @@ import model
 # Create model instances
 test   = model.Test()
 engine = model.Engine()
+telem  = model.Telem()
 
 # Set model dependencies
-engine.add_dep(test)
+engine.add_deps([test])
 
 # Initialize state from top-level model
-engine.init_state()
+engine.init_state(telem)
 
 # Initialize models
 stateFields = ["time"]
 test.init(stateFields)
 
-enginePath = "/home/roshan/Git/hpr-sim/input/engine/AeroTech_J450DM.eng"
+enginePath = pathlib.Path(__file__).parent.parent.parent / "input" / "AeroTech_J450DM.eng"
 timeData, thrustData, massData = preproc_engine.load(enginePath)
 engine.init(timeData, thrustData, massData)
 
@@ -65,5 +66,7 @@ ax.plot(time, massEng)
 ax.set_title("Engine Mass Profile")
 ax.set_xlabel("Time [s]")
 ax.set_ylabel("Mass [kg]")
+
+plt.show()
 
 # %%

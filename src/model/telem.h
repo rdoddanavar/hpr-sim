@@ -22,10 +22,10 @@ class Telem
 
     public:
 
-        Telem(const std::string& outputDirIn, const std::string& metaStrIn, const int& nPrecIn);
+        void init(const std::string& outputDirIn, const std::string& metaStrIn, const int& nPrecIn);
         ~Telem();
 
-        void init();
+        void init_data();
         void update(int iStep);
         void interp_boundary(std::string targetField, double targetPoint);
         void finalize(int iStep);

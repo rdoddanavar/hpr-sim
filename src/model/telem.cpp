@@ -10,7 +10,7 @@
 
 //----------------------------------------------------------------------------//
 
-Telem::Telem(const std::string& outputDirIn, const std::string& metaStrIn, const int& nPrecIn)
+void Telem::init(const std::string& outputDirIn, const std::string& metaStrIn, const int& nPrecIn)
 {
 
     // Telemetry setup
@@ -31,7 +31,7 @@ Telem::Telem(const std::string& outputDirIn, const std::string& metaStrIn, const
 
 //----------------------------------------------------------------------------//
 
-void Telem::init()
+void Telem::init_data()
 {
 
     iTelem = 0;
@@ -321,7 +321,10 @@ void Telem::finalize_output(int iStep)
 
 Telem::~Telem()
 {
-    std::fclose(telemFile);
+    if (telemFile != nullptr)
+    {
+        std::fclose(telemFile);
+    }
 }
 
 //----------------------------------------------------------------------------//

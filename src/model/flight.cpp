@@ -54,7 +54,7 @@ void Flight::update()
     // Initialize state
     int iStep = 0;
     update_deps();
-    telem->init();
+    telem->init_data();
 
     // Solve ODE system
     double y[] = {*state->at("linPosZ"),
