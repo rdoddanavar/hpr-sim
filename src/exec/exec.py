@@ -243,6 +243,8 @@ def run_sim(inputParams, outputPath, modelData, iRun):
 
     # Execute flight
     flight.update()
+    telem.interp_boundary("linPosZ", 0.0)
+    telem.finalize()
 
 #------------------------------------------------------------------------------#
 

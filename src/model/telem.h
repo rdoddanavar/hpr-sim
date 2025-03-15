@@ -22,18 +22,17 @@ class Telem
 
     public:
 
-        void init(const std::string& outputDirIn, const std::string& metaStrIn, const int& nPrecIn);
+        void init(const std::string& outputDir, const std::string& metaStr, const int& nPrec);
         ~Telem();
 
-        void init_data();
-        void update(int iStep);
+        void update();
         void interp_boundary(std::string targetField, double targetPoint);
-        void finalize(int iStep);
+        void finalize();
 
-        static std::vector<std::string> telemFields;
-        static std::vector<std::string> telemUnits;
+        static std::vector<std::string> telemFields_;
+        static std::vector<std::string> telemUnits_;
 
-        stateMap state;
+        stateMap state_;
 
     private:
 
@@ -43,19 +42,22 @@ class Telem
         void update_stats();
         void write_stats();
 
-        void finalize_output(int iStep);
+        void finalize_output();
 
-        telemArrayMap stateTelem;
-        telemMap      stateTelemMin;
-        telemMap      stateTelemMax;
+        telemArrayMap stateTelem_;
+        telemMap      stateTelemMin_;
+        telemMap      stateTelemMax_;
 
-        std::string metaStr;
-        std::string outputDir;
-        std::string telemMode;
-        std::FILE*  telemFile = nullptr;
+        std::string metaStr_;
+        std::string outputDir_;
+        std::string telemMode_;
+        std::FILE*  telemFile_ {nullptr};
 
-        int nPrec;
-        int nTelemFields;
-        int iTelem;
+        uint8_t nPrec_ {0};
+        size_t nTelemFields_ {0};
+        size_t iStep_ {0};
+        size_t iTelem_ {0};
+
+        bool isInit_ {false};
 
 };

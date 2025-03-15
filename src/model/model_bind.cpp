@@ -146,5 +146,8 @@ void bind_Telem(py::module_ &m)
 {
     py::class_<Telem>(m, "Telem")
         .def(py::init<>())
-        .def("init", &Telem::init);
+        .def("init", &Telem::init)
+        .def("update", &Telem::update)
+        .def("interp_boundary", &Telem::interp_boundary)
+        .def("finalize", &Telem::finalize);
 }

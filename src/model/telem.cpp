@@ -10,40 +10,34 @@
 
 //----------------------------------------------------------------------------//
 
-void Telem::init(const std::string& outputDirIn, const std::string& metaStrIn, const int& nPrecIn)
+void Telem::init(const std::string& outputDir, const std::string& metaStr, const int& nPrec)
 {
 
-    // Telemetry setup
-    outputDir = outputDirIn;
-    metaStr   = metaStrIn;
-    nPrec     = nPrecIn;
-
-    nTelemFields = telemFields.size();
-
-    for (const auto& field : telemFields)
+    if (!isInit_)
     {
-        stateTelem[field] = telemArray{static_cast<TELEM_TYPE>(0.0)};
+
+        // Telemetry setup
+        outputDir_ = outputDir;
+        metaStr_   = metaStr;
+        nPrec_     = nPrec;
+
+        nTelemFields_ = telemFields_.size();
+
+        for (const auto& field : telemFields_)
+        {
+            stateTelem_[field] = telemArray{static_cast<TELEM_TYPE>(0.0)};
+        }
+
+        init_output();
+
+        iStep_  = 0;
+        iTelem_ = 0;
+        isInit_ = true;
+
     }
-
-    init_output();
-
-}
-
-//----------------------------------------------------------------------------//
-
-void Telem::init_data()
-{
-
-    iTelem = 0;
-
-    for (const auto& field : telemFields)
+    else
     {
-
-        stateTelem[field][iTelem] = static_cast<TELEM_TYPE>(*state.at(field));
-
-        stateTelemMin[field] = static_cast<TELEM_TYPE>(*state.at(field));
-        stateTelemMax[field] = static_cast<TELEM_TYPE>(*state.at(field));
-
+        throw std::runtime_error("Telem object already initialized");
     }
 
 }
@@ -73,34 +67,52 @@ void Telem::init_output()
 
     //------------------------------------------------------------------------//
 
-    const std::string filePath = outputDir + "/telem.npy";
-    telemFile = std::fopen(filePath.c_str(), "wb");
+    const std::string filePath = outputDir_ + "/telem.npy";
+    telemFile_ = std::fopen(filePath.c_str(), "wb");
 
-    const std::size_t nHdr = 128; // No. bytes
+    const size_t nHdr = 128; // No. bytes
     std::array<uint8_t, nHdr> header{0x00}; // Initialize header with NULL
 
     // Initialize header bytes; Why? Array size not known ahead of time
     // After array data is written, determine array shape and overwrite header w/ correct metadata
-    std::fwrite(header.data(), 1, nHdr, telemFile);
+    std::fwrite(header.data(), 1, nHdr, telemFile_);
 
 }
 
 //----------------------------------------------------------------------------//
 
-void Telem::update(int iStep)
+void Telem::update()
 {
 
-    iTelem = iStep % N_TELEM_ARRAY; // Index wraps from [0, N_TELEM_ARRAY]
-
-    for (const auto& field : telemFields)
+    if (isInit_)
     {
-        stateTelem[field][iTelem] = static_cast<TELEM_TYPE>(*state.at(field));
+
+        iTelem_ = iStep_ % N_TELEM_ARRAY; // Index wraps from [0, N_TELEM_ARRAY]
+
+        for (const auto& field : telemFields_)
+        {
+            stateTelem_[field][iTelem_] = static_cast<TELEM_TYPE>(*state_.at(field));
+        }
+
+        if (iTelem_ == (N_TELEM_ARRAY - 1))
+        {
+            write_output();
+            update_stats();
+        }
+        else if (iTelem_ == 0)
+        {
+            for (const auto& field : telemFields_)
+            {
+                // Initialize minmax stats to current field values
+                stateTelemMin_[field] = static_cast<TELEM_TYPE>(*state_.at(field));
+                stateTelemMax_[field] = static_cast<TELEM_TYPE>(*state_.at(field));
+            }
+        }
+        iStep_++;
     }
-
-    if (iTelem == (N_TELEM_ARRAY - 1))
+    else
     {
-        write_output();
-        update_stats();
+        throw std::runtime_error("Telem object not initialized");
     }
 
 }
@@ -113,17 +125,17 @@ void Telem::update_stats()
     TELEM_TYPE minValue;
     TELEM_TYPE maxValue;
 
-    for (const auto& field : telemFields)
+    for (const auto& field : telemFields_)
     {
 
-        auto begin = stateTelem[field].begin();
-        auto end   = begin + (iTelem + 1); // +1 for zero index
+        auto begin = stateTelem_[field].begin();
+        auto end   = begin + (iTelem_ + 1); // +1 for zero index
 
         minValue = static_cast<TELEM_TYPE>(*std::min_element(begin, end));
         maxValue = static_cast<TELEM_TYPE>(*std::max_element(begin, end));
 
-        stateTelemMin[field] = std::min(stateTelemMin[field], minValue);
-        stateTelemMax[field] = std::max(stateTelemMax[field], maxValue);
+        stateTelemMin_[field] = std::min(stateTelemMin_[field], minValue);
+        stateTelemMax_[field] = std::max(stateTelemMax_[field], maxValue);
 
     }
 
@@ -138,21 +150,21 @@ void Telem::write_output()
     // See Telem::init_output_binary for NPY file format
 
     // Write data values
-    std::vector<TELEM_TYPE> out(nTelemFields, 0.0);
-    int iField;
+    std::vector<TELEM_TYPE> out(nTelemFields_, 0.0);
+    size_t iField;
 
-    for (int iStep = 0; iStep < (iTelem + 1); iStep++)
+    for (size_t iArr = 0; iArr < (iTelem_ + 1); iArr++)
     {
 
         iField = 0;
 
-        for (const auto& field : telemFields)
+        for (const auto& field : telemFields_)
         {
-            out[iField] = stateTelem[field][iStep];
+            out[iField] = stateTelem_[field][iArr];
             iField += 1;
         }
 
-        std::fwrite(out.data(), sizeof(TELEM_TYPE), nTelemFields, telemFile);
+        std::fwrite(out.data(), sizeof(TELEM_TYPE), nTelemFields_, telemFile_);
 
     }
 
@@ -163,7 +175,7 @@ void Telem::write_output()
 void Telem::write_stats()
 {
 
-    const std::string filePath  = outputDir + "/stats.yml";
+    const std::string filePath  = outputDir_ + "/stats.yml";
     std::FILE*        statsFile = std::fopen(filePath.c_str(), "w");
     // Error handling here?
 
@@ -171,17 +183,17 @@ void Telem::write_stats()
     const std::string tab = "    "; // 4 spaces
 
     // Document start
-    fmt::format_to(std::back_inserter(out), "{}\n", metaStr);
+    fmt::format_to(std::back_inserter(out), "{}\n", metaStr_);
     fmt::format_to(std::back_inserter(out), "---\n");
 
     std::string field;
     std::string unit;
 
-    for (int iField = 0; iField < nTelemFields; iField++)
+    for (int iField = 0; iField < nTelemFields_; iField++)
     {
 
-        field = telemFields[iField];
-        unit  = telemUnits[iField];
+        field = telemFields_[iField];
+        unit  = telemUnits_[iField];
 
         if (unit.empty())
         {
@@ -190,8 +202,8 @@ void Telem::write_stats()
 
        fmt::format_to(std::back_inserter(out), "{}:\n", field);
        fmt::format_to(std::back_inserter(out), "{}unit: {}\n", tab, unit);
-       fmt::format_to(std::back_inserter(out), "{}min: {:.{}f}\n", tab, stateTelemMin[field], nPrec);
-       fmt::format_to(std::back_inserter(out), "{}max: {:.{}f}\n", tab, stateTelemMax[field], nPrec);
+       fmt::format_to(std::back_inserter(out), "{}min: {:.{}f}\n", tab, stateTelemMin_[field], nPrec_);
+       fmt::format_to(std::back_inserter(out), "{}max: {:.{}f}\n", tab, stateTelemMax_[field], nPrec_);
 
     }
 
@@ -220,28 +232,28 @@ void Telem::interp_boundary(std::string targetField, double targetPoint)
     */
 
     // Get indices of last two points
-    int i2 = iTelem;
+    int i2 = iTelem_;
     int i1 = (i2 == 0) ? (N_TELEM_ARRAY - 1) : (i2 - 1);
 
     // Catching if end position is 0.0?
 
-    double x1 = stateTelem[targetField][i1]; // End position prev (positive)
-    double x2 = stateTelem[targetField][i2]; // End position      (negative)
+    double x1 = stateTelem_[targetField][i1]; // End position prev (positive)
+    double x2 = stateTelem_[targetField][i2]; // End position      (negative)
 
     double dx12    = x1 - x2;          // Distance traveled between (positive)
     double dx10    = x1 - targetPoint; // Distance from zero point  (positive)
     double dx10Rel = dx10/dx12;        // " " normalized [0.0, 1.0]
 
     // Force linPosZ = 0.0 at flight termination
-    stateTelem[targetField][i2] = targetPoint;
+    stateTelem_[targetField][i2] = targetPoint;
 
-    for (const auto& field : telemFields)
+    for (const auto& field : telemFields_)
     {
 
         if (field == targetField) continue;
 
-        double y1 = stateTelem[field][i1]; // End state prev
-        double y2 = stateTelem[field][i2]; // End state
+        double y1 = stateTelem_[field][i1]; // End state prev
+        double y2 = stateTelem_[field][i2]; // End state
 
         double dy12 = y2 - y1;
 
@@ -249,7 +261,7 @@ void Telem::interp_boundary(std::string targetField, double targetPoint)
         double y0 = y1 + dx10Rel*dy12;
 
         // Overwrite last value
-        stateTelem[field][i2] = y0;
+        stateTelem_[field][i2] = y0;
 
     }
 
@@ -257,63 +269,77 @@ void Telem::interp_boundary(std::string targetField, double targetPoint)
 
 //----------------------------------------------------------------------------//
 
-void Telem::finalize(int iStep)
+void Telem::finalize()
 {
 
-    // Finalize telem output
-    write_output();
-    finalize_output(iStep);
+    if (isInit_)
+    {
 
-    // Finalize stats output
-    update_stats();
-    write_stats();
+        // Finalize telem output
+        write_output();
+        finalize_output();
+
+        // Finalize stats output
+        update_stats();
+        write_stats();
+
+        isInit_ = false;
+
+    }
+    else
+    {
+        throw std::runtime_error("Telem object not initialized");
+    }
 
 }
 
 //----------------------------------------------------------------------------//
 
-void Telem::finalize_output(int iStep)
+void Telem::finalize_output()
 {
 
     // See Telem::init_output_binary for NPY file format
 
-    const std::size_t nHdr = 128; // No. bytes
-    const std::size_t nMag = 6;   //
-    const std::size_t nVer = 2;   // ""
-    const std::size_t nLen = 2;   // ""
+    const size_t nHdr = 128; // No. bytes
+    const size_t nMag = 6;   //
+    const size_t nVer = 2;   // ""
+    const size_t nLen = 2;   // ""
 
-    std::array<uint8_t, nMag> magic = {0x93, 'N', 'U', 'M', 'P', 'Y'};
+    std::array<uint8_t, nMag> magic   = {0x93, 'N', 'U', 'M', 'P', 'Y'};
     std::array<uint8_t, nVer> version = {0x01, 0x00};
-    std::array<std::uint16_t, 1> dataLen = {0x0076};
+    std::array<uint16_t, 1>   dataLen = {0x0076};
 
     // Go back and populate header
-    std::rewind(telemFile);
+    std::rewind(telemFile_);
 
     // 1. Magic string
-    std::fwrite(magic.data(), 1, nMag, telemFile); // nMag elements, 1 byte each
+    std::fwrite(magic.data(), 1, nMag, telemFile_); // nMag elements, 1 byte each
 
     // 2. & 3. Format version
-    std::fwrite(version.data(), 1, nVer, telemFile); // nVer elements, 1 byte each
+    std::fwrite(version.data(), 1, nVer, telemFile_); // nVer elements, 1 byte each
 
     // 4. Header data length
-    std::fwrite(dataLen.data(), nLen, 1, telemFile); // 1 element, nLen bytes each
+    std::fwrite(dataLen.data(), nLen, 1, telemFile_); // 1 element, nLen bytes each
 
     // 5. Python dict string
     // Example: "{'descr': '<f8', 'fortran_order': False, 'shape': (2, 2), }"
-    uint32_t nRow = static_cast<uint32_t>(iStep + 1);
-    uint32_t nCol = static_cast<uint32_t>(nTelemFields);
+    uint32_t nRow = static_cast<uint32_t>(iStep_); // iStep_ will correspond to number of rows; see update()
+    uint32_t nCol = static_cast<uint32_t>(nTelemFields_);
 
     std::string dictStr = fmt::format("{{'descr': '<f{:d}', 'fortran_order': False, 'shape': ({:d}, {:d}), }}",
                                       sizeof(TELEM_TYPE), nRow, nCol);
-    std::size_t nDict = dictStr.length();
+    size_t nDict = dictStr.length();
 
-    std::fwrite(dictStr.data(), 1, nDict, telemFile);
+    std::fwrite(dictStr.data(), 1, nDict, telemFile_);
 
     // 6. Padding
-    const std::size_t nPad = nHdr  - (nMag + nVer + nLen + nDict);
+    const size_t nPad = nHdr - (nMag + nVer + nLen + nDict);
     std::vector<uint8_t> space(nPad, 0x20);
     space[nPad-1] = 0x0A; // Set let element as new line
-    std::fwrite(space.data(), 1, nPad, telemFile);
+    std::fwrite(space.data(), 1, nPad, telemFile_);
+
+    // 7. Cleanup
+    std::fclose(telemFile_);
 
 }
 
@@ -321,15 +347,15 @@ void Telem::finalize_output(int iStep)
 
 Telem::~Telem()
 {
-    if (telemFile != nullptr)
+    if (isInit_)
     {
-        std::fclose(telemFile);
+        finalize();
     }
 }
 
 //----------------------------------------------------------------------------//
 
-std::vector<std::string> Telem::telemFields =
+std::vector<std::string> Telem::telemFields_ =
 {
     "time"           ,
     "thrust"         ,
@@ -354,7 +380,7 @@ std::vector<std::string> Telem::telemFields =
 
 //----------------------------------------------------------------------------//
 
-std::vector<std::string> Telem::telemUnits =
+std::vector<std::string> Telem::telemUnits_ =
 {
     "s"     ,
     "N"     ,
