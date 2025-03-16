@@ -31,6 +31,7 @@ telem  = model.Telem()
 engine.add_deps([test])
 
 # Initialize state from top-level model
+telem.init("output", "# test_engine.py", 3)
 engine.init_state(telem)
 
 # Initialize models
@@ -50,6 +51,7 @@ for iTime in range(len(time)):
 
     test.set_state_data("time", time[iTime])
     engine.update()
+    telem.update()
 
     thrust[iTime]  = test.get_state_data("thrust")
     massEng[iTime] = test.get_state_data("massEng")

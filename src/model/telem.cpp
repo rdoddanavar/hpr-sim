@@ -70,6 +70,10 @@ void Telem::init_output()
     const std::string filePath = outputDir_ + "/telem.npy";
     telemFile_ = std::fopen(filePath.c_str(), "wb");
 
+    if (telemFile_ == nullptr)
+    {
+        throw std::runtime_error("Cannot open " + filePath);
+    }
     const size_t nHdr = 128; // No. bytes
     std::array<uint8_t, nHdr> header{0x00}; // Initialize header with NULL
 
@@ -93,7 +97,10 @@ void Telem::update()
 
         for (const auto& field : telemFields_)
         {
-            stateTelem_[field][iTelem_] = static_cast<TELEM_TYPE>(*state_.at(field));
+            if (state_[field])
+            {
+                stateTelem_[field][iTelem_] = static_cast<TELEM_TYPE>(*state_[field]);
+            }
         }
 
         // If array is full, write data and update stats
@@ -110,8 +117,11 @@ void Telem::update()
         {
             for (const auto& field : telemFields_)
             {
-                stateTelemMin_[field] = static_cast<TELEM_TYPE>(*state_.at(field));
-                stateTelemMax_[field] = static_cast<TELEM_TYPE>(*state_.at(field));
+                if (state_[field])
+                {
+                    stateTelemMin_[field] = static_cast<TELEM_TYPE>(*state_[field]);
+                    stateTelemMax_[field] = static_cast<TELEM_TYPE>(*state_[field]);
+                }
             }
         }
 
@@ -186,7 +196,11 @@ void Telem::write_stats()
 
     const std::string filePath  = outputDir_ + "/stats.yml";
     std::FILE*        statsFile = std::fopen(filePath.c_str(), "w");
-    // Error handling here?
+
+    if (statsFile == nullptr)
+    {
+        throw std::runtime_error("Cannot open " + filePath);
+    }
 
     auto out = fmt::memory_buffer();
     const std::string tab = "    "; // 4 spaces
