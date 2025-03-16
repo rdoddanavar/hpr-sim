@@ -87,28 +87,37 @@ void Telem::update()
     if (isInit_)
     {
 
-        iTelem_ = iStep_ % N_TELEM_ARRAY; // Index wraps from [0, N_TELEM_ARRAY]
+        // Get array index and collect state data
+
+        iTelem_ = iStep_ % N_TELEM_ARRAY; // Index wraps from [0, N_TELEM_ARRAY - 1]
 
         for (const auto& field : telemFields_)
         {
             stateTelem_[field][iTelem_] = static_cast<TELEM_TYPE>(*state_.at(field));
         }
 
+        // If array is full, write data and update stats
+
         if (iTelem_ == (N_TELEM_ARRAY - 1))
         {
             write_output();
             update_stats();
         }
-        else if (iTelem_ == 0)
+
+        // First pass, set minmax stats to current field values
+
+        if (iStep_ == 0)
         {
             for (const auto& field : telemFields_)
             {
-                // Initialize minmax stats to current field values
                 stateTelemMin_[field] = static_cast<TELEM_TYPE>(*state_.at(field));
                 stateTelemMax_[field] = static_cast<TELEM_TYPE>(*state_.at(field));
             }
         }
+
+        // Increment overall iteration index
         iStep_++;
+
     }
     else
     {
