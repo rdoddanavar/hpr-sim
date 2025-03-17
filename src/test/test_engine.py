@@ -1,5 +1,7 @@
 # System modules
 import sys
+import os
+import shutil
 import pathlib
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,14 +15,20 @@ for item in paths:
 
 # Project modules
 import preproc_engine
-import model
 import postproc_flight
+import model
 
 #------------------------------------------------------------------------------#
 
-#printFigs = True
-#figDest   = "../../doc/src/fig/"
-rootPath = pathlib.Path(__file__).parent.parent.parent
+# Path setup
+rootPath   = pathlib.Path(__file__).parent.parent.parent
+inputPath  = rootPath / "input"
+outputPath = rootPath / "output" / "test_engine"
+
+if os.path.exists(outputPath):
+    shutil.rmtree(outputPath)
+
+os.mkdir(outputPath)
 
 # Create model instances
 test   = model.Test()
@@ -31,14 +39,14 @@ telem  = model.Telem()
 engine.add_deps([test])
 
 # Initialize state from top-level model
-telem.init((rootPath / "output").as_posix(), "# test_engine.py", 3)
+telem.init(outputPath.as_posix(), "# test_engine.py", 3)
 engine.init_state(telem)
 
 # Initialize models
 stateFields = ["time"]
 test.init(stateFields)
 
-enginePath = rootPath / "input" / "AeroTech_J450DM.eng"
+enginePath = inputPath / "AeroTech_J450DM.eng"
 timeData, thrustData, massData = preproc_engine.load(enginePath)
 engine.init(timeData, thrustData, massData)
 
@@ -57,21 +65,23 @@ for iTime in range(len(time)):
     massEng[iTime] = test.get_state_data("massEng")
 
 
-# Export to mat
+# Export data to *.mat
 telem.finalize()
-postproc_flight.npy_to_mat(rootPath / "output" / "telem.npy")
+postproc_flight.npy_to_mat(outputPath / "telem.npy")
 
 # Visualization
+plt.rcParams['text.usetex'] = True
+
 fig, ax = plt.subplots()
 ax.plot(time, thrust)
 ax.set_title("Thrust Profile")
 ax.set_xlabel("Time [s]")
 ax.set_ylabel("Thrust [N]")
+fig.savefig(outputPath / "thrust.png", bbox_inches="tight")
 
 fig, ax = plt.subplots()
 ax.plot(time, massEng)
 ax.set_title("Engine Mass Profile")
 ax.set_xlabel("Time [s]")
 ax.set_ylabel("Mass [kg]")
-
-plt.show()
+fig.savefig(outputPath / "mass.png", bbox_inches="tight")
