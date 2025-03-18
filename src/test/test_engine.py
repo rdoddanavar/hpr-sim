@@ -46,12 +46,11 @@ engine.init_state(telem)
 stateFields = ["time"]
 test.init(stateFields)
 
-enginePath = inputPath / "AeroTech_J450DM.eng"
-timeData, thrustData, massData = preproc_engine.load(enginePath)
+timeData, thrustData, massData = preproc_engine.load(inputPath / "AeroTech_J450DM.eng")
 engine.init(timeData, thrustData, massData)
 
 # Test model
-time    = np.arange(0, 3, 0.01)
+time    = np.arange(0, timeData.max(), 0.01)
 thrust  = np.empty(len(time))
 massEng = np.empty(len(time))
 
@@ -73,14 +72,16 @@ postproc_flight.npy_to_mat(outputPath / "telem.npy")
 plt.rcParams['text.usetex'] = True
 
 fig, ax = plt.subplots()
-ax.plot(time, thrust)
+ax.plot(timeData, thrustData, 'o', label="Data")
+ax.plot(time, thrust, label="Interpolation")
 ax.set_title("Thrust Profile")
 ax.set_xlabel("Time [s]")
 ax.set_ylabel("Thrust [N]")
 fig.savefig(outputPath / "thrust.png", bbox_inches="tight")
 
 fig, ax = plt.subplots()
-ax.plot(time, massEng)
+ax.plot(timeData, massData, 'o', label="Data")
+ax.plot(time, massEng, label="Interpolation")
 ax.set_title("Engine Mass Profile")
 ax.set_xlabel("Time [s]")
 ax.set_ylabel("Mass [kg]")
