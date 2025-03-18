@@ -59,7 +59,7 @@ class Model
         void init_state(Telem* telemIn)
         {
             telem = telemIn;
-            set_state(&(telem->state));
+            set_state(&(telem->state_));
         }
 
         void set_state(stateMap* stateIn)

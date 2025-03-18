@@ -54,7 +54,7 @@ void Flight::update()
     // Initialize state
     int iStep = 0;
     update_deps();
-    telem->init();
+    telem->update();
 
     // Solve ODE system
     double y[] = {*state->at("linPosZ"),
@@ -69,7 +69,7 @@ void Flight::update()
 
         update_deps(); // Reset state to correct time step
 
-        telem->update(iStep);
+        telem->update();
 
         // TODO: could include more complex logic with an "apogeeFlag"
 
@@ -85,8 +85,6 @@ void Flight::update()
     }
 
     flightTerm = true; // TODO: better handling for flight termination
-    telem->interp_boundary("linPosZ", 0.0);
-    telem->finalize(iStep);
 
 }
 
