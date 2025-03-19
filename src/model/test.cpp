@@ -7,11 +7,11 @@
 
 //---------------------------------------------------------------------------//
 
-void Test::init(std::vector<std::string> stateFieldsInit)
+void Test::init(std::vector<std::string> stateFields)
 {
 
-    stateFields = stateFieldsInit;
-    stateData   = std::vector<double>(stateFields.size());
+    stateFields_ = stateFields;
+    stateData_   = std::vector<double>(stateFields.size());
     set_state_fields();
 
 }
@@ -21,9 +21,9 @@ void Test::init(std::vector<std::string> stateFieldsInit)
 void Test::set_state_fields()
 {
 
-    for (int i = 0; i < stateFields.size(); i++)
+    for (int i = 0; i < stateFields_.size(); i++)
     {
-        state->emplace(stateFields[i], &stateData[i]);
+        state->emplace(stateFields_[i], &stateData_[i]);
     }
 
 }

@@ -113,7 +113,7 @@ void Aerodynamics::init(const double&      refAreaInit  ,
     interp2d_init(clPowerOnSpline,  machVec.data(), alphaVec.data(), clPowerOnVec.data(),  nMach, nAlpha);
     interp2d_init(cdPowerOnSpline,  machVec.data(), alphaVec.data(), cdPowerOnVec.data(),  nMach, nAlpha);
 
-    isInit = true;
+    isInit_ = true;
 
 }
 
@@ -185,7 +185,7 @@ void Aerodynamics::update()
 Aerodynamics::~Aerodynamics()
 {
 
-    if (isInit)
+    if (isInit_)
     {
 
         gsl_spline2d_free(cpTotalSpline);
