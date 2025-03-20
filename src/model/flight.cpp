@@ -12,13 +12,13 @@
 
 //---------------------------------------------------------------------------//
 
-void Flight::init(double timeStep, std::string termField, std::string termCondition, double termValue)
+void Flight::init(double timeStep, std::string termField, std::string termLogic, double termValue)
 {
 
     timeStep_  = timeStep;
     termField_ = termField;
     termValue_ = termValue;
-    termEval_  = termEvalMap_[termCondition];
+    termEval_  = termEvalMap_[termLogic];
 
     // Solver setup
     odeSolver_.sys.function  = &ode_update;

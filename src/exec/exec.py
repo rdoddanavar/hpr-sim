@@ -237,11 +237,11 @@ def run_sim(inputParams, outputPath, modelData, iRun):
 
     eom.init()
 
-    timeStep      = inputParams["flight"]["timeStep"]["value"]
-    termField     = inputParams["flight"]["termField"]["value"]
-    termCondition = inputParams["flight"]["termCondition"]["value"]
-    termValue     = inputParams["flight"]["termValue"]["value"]
-    flight.init(timeStep, termField, termCondition, termValue)
+    timeStep  = inputParams["flight"]["timeStep"]["value"]
+    termField = inputParams["flight"]["termField"]["value"]
+    termLogic = inputParams["flight"]["termLogic"]["value"]
+    termValue = inputParams["flight"]["termValue"]["value"]
+    flight.init(timeStep, termField, termLogic, termValue)
 
     # Execute flight
     flight.update()

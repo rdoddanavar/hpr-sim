@@ -17,10 +17,10 @@ exec:
 flight:
     timeStep: 0.01
     termField: linPosZ
-    termCondition: leq
+    termLogic: leq
     termValue: 0.0
 engine:
-    inputPath: input/AeroTech_J450DM.eng
+    inputPath: input/unit_test/AeroTech_J450DM.eng
 mass:
     massBody:
         value: 5.0
@@ -39,7 +39,7 @@ atmosphere:
         value: 1.0
         unit: atm
 aerodynamics:
-    inputPath: input/patriot_aerodynamics.csv
+    inputPath: input/unit_test/patriot_aerodynamics.csv
     refArea:
         value: 12.566
         unit: in^2

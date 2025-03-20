@@ -79,7 +79,7 @@ flight:
     termField:
         type: str
         isPath: false
-    termCondition:
+    termLogic:
         type: str
         isPath: false
         valid: [less, leq, equal, geq, greater]

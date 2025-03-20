@@ -50,7 +50,7 @@ jobs:
       - name: Install python packages
         run: pip install -r requirements.txt
       - name: Run unit test
-        run: ./hpr-sim.py -i input/unit_test.yml -o output/ && ls -l output/*/*
+        run: ./hpr-sim.py -i input/unit_test/unit_test.yml -o output/ && ls -l output/*/*
       - name: Generate telemetry checksum
         run: python tools/regression_checksum.py output/unit_test
       - name: Run regression test
@@ -78,7 +78,7 @@ jobs:
       - name: PyInstaller build
         run: python tools/pyinstaller_build.py
       - name: Run unit test
-        run: cd build/pyinstaller/dist/hpr-sim && ./hpr-sim -i input/unit_test.yml -o output/ && ls -l output/*/*
+        run: cd build/pyinstaller/dist/hpr-sim && ./hpr-sim -i input/unit_test/unit_test.yml -o output/ && ls -l output/*/*
       - name: Generate telemetry checksum
         run: python tools/regression_checksum.py build/pyinstaller/dist/hpr-sim/output/unit_test
       - name: Run regression test

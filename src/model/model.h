@@ -317,7 +317,7 @@ class Flight : public Model
 
     public:
 
-        void init(double timeStep, std::string termField, std::string termCondition, double termValue);
+        void init(double timeStep, std::string termField, std::string termLogic, double termValue);
         void set_state_fields() override;
         void update() override;
 
