@@ -321,7 +321,6 @@ class Flight : public Model
         void set_state_fields() override;
         void update() override;
 
-        Flight();
         ~Flight();
 
         OdeSolver odeSolver_; // ODE solver settings & driver
@@ -329,27 +328,33 @@ class Flight : public Model
     private:
 
         // State variables
-        double time_;
+        double time_ {0.0};
 
         // Miscellaneous
-        double timeStep_;
-        bool   flightTerm_{false};
-
-        std::string termField_;
-        std::string termCondition_;
-        double      termValue_;
+        double timeStep_ {0.0};
+        bool   flightTerm_ {false};
 
         // TODO: create "phase" structure to capture all flags
 
-        typedef bool (Flight::*TermEvalFun)(double); // class name necessary when definining inside class
-        TermEvalFun term_eval;
+        std::string termField_ {""};
+        double      termValue_ {0.0};
 
-        bool term_eval_less    (double value) {return true;}; //*state->at(termField_) <  value;}; 
-        bool term_eval_leq     (double value) {return true;}; //*state->at(termField_) <= value;}; 
-        bool term_eval_equal   (double value) {return true;}; //*state->at(termField_) == value;}; 
-        bool term_eval_geq     (double value) {return true;}; //*state->at(termField_) >= value;}; 
-        bool term_eval_greater (double value) {return true;}; //*state->at(termField_) >  value;}; 
+        typedef bool (Flight::*TermEvalFun)(); // class name necessary when definining inside class
+        TermEvalFun termEval_ {nullptr};
 
-        std::unordered_map<std::string, TermEvalFun> termEvalMap_;
+        bool term_eval_less    () {return *state->at(termField_) <  termValue_;}; 
+        bool term_eval_leq     () {return *state->at(termField_) <= termValue_;}; 
+        bool term_eval_equal   () {return *state->at(termField_) == termValue_;}; 
+        bool term_eval_geq     () {return *state->at(termField_) >= termValue_;}; 
+        bool term_eval_greater () {return *state->at(termField_) >  termValue_;}; 
+
+        std::unordered_map<std::string, TermEvalFun> termEvalMap_ = 
+        {
+            {"less"   , &Flight::term_eval_less   },
+            {"leq"    , &Flight::term_eval_leq    },
+            {"equal"  , &Flight::term_eval_equal  },
+            {"geq"    , &Flight::term_eval_geq    },
+            {"greater", &Flight::term_eval_greater},
+        };
 
 };

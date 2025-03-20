@@ -12,18 +12,13 @@
 
 //---------------------------------------------------------------------------//
 
-Flight::Flight()
-{
-    termEvalMap_.emplace("less", &Flight::term_eval_less);
-}
-
 void Flight::init(double timeStep, std::string termField, std::string termCondition, double termValue)
 {
 
-    timeStep_      = timeStep;
-    termField_     = termField;
-    termCondition_ = termCondition;
-    termValue_     = termValue;
+    timeStep_  = timeStep;
+    termField_ = termField;
+    termValue_ = termValue;
+    termEval_  = termEvalMap_[termCondition];
 
     // Solver setup
     odeSolver_.sys.function  = &ode_update;
@@ -68,7 +63,7 @@ void Flight::update()
     double y[] = {*state->at("linPosZ"),
                   *state->at("linVelZ")};
 
-    while (y[0] >= 0.0)
+    while ((this->*termEval_)())
     {
 
         double ti = ++iStep*timeStep_;
