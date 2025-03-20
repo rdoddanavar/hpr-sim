@@ -202,7 +202,8 @@ def run_sim(inputParams, outputPath, modelData, iRun):
     metaStr2 = f"# Run: {iRun+1}/{numMC}"
     metaStr  = metaStr0 + metaStr1 + metaStr2
 
-    telem = model.Telem(outputPath.resolve().as_posix(), metaStr, telemPrec)
+    telem = model.Telem()
+    telem.init(outputPath.resolve().as_posix(), metaStr, telemPrec)
 
     # Initialize state from top-level model
     flight.init_state(telem)
@@ -236,12 +237,16 @@ def run_sim(inputParams, outputPath, modelData, iRun):
 
     eom.init()
 
-    solverMethod = inputParams["flight"]["solverMethod"]["value"]
-    solverStep   = inputParams["flight"]["solverStep"]["value"]
-    flight.init(solverMethod, solverStep)
+    timeStep  = inputParams["flight"]["timeStep"]["value"]
+    termField = inputParams["flight"]["termField"]["value"]
+    termLogic = inputParams["flight"]["termLogic"]["value"]
+    termValue = inputParams["flight"]["termValue"]["value"]
+    flight.init(timeStep, termField, termLogic, termValue)
 
     # Execute flight
     flight.update()
+    telem.interp_boundary("linPosZ", 0.0)
+    telem.finalize()
 
 #------------------------------------------------------------------------------#
 

@@ -134,3 +134,11 @@ def export_mat(outputPath: pathlib.Path) -> None:
     for iRun in range(len(telem)):
         matPath = subdirs[iRun] / "telem.mat"
         scipy.io.savemat(matPath, telem[iRun], oned_as="column")
+
+#------------------------------------------------------------------------------#
+
+def npy_to_mat(npyPath: pathlib.Path) -> None:
+
+    telem   = load_npy(npyPath)
+    matPath = npyPath.parent / "telem.mat"
+    scipy.io.savemat(matPath, telem, oned_as="column")

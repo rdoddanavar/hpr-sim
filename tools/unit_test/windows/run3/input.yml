@@ -1,4 +1,4 @@
-# 2024-12-07 18:43:34
+# 2025-03-20 08:04:50
 # hpr-sim v0.0.0
 # Run: 3/5
 ---
@@ -20,13 +20,17 @@ exec:
     telemPlot:
         value: true
 flight:
-    solverMethod:
-        value: rkf45
-    solverStep:
+    timeStep:
         value: 0.01
+    termField:
+        value: linPosZ
+    termLogic:
+        value: leq
+    termValue:
+        value: 0.0
 engine:
     inputPath:
-        value: input/AeroTech_J450DM.eng
+        value: input/unit_test/AeroTech_J450DM.eng
 mass:
     massBody:
         value: 4.516166478011944
@@ -50,7 +54,7 @@ atmosphere:
         unit: atm
 aerodynamics:
     inputPath:
-        value: input/patriot_aerodynamics.csv
+        value: input/unit_test/patriot_aerodynamics.csv
     refArea:
         value: 12.566
         unit: in^2

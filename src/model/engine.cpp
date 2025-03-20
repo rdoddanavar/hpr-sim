@@ -49,7 +49,7 @@ void Engine::init(numpyArray& timeInit  ,
 
     timeMax = timeData[nTime-1];
 
-    isInit = true;
+    isInit_ = true;
 
 }
 

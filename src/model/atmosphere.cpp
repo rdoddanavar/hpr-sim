@@ -39,7 +39,7 @@ void Atmosphere::init(double tempInit, double pressInit)
     gravity0 = *state->at("gravity0");
     usStd1976_init(altitudeGP0);
 
-    isInit = true;
+    isInit_ = true;
 
 }
 
