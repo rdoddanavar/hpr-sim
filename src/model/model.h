@@ -75,7 +75,7 @@ class Model
 
         }
 
-        bool isInit = false;
+        bool isInit_ = false;
         Telem* telem = nullptr;
         stateMap* state = nullptr;
         std::set<Model*> depModels; // std::set enforces unique elements
@@ -91,7 +91,7 @@ class Test : public Model
 
     public:
 
-        void init(std::vector<std::string> stateFieldsInit);
+        void init(std::vector<std::string> stateFields_);
         void set_state_fields() override;
         void update() override;
 
@@ -100,8 +100,8 @@ class Test : public Model
 
     private:
 
-        std::vector<std::string> stateFields;
-        std::vector<double>      stateData;
+        std::vector<std::string> stateFields_;
+        std::vector<double>      stateData_;
 
 
 };
@@ -234,7 +234,7 @@ class Aerodynamics : public Model
 {
 
     public:
-        
+
         void init(const double&      refAreaInit  ,
                   const numpyArray& machInit      ,
                   const numpyArray& alphaInit     ,
@@ -317,23 +317,44 @@ class Flight : public Model
 
     public:
 
-        void init(const std::string& solverMethod, const double& solverStep);
+        void init(double timeStep, std::string termField, std::string termLogic, double termValue);
         void set_state_fields() override;
         void update() override;
 
-        ~Flight(); // Destructor
+        ~Flight();
 
-        OdeSolver odeSolver; // ODE solver settings & driver
+        OdeSolver odeSolver_; // ODE solver settings & driver
 
     private:
 
         // State variables
-        double time;
+        double time_ {0.0};
 
         // Miscellaneous
-        double dt;
-        bool   flightTerm{false};
+        double timeStep_ {0.0};
+        bool   flightTerm_ {false};
 
         // TODO: create "phase" structure to capture all flags
+
+        std::string termField_ {""};
+        double      termValue_ {0.0};
+
+        typedef bool (Flight::*TermEvalFun)();
+        TermEvalFun termEval_ {nullptr};
+
+        bool term_eval_less    () {return *state->at(termField_) <  termValue_;}; 
+        bool term_eval_leq     () {return *state->at(termField_) <= termValue_;}; 
+        bool term_eval_equal   () {return *state->at(termField_) == termValue_;}; 
+        bool term_eval_geq     () {return *state->at(termField_) >= termValue_;}; 
+        bool term_eval_greater () {return *state->at(termField_) >  termValue_;}; 
+
+        std::unordered_map<std::string, TermEvalFun> termEvalMap_ = 
+        {
+            {"less"   , &Flight::term_eval_less   },
+            {"leq"    , &Flight::term_eval_leq    },
+            {"equal"  , &Flight::term_eval_equal  },
+            {"geq"    , &Flight::term_eval_geq    },
+            {"greater", &Flight::term_eval_greater},
+        };
 
 };

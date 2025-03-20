@@ -45,7 +45,7 @@ void Engine::init(numpyArray& timeInit  ,
 
     timeMax = timeData[nTime-1];
 
-    isInit = true;
+    isInit_ = true;
 
 }
 
@@ -93,7 +93,7 @@ void Engine::update()
 Engine::~Engine()
 {
 
-    if (isInit)
+    if (isInit_)
     {
         
         gsl_spline_free(thrustSpline);

@@ -12,30 +12,33 @@
 
 //---------------------------------------------------------------------------//
 
-void Flight::init(const std::string& solverMethod, const double& solverStep)
+void Flight::init(double timeStep, std::string termField, std::string termLogic, double termValue)
 {
 
+    timeStep_  = timeStep;
+    termField_ = termField;
+    termValue_ = termValue;
+    termEval_  = termEvalMap_[termLogic];
+
     // Solver setup
-    dt = solverStep;
+    odeSolver_.sys.function  = &ode_update;
+    odeSolver_.sys.jacobian  = nullptr;
+    odeSolver_.sys.dimension = 2;
+    odeSolver_.sys.params    = this;
 
-    odeSolver.sys.function  = &ode_update;
-    odeSolver.sys.jacobian  = nullptr;
-    odeSolver.sys.dimension = 2;
-    odeSolver.sys.params    = this;
+    odeSolver_.hStart = 1e-6;
+    odeSolver_.epsAbs = 1e-9;
+    odeSolver_.epsRel = 1e-9;
 
-    odeSolver.hStart = 1e-6;
-    odeSolver.epsAbs = 1e-9;
-    odeSolver.epsRel = 1e-9;
+    odeSolver_.set_method("rkf45");
 
-    odeSolver.set_method(solverMethod);
+    odeSolver_.driver = gsl_odeiv2_driver_alloc_y_new(&odeSolver_.sys   ,
+                                                      odeSolver_.method,
+                                                      odeSolver_.hStart,
+                                                      odeSolver_.epsAbs,
+                                                      odeSolver_.epsRel);
 
-    odeSolver.driver = gsl_odeiv2_driver_alloc_y_new(&odeSolver.sys   ,
-                                                      odeSolver.method,
-                                                      odeSolver.hStart,
-                                                      odeSolver.epsAbs,
-                                                      odeSolver.epsRel);
-
-    isInit = true;
+    isInit_ = true;
 
 }
 
@@ -43,7 +46,7 @@ void Flight::init(const std::string& solverMethod, const double& solverStep)
 
 void Flight::set_state_fields()
 {
-    state->emplace("time", &time);
+    state->emplace("time", &time_);
 }
 
 //---------------------------------------------------------------------------//
@@ -60,32 +63,20 @@ void Flight::update()
     double y[] = {*state->at("linPosZ"),
                   *state->at("linVelZ")};
 
-    while (y[0] >= 0.0)
+    while (!flightTerm_)
     {
 
-        double ti = ++iStep*dt;
+        double ti = ++iStep*timeStep_;
 
-        int status = gsl_odeiv2_driver_apply(odeSolver.driver, &time, ti, y);
+        int status = gsl_odeiv2_driver_apply(odeSolver_.driver, &time_, ti, y);
 
         update_deps(); // Reset state to correct time step
 
         telem->update();
 
-        // TODO: could include more complex logic with an "apogeeFlag"
-
-        /*
-        TODO
-        if (status != GSL_SUCCESS)
-        {
-          printf ("error, return value=%d\n", status);
-          break;
-        }
-        */
+        flightTerm_ = (this->*termEval_)(); // TODO: chain logic with apogeeFlag
 
     }
-
-    flightTerm = true; // TODO: better handling for flight termination
-
 }
 
 //---------------------------------------------------------------------------//
@@ -115,9 +106,9 @@ int ode_update(double t, const double y[], double f[], void *params)
 Flight::~Flight()
 {
 
-    if (isInit)
+    if (isInit_)
     {
-        gsl_odeiv2_driver_free(odeSolver.driver);
+        gsl_odeiv2_driver_free(odeSolver_.driver);
     }
 
 }

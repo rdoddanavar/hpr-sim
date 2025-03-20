@@ -32,7 +32,7 @@ void Geodetic::init(double phiInit, double altInit)
     altitudeAGL  = 0.0;          // [m]
     wgs84();
 
-    isInit = true;
+    isInit_ = true;
 
 }
 

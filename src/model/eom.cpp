@@ -26,7 +26,7 @@ void EOM::init()
     angVel = Eigen::Vector3d::Zero();
     angPos = Eigen::Vector3d::Zero();
 
-    isInit = true;
+    isInit_ = true;
 
 }
 

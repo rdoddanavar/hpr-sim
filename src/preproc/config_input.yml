@@ -69,15 +69,25 @@ exec:
     telemPlot:
         type: bool
 flight:
-    solverMethod:
-        type: str
-        isPath: false
-        valid: [rk2, rk4, rkf45, rkck, rk8pd]
-    solverStep:
+    timeStep:
         type: float
         quantity: time
         unit: s
         min: 0
+        max: .inf
+        isRand: false
+    termField:
+        type: str
+        isPath: false
+    termLogic:
+        type: str
+        isPath: false
+        valid: [less, leq, equal, geq, greater]
+    termValue:
+        type: float
+        quantity: null
+        unit: null
+        min: -.inf
         max: .inf
         isRand: false
 engine:

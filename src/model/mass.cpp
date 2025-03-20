@@ -14,7 +14,7 @@ void Mass::init(double massBodyInit)
 
     massBody = massBodyInit;
 
-    isInit = true;
+    isInit_ = true;
 
 }
 
