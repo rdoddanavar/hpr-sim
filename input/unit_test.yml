@@ -15,8 +15,10 @@ exec:
     telemPrec: 3
     telemPlot: true
 flight:
-    solverMethod: rkf45
-    solverStep: 0.01
+    timeStep: 0.01
+    termField: linPosZ
+    termCondition: leq
+    termValue: 0.0
 engine:
     inputPath: input/AeroTech_J450DM.eng
 mass:

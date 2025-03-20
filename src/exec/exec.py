@@ -237,9 +237,11 @@ def run_sim(inputParams, outputPath, modelData, iRun):
 
     eom.init()
 
-    solverMethod = inputParams["flight"]["solverMethod"]["value"]
-    solverStep   = inputParams["flight"]["solverStep"]["value"]
-    flight.init(solverMethod, solverStep)
+    timeStep      = inputParams["flight"]["timeStep"]["value"]
+    termField     = inputParams["flight"]["termField"]["value"]
+    termCondition = inputParams["flight"]["termCondition"]["value"]
+    termValue     = inputParams["flight"]["termValue"]["value"]
+    flight.init(timeStep, termField, termCondition, termValue)
 
     # Execute flight
     flight.update()
