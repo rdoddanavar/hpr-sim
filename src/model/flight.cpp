@@ -63,7 +63,7 @@ void Flight::update()
     double y[] = {*state->at("linPosZ"),
                   *state->at("linVelZ")};
 
-    while ((this->*termEval_)())
+    while (!flightTerm_)
     {
 
         double ti = ++iStep*timeStep_;
@@ -74,21 +74,9 @@ void Flight::update()
 
         telem->update();
 
-        // TODO: could include more complex logic with an "apogeeFlag"
-
-        /*
-        TODO
-        if (status != GSL_SUCCESS)
-        {
-          printf ("error, return value=%d\n", status);
-          break;
-        }
-        */
+        flightTerm_ = (this->*termEval_)(); // TODO: chain logic with apogeeFlag
 
     }
-
-    flightTerm_ = true; // TODO: better handling for flight termination
-
 }
 
 //---------------------------------------------------------------------------//
