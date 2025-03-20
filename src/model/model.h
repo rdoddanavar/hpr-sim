@@ -339,7 +339,7 @@ class Flight : public Model
         std::string termField_ {""};
         double      termValue_ {0.0};
 
-        typedef bool (Flight::*TermEvalFun)(); // class name necessary when definining inside class
+        typedef bool (Flight::*TermEvalFun)();
         TermEvalFun termEval_ {nullptr};
 
         bool term_eval_less    () {return *state->at(termField_) <  termValue_;}; 
