@@ -2,12 +2,9 @@
 // <none>
 
 // External libraries
-#include "gsl/interpolation/gsl_interp.h"
-#include "gsl/interpolation/gsl_spline.h"
 
 // Project headers
 #include "model.h"
-#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 

@@ -10,7 +10,6 @@
 #include "gsl/interpolation/gsl_spline2d.h"
 
 // Project headers
-#include "util_model.h"
 #include "interp.h"
 
 std::vector<double> process_numpy_array(numpyArray& array)

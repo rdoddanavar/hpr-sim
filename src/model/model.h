@@ -15,7 +15,7 @@
 
 // Project headers
 #include "telem.h"
-#include "util_model.h"
+#include "odeint.h"
 #include "interp.h"
 
 //---------------------------------------------------------------------------//

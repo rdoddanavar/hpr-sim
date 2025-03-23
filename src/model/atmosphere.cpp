@@ -2,11 +2,9 @@
 #include <cmath>
 
 // External libraries
-#include "gsl/interpolation/gsl_interp.h"
 
 // Project headers
 #include "model.h"
-#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
