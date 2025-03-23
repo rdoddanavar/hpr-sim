@@ -1,6 +1,7 @@
 // System libraries
 #include <cmath>
 #include <algorithm>
+#include <stdexcept>
 
 // External libraries
 #include "gsl/interpolation/gsl_interp.h"
@@ -103,8 +104,15 @@ void Interp::init(std::vector<std::vector<double>> dataInd, std::vector<double> 
 
 void Interp::init_linear()
 {
-    xMin_[0] = *std::min_element(dataInd_[0].begin(), dataInd_[0].end());
-    xMax_[0] = *std::max_element(dataInd_[0].begin(), dataInd_[0].end());
+    if (nDim_ == 1)
+    {
+        xMin_[0] = *std::min_element(dataInd_[0].begin(), dataInd_[0].end());
+        xMax_[0] = *std::max_element(dataInd_[0].begin(), dataInd_[0].end());
+        // check_dims_1D()
+    }
+    {
+        throw std::runtime_error("Array dimensions incompatible with interp method LINEAR");
+    }
 }
 
 double Interp::update(double xq)
