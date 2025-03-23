@@ -3,9 +3,6 @@
 #include <cstddef>
 #include <vector>
 
-using indvec = std::vector<std::vector<double>>;
-using depvec = std::vector<double>;
-
 enum interpMethod
 {
     NONE     = 0, // TODO: NEAREST method?
@@ -19,7 +16,7 @@ class Interp
     
     public:
 
-        void init(indvec dataInd, depvec dataDep, interpMethod method);
+        void init(std::vector<std::vector<double>> dataInd, std::vector<double> dataDep, interpMethod method);
         double update(double xq);
         double update(std::vector<double> xq);
 
@@ -27,18 +24,18 @@ class Interp
 
         void init_linear();
         double update_linear(double xq);
-        void search(std::size_t iDim, double xq);
+        void search(size_t iDim, double xq);
 
-        indvec dataInd_;
-        depvec dataDep_;
+        std::vector<std::vector<double>> dataInd_;
+        std::vector<double> dataDep_;
 
         interpMethod method_;
 
-        std::size_t nDim_;
+        size_t nDim_;
 
         std::vector<double> xMin_;
         std::vector<double> xMax_;
 
-        std::vector<std::size_t> iSearch_;
+        std::vector<size_t> iSearch_;
 
 };

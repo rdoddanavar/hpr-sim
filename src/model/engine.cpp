@@ -12,14 +12,14 @@
 
 //---------------------------------------------------------------------------//
 
-void Engine::init(numpyArray& timeInit  , 
-                  numpyArray& thrustInit, 
-                  numpyArray& massInit  ) 
+void Engine::init(numpyArray& timeArray  ,
+                  numpyArray& thrustArray,
+                  numpyArray& massArray  )
 {
 
-    py::buffer_info timeBuff   = timeInit.request();
-    py::buffer_info thrustBuff = thrustInit.request();
-    py::buffer_info massBuff   = massInit.request();
+    py::buffer_info timeBuff   = timeArray.request();
+    py::buffer_info thrustBuff = thrustArray.request();
+    py::buffer_info massBuff   = massArray.request();
 
     const size_t nTime = timeBuff.size;
 
@@ -33,21 +33,21 @@ void Engine::init(numpyArray& timeInit  ,
         throw std::runtime_error("Input arrays must have identical lengths");
     }
 
-    double* timeData   = (double*) timeBuff.ptr;
-    double* thrustData = (double*) thrustBuff.ptr;
-    double* massData   = (double*) massBuff.ptr;
+    double* timePtr   = static_cast<double*>(timeBuff.ptr  );
+    double* thrustPtr = static_cast<double*>(thrustBuff.ptr);
+    double* massPtr   = static_cast<double*>(massBuff.ptr  );
 
-    indvec tmp1 = {std::vector<double>(timeData, timeData + timeBuff.size)};
-    depvec tmp2 = std::vector<double>(thrustData, thrustData + thrustBuff.size);
-    depvec tmp3 = std::vector<double>(massData, massData + massBuff.size);
+    std::vector<std::vector<double>> timeData   = {std::vector<double>(timePtr  , timePtr   + timeBuff.size  )};
+                std::vector<double>  thrustData =  std::vector<double>(thrustPtr, thrustPtr + thrustBuff.size);
+                std::vector<double>  massData   =  std::vector<double>(massPtr  , massPtr   + massBuff.size  );
 
-    thrustInterp.init(tmp1, tmp2, LINEAR);
-    massInterp.init(tmp1, tmp3, LINEAR);    
+    thrustInterp_.init(timeData, thrustData, LINEAR);
+    massInterp_.init(timeData, massData, LINEAR);
 
-    thrust  = thrustInterp.update(0.0);
-    massEng = massInterp.update(0.0);
+    thrust_  = thrustInterp_.update(0.0);
+    massEng_ = massInterp_.update(0.0);
 
-    timeMax = timeData[nTime-1];
+    timeMax_ = timeData[0][nTime-1];
 
     isInit_ = true;
 
@@ -58,9 +58,9 @@ void Engine::init(numpyArray& timeInit  ,
 void Engine::set_state_fields()
 {
 
-    state->emplace("thrust" , &thrust);
-    state->emplace("massEng", &massEng);
-    state->emplace("isBurnout", &isBurnout);
+    state->emplace("thrust" , &thrust_);
+    state->emplace("massEng", &massEng_);
+    state->emplace("isBurnout", &isBurnout_);
 
 }
 
@@ -73,21 +73,21 @@ void Engine::update()
 
     double time = *state->at("time");
 
-    if (!isBurnout)
+    if (!isBurnout_)
     {
 
-        thrust  = thrustInterp.update(time);
-        massEng = massInterp.update(time);
+        thrust_  = thrustInterp_.update(time);
+        massEng_ = massInterp_.update(time);
 
-        if (time >= timeMax)
+        if (time >= timeMax_)
         {
-            isBurnout = 1.0;
+            isBurnout_ = 1.0;
         }
 
     }
     else
     {
-        thrust = 0.0;
+        thrust_ = 0.0;
     }
 
 }

@@ -191,7 +191,7 @@ double interp2d_eval(gsl_spline2d*     spline,
 
 //----------------------------------------------------------------------------//
 
-void Interp::init(indvec dataInd, depvec dataDep, interpMethod method)
+void Interp::init(std::vector<std::vector<double>> dataInd, std::vector<double> dataDep, interpMethod method)
 {
 
     dataInd_ = dataInd;
@@ -203,12 +203,12 @@ void Interp::init(indvec dataInd, depvec dataDep, interpMethod method)
     xMin_ = std::vector<double>(nDim_, 0.0);
     xMax_ = std::vector<double>(nDim_, 0.0);
 
-    iSearch_ = std::vector<std::size_t>(nDim_, 0);
+    iSearch_ = std::vector<size_t>(nDim_, 0);
 
-    for (std::size_t iDim=0; iDim<nDim_; iDim++)
+    for (size_t iDim=0; iDim<nDim_; iDim++)
     {
-        std::size_t iLo = 0;
-        std::size_t iHi = dataInd_[iDim].size() - 1;
+        size_t iLo = 0;
+        size_t iHi = dataInd_[iDim].size() - 1;
         iSearch_[iDim]  = floor((iLo + iHi)/2);
     }
 
@@ -265,7 +265,7 @@ double Interp::update(std::vector<double> xq)
 double Interp::update_linear(double xq)
 {
 
-    const std::size_t iDim = 0;
+    const size_t iDim = 0;
     double yq;
 
     if (xq <= xMin_[iDim]) // No extrapolation, use min y value
@@ -297,7 +297,7 @@ double Interp::update_linear(double xq)
 
 }
 
-void Interp::search(std::size_t iDim, double xq)
+void Interp::search(size_t iDim, double xq)
 {
 
     // Performs a binary search to find 
@@ -306,11 +306,11 @@ void Interp::search(std::size_t iDim, double xq)
     // Additional logic is used to accelerate the search
     // using edge cases or the previous result
 
-    const std::vector<double>& x       = dataInd_[iDim];
-          std::size_t&         iSearch = iSearch_[iDim];
+    const std::vector<double>& x = dataInd_[iDim];
+    size_t& iSearch = iSearch_[iDim];
 
-    std::size_t iLo = 0;
-    std::size_t iHi = x.size() - 1;
+    size_t iLo = 0;
+    size_t iHi = x.size() - 1;
 
     // Check bounds
 

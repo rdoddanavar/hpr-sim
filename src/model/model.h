@@ -114,9 +114,9 @@ class Engine : public Model
 
     public:
 
-        void init(numpyArray& timeInit  , 
-                  numpyArray& thrustInit, 
-                  numpyArray& massInit  );
+        void init(numpyArray& timeArray  ,
+                  numpyArray& thrustArray,
+                  numpyArray& massArray  );
 
         void set_state_fields() override;
         void update() override;
@@ -124,15 +124,15 @@ class Engine : public Model
     private:
 
         // State variables
-        double thrust;
-        double massEng;
-        double isBurnout;
+        double thrust_ {0.0};
+        double massEng_ {0.0};
+        double isBurnout_ {0.0};
 
         // Miscellaneous
-        double timeMax;
+        double timeMax_ {0.0};
 
-        Interp thrustInterp;
-        Interp massInterp;
+        Interp thrustInterp_;
+        Interp massInterp_;
 
 };
 
