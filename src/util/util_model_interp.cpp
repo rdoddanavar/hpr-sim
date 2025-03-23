@@ -13,6 +13,22 @@
 #include "util_model.h"
 #include "interp.h"
 
+std::vector<double> process_numpy_array(numpyArray& array)
+{
+
+    py::buffer_info buff = array.request();
+
+    if (buff.ndim != 1)
+    {
+        throw std::runtime_error("Input arrays must be 1-D");
+    }
+
+    double* ptr = static_cast<double*>(buff.ptr);
+
+    return std::vector<double>(ptr, ptr + buff.size);
+
+}
+
 //---------------------------------------------------------------------------//
 
 // 2-D interpolant initialization - BILINEAR

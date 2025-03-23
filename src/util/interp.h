@@ -2,6 +2,12 @@
 
 #include <cstddef>
 #include <vector>
+#include "pybind11/numpy.h"
+
+namespace py = pybind11;
+using numpyArray = py::array_t<double, py::array::c_style | py::array::forcecast>;
+
+std::vector<double> process_numpy_array(numpyArray& array);
 
 enum interpMethod
 {
