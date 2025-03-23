@@ -16,53 +16,12 @@
 
 //---------------------------------------------------------------------------//
 
-void interp1d_init(gsl_interp*       &interp,
-                   const double      x[]    ,
-                   const double      y[]    ,
-                   const size_t      n      ,
-                   gsl_interp_accel* &acc   );
-
-//---------------------------------------------------------------------------//
-
-void interp1d_init(gsl_spline*       &spline,
-                   const double      x[]    ,
-                   const double      y[]    ,
-                   const size_t      n      ,
-                   gsl_interp_accel* &acc   );
-
-//---------------------------------------------------------------------------//
-
 void interp2d_init(gsl_spline2d*     &spline,
                    const double      x[]    ,
                    const double      y[]    ,
                    const double      z[]    ,
                    const size_t      nx     ,
                    const size_t      ny     );
-
-//---------------------------------------------------------------------------//
-
-void interp2d_init(gsl_spline2d*     &spline,
-                   const double      x[]    ,
-                   const double      y[]    ,
-                   const double      z[]    ,
-                   const size_t      nx     ,
-                   const size_t      ny     ,
-                   gsl_interp_accel* &xacc  ,
-                   gsl_interp_accel* &yacc  );
-
-//---------------------------------------------------------------------------//
-
-double interp1d_eval(gsl_interp*       interp,
-                     const double      x[]   ,
-                     const double      y[]   ,
-                     const double      xq    ,
-                     gsl_interp_accel* acc   );
-
-//---------------------------------------------------------------------------//
-
-double interp1d_eval(gsl_spline*       spline,
-                     const double      xq    ,
-                     gsl_interp_accel* acc   );
 
 //---------------------------------------------------------------------------//
 
