@@ -4,10 +4,37 @@
 #include <vector>
 #include "pybind11/numpy.h"
 
+#include "gsl/interpolation/gsl_interp.h"
+#include "gsl/interpolation/gsl_interp2d.h"
+#include "gsl/interpolation/gsl_spline.h"
+#include "gsl/interpolation/gsl_spline2d.h"
+
 namespace py = pybind11;
 using numpyArray = py::array_t<double, py::array::c_style | py::array::forcecast>;
 
+//----------------------------------------------------------------------------//
+
 std::vector<double> process_numpy_array(numpyArray& array);
+
+//----------------------------------------------------------------------------//
+
+void interp2d_init(gsl_spline2d*     &spline,
+    const double      x[]    ,
+    const double      y[]    ,
+    const double      z[]    ,
+    const size_t      nx     ,
+    const size_t      ny     );
+
+//----------------------------------------------------------------------------//
+
+double interp2d_eval(gsl_spline2d*     spline,
+      const double      xq    ,
+      const double      yq    ,
+      gsl_interp_accel* xacc  ,
+      gsl_interp_accel* yacc  );
+
+
+//----------------------------------------------------------------------------//
 
 enum interpMethod
 {
@@ -17,9 +44,11 @@ enum interpMethod
     BILINEAR = 3
 };
 
+//----------------------------------------------------------------------------//
+
 class Interp
 {
-    
+
     public:
 
         void init(std::vector<std::vector<double>> dataInd, std::vector<double> dataDep, interpMethod method);
