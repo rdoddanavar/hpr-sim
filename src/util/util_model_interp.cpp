@@ -264,27 +264,27 @@ double Interp::update(std::vector<double> xq)
 
 double Interp::update_linear(double xq)
 {
-    
+
     const std::size_t iDim = 0;
     double yq;
 
-    if (xq < xMin_[iDim]) // No extrapolation, use min y value
+    if (xq <= xMin_[iDim]) // No extrapolation, use min y value
     {
         yq = dataDep_[0];
     }
-    else if (xq > xMax_[iDim]) // No extrapolation, use max y value
+    else if (xq >= xMax_[iDim]) // No extrapolation, use max y value
     {
         yq = dataDep_.back();
     }
     else // Evaluate on valid interval
     {
 
-        search(iDim, iDim);
+        search(iDim, xq);
 
-        double x0 = dataDep_[iSearch_[iDim]+0];
-        double x1 = dataDep_[iSearch_[iDim]+1];
-        double y0 = dataDep_[iSearch_[iDim]+0];
-        double y1 = dataDep_[iSearch_[iDim]+1];
+        double x0 = dataInd_[iDim][iSearch_[iDim]+0];
+        double x1 = dataInd_[iDim][iSearch_[iDim]+1];
+        double y0 = dataDep_      [iSearch_[iDim]+0];
+        double y1 = dataDep_      [iSearch_[iDim]+1];
 
         double dx = x1 - x0;
         double dy = y1 - y0;
