@@ -126,6 +126,7 @@ void Interp::init_linear()
         xMax_[0] = *std::max_element(dataInd_[0].begin(), dataInd_[0].end());
         // check_dims_1D()
     }
+    else
     {
         throw std::runtime_error("Array dimensions incompatible with interp method LINEAR");
     }

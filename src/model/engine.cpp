@@ -2,7 +2,6 @@
 // <none>
 
 // External libraries
-#include "pybind11/numpy.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
 
@@ -22,16 +21,6 @@ void Engine::init(numpyArray& timeArray  ,
     py::buffer_info massBuff   = massArray.request();
 
     const size_t nTime = timeBuff.size;
-
-    if (timeBuff.ndim != 1 || thrustBuff.ndim != 1 || massBuff.ndim != 1)
-    {
-        throw std::runtime_error("Input arrays must be 1-D");
-    }
-
-    if (thrustBuff.size != nTime || massBuff.size != nTime)
-    {
-        throw std::runtime_error("Input arrays must have identical lengths");
-    }
 
     double* timePtr   = static_cast<double*>(timeBuff.ptr  );
     double* thrustPtr = static_cast<double*>(thrustBuff.ptr);

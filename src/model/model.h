@@ -7,8 +7,6 @@
 #include <set>
 
 // External libraries
-#include "pybind11/pybind11.h"
-#include "pybind11/numpy.h"
 #include "gsl/interpolation/gsl_interp.h"
 #include "gsl/interpolation/gsl_spline.h"
 #include "gsl/interpolation/gsl_spline2d.h"
@@ -25,10 +23,8 @@
 // Macros
 
 // Namespaces
-namespace py = pybind11;
 
 // Type aliases
-using numpyArray = py::array_t<double, py::array::c_style | py::array::forcecast>;
 
 //---------------------------------------------------------------------------//
 
