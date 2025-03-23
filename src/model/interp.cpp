@@ -19,7 +19,7 @@ std::vector<double> process_numpy_array(numpyArray& array)
 
     if (buff.ndim != 1)
     {
-        throw std::runtime_error("Input arrays must be 1-D");
+        throw std::runtime_error("NumPy array must be 1-D");
     }
 
     double* ptr = static_cast<double*>(buff.ptr);
