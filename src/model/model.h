@@ -110,9 +110,9 @@ class Engine : public Model
 
     public:
 
-        void init(numpyArray& timeArray  ,
-                  numpyArray& thrustArray,
-                  numpyArray& massArray  );
+        void init(const numpyArray& timeArray  ,
+                  const numpyArray& thrustArray,
+                  const numpyArray& massArray  );
 
         void set_state_fields() override;
         void update() override;
@@ -228,14 +228,14 @@ class Aerodynamics : public Model
 
     public:
 
-        void init(const double&      refAreaInit  ,
-                  const numpyArray& machInit      ,
-                  const numpyArray& alphaInit     ,
-                  const numpyArray& cpTotalInit   ,
-                  const numpyArray& clPowerOffInit,
-                  const numpyArray& cdPowerOffInit,
-                  const numpyArray& clPowerOnInit ,
-                  const numpyArray& cdPowerOnInit );
+        void init(const double&     refArea  ,
+                  const numpyArray& machArray,
+                  const numpyArray& alphaArray,
+                  const numpyArray& cpTotalArray,
+                  const numpyArray& clPowerOffArray,
+                  const numpyArray& cdPowerOffArray,
+                  const numpyArray& clPowerOnArray ,
+                  const numpyArray& cdPowerOnArray );
 
         void set_state_fields() override;
         void update() override;
@@ -245,27 +245,24 @@ class Aerodynamics : public Model
     private:
 
         // State variables
-        double dynamicPressure; // [N/m^2]
-        double mach;            // [-]
-        double reynolds;        // [-]
-        double alphaT;          // [rad]
-        double dragCoeff;       // [-]
-        double liftCoeff;       // [-]
-        double centerPressure;  // [m]
-        double dragForce;       // [N]
-        double liftForce;       // [N]
+        double dynamicPressure_; // [N/m^2]
+        double mach_;            // [-]
+        double reynolds_;        // [-]
+        double alphaT_;          // [rad]
+        double dragCoeff_;       // [-]
+        double liftCoeff_;       // [-]
+        double centerPressure_;  // [m]
+        double dragForce_;       // [N]
+        double liftForce_;       // [N]
 
         // Miscellaneous
-        double refArea; // [m^2]
+        double refArea_; // [m^2]
 
-        gsl_spline2d* cpTotalSpline;
-        gsl_spline2d* clPowerOffSpline;
-        gsl_spline2d* cdPowerOffSpline;
-        gsl_spline2d* clPowerOnSpline;
-        gsl_spline2d* cdPowerOnSpline;
-
-        gsl_interp_accel* machAcc;
-        gsl_interp_accel* alphaAcc;
+        Interp cpTotalInterp_;
+        Interp clPowerOffInterp_;
+        Interp cdPowerOffInterp_;
+        Interp clPowerOnInterp_;
+        Interp cdPowerOnInterp_;
 
         // Eigen::Vector3d forceAero;  // Force  [N]
         // Eigen::Vector3d momentAero; // Moment [N*m]

@@ -9,9 +9,9 @@
 
 //---------------------------------------------------------------------------//
 
-void Engine::init(numpyArray& timeArray  ,
-                  numpyArray& thrustArray,
-                  numpyArray& massArray  )
+void Engine::init(const numpyArray& timeArray  ,
+                  const numpyArray& thrustArray,
+                  const numpyArray& massArray  )
 {
 
     std::vector<double> timeData   = process_numpy_array(timeArray);

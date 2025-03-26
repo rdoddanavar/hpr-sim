@@ -12,7 +12,9 @@
 // Project headers
 #include "interp.h"
 
-std::vector<double> process_numpy_array(numpyArray& array)
+//---------------------------------------------------------------------------//
+
+std::vector<double> process_numpy_array(const numpyArray& array)
 {
 
     py::buffer_info buff = array.request();
@@ -29,55 +31,6 @@ std::vector<double> process_numpy_array(numpyArray& array)
 }
 
 //---------------------------------------------------------------------------//
-
-// 2-D interpolant initialization - BILINEAR
-
-void interp2d_init(gsl_spline2d*     &spline,
-                   const double      x[]    ,
-                   const double      y[]    ,
-                   const double      z[]    ,
-                   const size_t      nx     ,
-                   const size_t      ny     )
-{
-
-    spline = gsl_spline2d_alloc(gsl_interp2d_bilinear, nx, ny);
-
-    gsl_spline2d_init(spline, x, y, z, nx, ny);
-
-}
-
-//---------------------------------------------------------------------------//
-
-// 2-D interpolant evaluation
-
-double interp2d_eval(gsl_spline2d*     spline,
-                     double            xq    ,
-                     double            yq    ,
-                     gsl_interp_accel* xacc  ,
-                     gsl_interp_accel* yacc  )
-{
-
-    double zq;
-    const double xmin = spline->interp_object.xmin;
-    const double xmax = spline->interp_object.xmax;
-    const double ymin = spline->interp_object.ymin;
-    const double ymax = spline->interp_object.ymax;
-
-    // No extrapolation; enforce limits on (x,y) domain
-
-    xq = (xq < xmin) ? xmin : xq;
-    xq = (xq > xmax) ? xmax : xq;
-
-    yq = (yq < ymin) ? ymin : yq;
-    yq = (yq > ymax) ? ymax : yq;
-
-    zq = gsl_spline2d_eval(spline, xq, yq, xacc, yacc);
-
-    return zq;
-
-}
-
-//----------------------------------------------------------------------------//
 
 void Interp::init(std::vector<std::vector<double>> dataInd, std::vector<double> dataDep, interpMethod method)
 {
@@ -193,6 +146,55 @@ double Interp::update_linear(double xq)
 
 }
 
+//---------------------------------------------------------------------------//
+
+/*
+
+void Interp::init_pchip()
+{
+    ;
+}
+
+//---------------------------------------------------------------------------//
+
+void Interp::update_phip()
+{
+    ;
+}
+
+//---------------------------------------------------------------------------//
+
+void Interp::init_bilinear()
+{
+    ;
+}
+
+//---------------------------------------------------------------------------//
+
+void Interp::update_bilinear()
+{
+    double zq;
+    const double xmin = spline->interp_object.xmin;
+    const double xmax = spline->interp_object.xmax;
+    const double ymin = spline->interp_object.ymin;
+    const double ymax = spline->interp_object.ymax;
+
+    // No extrapolation; enforce limits on (x,y) domain
+
+    xq = (xq < xmin) ? xmin : xq;
+    xq = (xq > xmax) ? xmax : xq;
+
+    yq = (yq < ymin) ? ymin : yq;
+    yq = (yq > ymax) ? ymax : yq;
+
+    zq = gsl_spline2d_eval(spline, xq, yq, xacc, yacc);
+
+    return zq;
+}
+*/
+
+//---------------------------------------------------------------------------//
+
 void Interp::search(size_t iDim, double xq)
 {
 
@@ -260,28 +262,3 @@ void Interp::search(size_t iDim, double xq)
     }
 
 }
-
-/*
-
-void Interp::init_pchip()
-{
-    ;
-}
-
-void Interp::update_phip()
-{
-    ;
-}
-
-void Interp::init_bilinear()
-{
-    ;
-}
-
-void Interp::update_bilinear()
-{
-    ;
-}
-*/
-
-
