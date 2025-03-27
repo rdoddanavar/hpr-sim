@@ -4,10 +4,7 @@
 #include <stdexcept>
 
 // External libraries
-#include "gsl/interpolation/gsl_interp.h"
-#include "gsl/interpolation/gsl_interp2d.h"
-#include "gsl/interpolation/gsl_spline.h"
-#include "gsl/interpolation/gsl_spline2d.h"
+// <none>
 
 // Project headers
 #include "interp.h"

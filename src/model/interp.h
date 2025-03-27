@@ -4,11 +4,6 @@
 #include <vector>
 #include "pybind11/numpy.h"
 
-#include "gsl/interpolation/gsl_interp.h"
-#include "gsl/interpolation/gsl_interp2d.h"
-#include "gsl/interpolation/gsl_spline.h"
-#include "gsl/interpolation/gsl_spline2d.h"
-
 namespace py = pybind11;
 using numpyArray = py::array_t<double, py::array::c_style | py::array::forcecast>;
 
