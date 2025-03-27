@@ -39,9 +39,13 @@ class Interp
 
     private:
 
+        void check_method(std::string methodName, size_t methodDim);
         void init_linear();
+        //void init_pchip();
+        void init_bilinear();
         double update_linear(double xq);
-        void search(size_t iDim, double xq);
+        double update_bilinear(std::vector<double> xyq);
+        size_t search(const std::vector<double>& x, double xq, size_t iSearch);
 
         std::vector<std::vector<double>> dataInd_;
         std::vector<double> dataDep_;
@@ -49,6 +53,8 @@ class Interp
         interpMethod method_;
 
         size_t nDim_;
+
+        std::vector<size_t> xSize_;
 
         std::vector<double> xMin_;
         std::vector<double> xMax_;

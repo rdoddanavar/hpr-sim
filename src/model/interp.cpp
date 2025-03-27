@@ -41,6 +41,8 @@ void Interp::init(std::vector<std::vector<double>> dataInd, std::vector<double> 
 
     nDim_ = dataInd_.size();
 
+    xSize_ = std::vector<size_t>(nDim_, 0);
+
     xMin_ = std::vector<double>(nDim_, 0.0);
     xMax_ = std::vector<double>(nDim_, 0.0);
 
@@ -48,12 +50,20 @@ void Interp::init(std::vector<std::vector<double>> dataInd, std::vector<double> 
 
     for (size_t iDim=0; iDim<nDim_; iDim++)
     {
-        size_t iLo = 0;
-        size_t iHi = dataInd_[iDim].size() - 1;
-        iSearch_[iDim]  = floor((iLo + iHi)/2);
-    }
 
-    // TODO: error catching for dimension/method mismatch
+        // Populate independent data dimensions
+        xSize_[iDim] = dataInd_[iDim].size();
+
+        // Get edge values
+        xMin_[iDim] = *std::min_element(dataInd_[iDim].begin(), dataInd_[iDim].end());
+        xMax_[iDim] = *std::max_element(dataInd_[iDim].begin(), dataInd_[iDim].end());
+
+        // Initialize search indices
+        size_t iLo = 0;
+        size_t iHi = xSize_[iDim] - 1;
+        iSearch_[iDim] = floor((iLo + iHi)/2);
+
+    }
 
     switch (method_)
     {
@@ -64,24 +74,36 @@ void Interp::init(std::vector<std::vector<double>> dataInd, std::vector<double> 
             //init_pchip();
             break;
         case BILINEAR:
-            //init_bilinear();
+            init_bilinear();
             break;
+    }
+
+}
+
+void Interp::check_method(std::string methodName, size_t methodDim)
+{
+
+    bool checkDim = (nDim_ == methodDim);
+
+    size_t sizeTotal = 1;
+
+    for (size_t iDim=0; iDim<nDim_; iDim++)
+    {
+        sizeTotal *= xSize_[iDim];
+    }
+
+    bool checkSize = (sizeTotal == dataDep_.size());
+
+    if (!(checkDim && checkSize))
+    {
+        throw std::runtime_error("Input array dimensions incompatible with interp method: " + methodName);
     }
 
 }
 
 void Interp::init_linear()
 {
-    if (nDim_ == 1)
-    {
-        xMin_[0] = *std::min_element(dataInd_[0].begin(), dataInd_[0].end());
-        xMax_[0] = *std::max_element(dataInd_[0].begin(), dataInd_[0].end());
-        // check_dims_1D()
-    }
-    else
-    {
-        throw std::runtime_error("Array dimensions incompatible with interp method LINEAR");
-    }
+    check_method("LINEAR", 1);
 }
 
 double Interp::update(double xq)
@@ -105,7 +127,7 @@ double Interp::update(std::vector<double> xq)
     switch (method_)
     {
         case BILINEAR:
-            //yq = update_bilinear(xq);
+            yq = update_bilinear(xq);
             break;
     }
     return yq;
@@ -128,7 +150,7 @@ double Interp::update_linear(double xq)
     else // Evaluate on valid interval
     {
 
-        search(iDim, xq);
+        iSearch_[iDim] = search(dataInd_[iDim], xq, iSearch_[iDim]);
 
         double x0 = dataInd_[iDim][iSearch_[iDim]+0];
         double x1 = dataInd_[iDim][iSearch_[iDim]+1];
@@ -138,6 +160,7 @@ double Interp::update_linear(double xq)
         double dx = x1 - x0;
         double dy = y1 - y0;
 
+        // Perform linear interpolation
         yq = y0 + (dy/dx)*(xq - x0);
 
     }
@@ -162,40 +185,39 @@ void Interp::update_phip()
     ;
 }
 
-//---------------------------------------------------------------------------//
-
-void Interp::init_bilinear()
-{
-    ;
-}
-
-//---------------------------------------------------------------------------//
-
-void Interp::update_bilinear()
-{
-    double zq;
-    const double xmin = spline->interp_object.xmin;
-    const double xmax = spline->interp_object.xmax;
-    const double ymin = spline->interp_object.ymin;
-    const double ymax = spline->interp_object.ymax;
-
-    // No extrapolation; enforce limits on (x,y) domain
-
-    xq = (xq < xmin) ? xmin : xq;
-    xq = (xq > xmax) ? xmax : xq;
-
-    yq = (yq < ymin) ? ymin : yq;
-    yq = (yq > ymax) ? ymax : yq;
-
-    zq = gsl_spline2d_eval(spline, xq, yq, xacc, yacc);
-
-    return zq;
-}
 */
 
 //---------------------------------------------------------------------------//
 
-void Interp::search(size_t iDim, double xq)
+void Interp::init_bilinear()
+{
+    check_method("BILINEAR", 2);
+}
+
+//---------------------------------------------------------------------------//
+
+double Interp::update_bilinear(std::vector<double> xq)
+{
+
+    for (size_t iDim=0; iDim<nDim_; iDim++)
+    {
+        // No extrapolation; enforce limits on domain
+        xq[iDim] = (xq[iDim] < xMin_[iDim]) ? xMin_[iDim] : xq[iDim];
+        xq[iDim] = (xq[iDim] > xMax_[iDim]) ? xMax_[iDim] : xq[iDim];
+
+        // Get search indices
+        iSearch_[iDim] = search(dataInd_[iDim], xq[iDim], iSearch_[iDim]);
+    }
+
+    // Perform bilinear interpolation
+    double yq = 0.0;
+    return yq;
+}
+
+
+//---------------------------------------------------------------------------//
+
+size_t Interp::search(const std::vector<double>& x, double xq, size_t iSearch)
 {
 
     // Performs a binary search to find 
@@ -203,9 +225,6 @@ void Interp::search(size_t iDim, double xq)
     // that satisfies x[i] <= xq;
     // Additional logic is used to accelerate the search
     // using edge cases or the previous result
-
-    const std::vector<double>& x = dataInd_[iDim];
-    size_t& iSearch = iSearch_[iDim];
 
     size_t iLo = 0;
     size_t iHi = x.size() - 1;
@@ -215,25 +234,23 @@ void Interp::search(size_t iDim, double xq)
     if (xq == x[iLo])
     {
         iSearch = iLo;
-        return;
+        return iSearch;
     }
     else if (xq == x[iHi])
     {
         iSearch = iHi;
-        return;
+        return iSearch;
     }
 
     // Check immediately before and after current index
 
     if ((iSearch > iLo) && (xq >= x[iSearch-1]) && (xq < x[iSearch]))
     {
-        iSearch -= 1;
-        return;
+        return iSearch--;
     }
     else if ((iSearch < (iHi-1)) && (xq >= x[iSearch+1]) && (xq < x[iSearch+2]))
     {
-        iSearch += 1;
-        return;
+        return iSearch++;
     }
 
     // Finally, perform binary search
@@ -245,7 +262,7 @@ void Interp::search(size_t iDim, double xq)
         // goal: find index of (floor) closest x point)
 
         if ((xq >= x[iSearch]) && (xq < x[iSearch+1]))
-            return;
+            return iSearch;
         else
         {
             if (xq < x[iSearch])
