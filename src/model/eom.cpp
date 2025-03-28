@@ -1,12 +1,12 @@
-// System libraries
+// System headers
 #include <vector>
 
-// External libraries
+// External headers
 #include "eigen/Eigen/Core"
 #include "eigen/Eigen/Geometry"
 #include "eigen/Eigen/LU"
 
-// Project headers
+// Internal headers
 #include "model.h"
 
 //---------------------------------------------------------------------------//

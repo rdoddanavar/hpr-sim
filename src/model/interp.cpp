@@ -7,7 +7,7 @@
 // External headers
 // <none>
 
-// Project headers
+// Internal headers
 #include "interp.h"
 
 //---------------------------------------------------------------------------//

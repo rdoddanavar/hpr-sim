@@ -1,9 +1,10 @@
-// System libraries
+// System headers
 #include <cmath>
 
-// External libraries
+// External headers
+// <none>
 
-// Project headers
+// Internal headers
 #include "model.h"
 
 //---------------------------------------------------------------------------//

@@ -1,11 +1,11 @@
-// System libraries
+// System headers
 #include <string>
 
-// External libraries
+// External headers
 #include "gsl/ode-initval2/gsl_odeiv2.h"
 #include "gsl/err/gsl_errno.h"
 
-// Project headers
+// Internal headers
 #include "model.h"
 #include "telem.h"
 

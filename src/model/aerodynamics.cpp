@@ -7,7 +7,7 @@
 // External headers
 #include "pybind11/numpy.h"
 
-// Project headers
+// Internal headers
 #include "model.h"
 
 //---------------------------------------------------------------------------//

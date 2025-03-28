@@ -1,11 +1,12 @@
-// System libraries
+// System headers
 // <none>
 
-// External libraries
+// External headers
+// <none>
 
-// Project headers
-#include "model.h"
+// Internal headers
 #include "interp.h"
+#include "model.h"
 
 //---------------------------------------------------------------------------//
 

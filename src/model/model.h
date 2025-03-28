@@ -9,7 +9,7 @@
 // External headers
 #include "eigen/Eigen/Core"
 
-// Project headers
+// Internal headers
 #include "interp.h"
 #include "odeint.h"
 #include "telem.h"

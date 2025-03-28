@@ -1,13 +1,13 @@
 #pragma once
 
-// System libraries
+// System headers
 #include <map>
 #include <string>
 
-// External libraries
+// External headers
 #include "gsl/ode-initval2/gsl_odeiv2.h"
 
-// Project headers
+// Internal headers
 // <none>
 
 //---------------------------------------------------------------------------//
