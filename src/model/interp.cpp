@@ -1,9 +1,10 @@
-// System libraries
-#include <cmath>
+// System headers
 #include <algorithm>
+#include <array>
+#include <cmath>
 #include <stdexcept>
 
-// External libraries
+// External headers
 // <none>
 
 // Project headers
@@ -147,17 +148,20 @@ double Interp::update_linear(double xq)
     else // Evaluate on valid interval
     {
 
+        // Get search index
         iSearch_[iDim] = search(dataInd_[iDim], xq, iSearch_[iDim]);
 
-        double x0 = dataInd_[iDim][iSearch_[iDim]+0];
-        double x1 = dataInd_[iDim][iSearch_[iDim]+1];
-        double y0 = dataDep_      [iSearch_[iDim]+0];
-        double y1 = dataDep_      [iSearch_[iDim]+1];
-
-        double dx = x1 - x0;
-        double dy = y1 - y0;
-
         // Perform linear interpolation
+        double x0, x1, y0, y1, dx, dy;
+
+        x0 = dataInd_[iDim][iSearch_[iDim]+0];
+        x1 = dataInd_[iDim][iSearch_[iDim]+1];
+        y0 = dataDep_      [iSearch_[iDim]+0];
+        y1 = dataDep_      [iSearch_[iDim]+1];
+
+        dx = x1 - x0;
+        dy = y1 - y0;
+
         yq = y0 + (dy/dx)*(xq - x0);
 
     }
@@ -193,6 +197,11 @@ void Interp::init_bilinear()
 
 //---------------------------------------------------------------------------//
 
+size_t Interp::get_2d_idx(size_t i0, size_t i1)
+{
+    return i0*xSize_[1] + i1;
+}
+
 double Interp::update_bilinear(std::vector<double> xq)
 {
 
@@ -206,9 +215,36 @@ double Interp::update_bilinear(std::vector<double> xq)
         iSearch_[iDim] = search(dataInd_[iDim], xq[iDim], iSearch_[iDim]);
     }
 
+    // Perform linear interpolation
+    double x0, x1, y0, y1, dx, dy;
+    std::array<double, 2> yq;
+
+    for (size_t iDim=0; iDim<nDim_; iDim++)
+    {
+
+        x0 = dataInd_[0][iSearch_[0]+0];
+        x1 = dataInd_[0][iSearch_[0]+1];
+        y0 = dataDep_[get_2d_idx(iSearch_[0]+0, iSearch_[1]+iDim)];
+        y1 = dataDep_[get_2d_idx(iSearch_[0]+1, iSearch_[1]+iDim)];
+
+        dx = x1 - x0;
+        dy = y1 - y0;
+
+        yq[iDim] = y0 + (dy/dx)*(xq[0] - x0);
+
+    }
+
     // Perform bilinear interpolation
-    double yq = 0.0;
-    return yq;
+    x0 = dataInd_[1][iSearch_[1]+0];
+    x1 = dataInd_[1][iSearch_[1]+1];
+    y0 = yq[0];
+    y1 = yq[1];
+
+    dx = x1 - x0;
+    dy = y1 - y0;
+
+    return y0 + (dy/dx)*(xq[1] - x0);
+
 }
 
 
@@ -217,11 +253,14 @@ double Interp::update_bilinear(std::vector<double> xq)
 size_t Interp::search(const std::vector<double>& x, double xq, size_t iSearch)
 {
 
-    // Performs a binary search to find 
-    // the index of the first point in x
-    // that satisfies x[i] <= xq;
-    // Additional logic is used to accelerate the search
-    // using edge cases or the previous result
+    /*
+    Performs a binary search to find 
+    the index of the first point in x
+    that satisfies x[iSearch] <= xq
+    
+    Additional logic is used to accelerate the search
+    using edge cases or the previous result
+    */
 
     size_t iLo = 0;
     size_t iHi = x.size() - 1;
@@ -243,11 +282,11 @@ size_t Interp::search(const std::vector<double>& x, double xq, size_t iSearch)
 
     if ((iSearch > iLo) && (xq >= x[iSearch-1]) && (xq < x[iSearch]))
     {
-        return iSearch--;
+        return --iSearch;
     }
     else if ((iSearch < (iHi-1)) && (xq >= x[iSearch+1]) && (xq < x[iSearch+2]))
     {
-        return iSearch++;
+        return ++iSearch;
     }
 
     // Finally, perform binary search

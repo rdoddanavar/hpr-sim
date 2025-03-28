@@ -1,22 +1,18 @@
 #pragma once
 
-// System libraries
+// System headers
 #include <cstdio>
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
 
-// External libraries
-#include "gsl/interpolation/gsl_interp.h"
-#include "gsl/interpolation/gsl_spline.h"
-#include "gsl/interpolation/gsl_spline2d.h"
-#include "gsl/ode-initval2/gsl_odeiv2.h"
+// External headers
 #include "eigen/Eigen/Core"
 
 // Project headers
-#include "telem.h"
-#include "odeint.h"
 #include "interp.h"
+#include "odeint.h"
+#include "telem.h"
 
 //---------------------------------------------------------------------------//
 
@@ -228,10 +224,10 @@ class Aerodynamics : public Model
 
     public:
 
-        void init(const double&     refArea  ,
-                  const numpyArray& machArray,
-                  const numpyArray& alphaArray,
-                  const numpyArray& cpTotalArray,
+        void init(const double&     refArea        ,
+                  const numpyArray& machArray      ,
+                  const numpyArray& alphaArray     ,
+                  const numpyArray& cpTotalArray   ,
                   const numpyArray& clPowerOffArray,
                   const numpyArray& cdPowerOffArray,
                   const numpyArray& clPowerOnArray ,
@@ -239,8 +235,6 @@ class Aerodynamics : public Model
 
         void set_state_fields() override;
         void update() override;
-
-        ~Aerodynamics(); // Destructor
 
     private:
 

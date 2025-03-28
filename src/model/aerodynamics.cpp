@@ -1,22 +1,20 @@
-// System libraries
+// System headers
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
-// External libraries
+// External headers
 #include "pybind11/numpy.h"
-#include "gsl/interpolation/gsl_interp2d.h"
-#include "gsl/interpolation/gsl_spline2d.h"
 
 // Project headers
 #include "model.h"
 
 //---------------------------------------------------------------------------//
 
-void Aerodynamics::init(const double&      refArea  ,
+void Aerodynamics::init(const double&      refArea       ,
                         const numpyArray& machArray      ,
-                        const numpyArray& alphaArray,
+                        const numpyArray& alphaArray     ,
                         const numpyArray& cpTotalArray   ,
                         const numpyArray& clPowerOffArray,
                         const numpyArray& cdPowerOffArray,

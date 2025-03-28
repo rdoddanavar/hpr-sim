@@ -1,11 +1,17 @@
 #pragma once
 
+// System headers
 #include <cstddef>
 #include <vector>
+
+// External headers
 #include "pybind11/numpy.h"
 
 namespace py = pybind11;
 using numpyArray = py::array_t<double, py::array::c_style | py::array::forcecast>;
+
+// Internal headers
+// <none>
 
 //---------------------------------------------------------------------------//
 
@@ -41,6 +47,7 @@ class Interp
         double update_linear(double xq);
         double update_bilinear(std::vector<double> xyq);
         size_t search(const std::vector<double>& x, double xq, size_t iSearch);
+        size_t get_2d_idx(size_t i0, size_t i1);
 
         std::vector<std::vector<double>> dataInd_;
         std::vector<double> dataDep_;
