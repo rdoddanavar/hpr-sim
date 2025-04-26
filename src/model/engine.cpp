@@ -19,8 +19,8 @@ void Engine::init(const numpyArray& timeArray  ,
     std::vector<double> thrustData = process_numpy_array(thrustArray);
     std::vector<double> massData   = process_numpy_array(massArray);
 
-    thrustInterp_.init({timeData}, thrustData, LINEAR);
-    massInterp_.init({timeData}, massData, LINEAR);
+    thrustInterp_.init({timeData}, thrustData, Interp::PCHIP);
+    massInterp_.init({timeData}, massData, Interp::PCHIP);
 
     thrust_  = thrustInterp_.update(0.0);
     massEng_ = massInterp_.update(0.0);

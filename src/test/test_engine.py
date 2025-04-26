@@ -50,7 +50,7 @@ timeData, thrustData, massData = preproc_engine.load(inputPath / "AeroTech_J450D
 engine.init(timeData, thrustData, massData)
 
 # Test model
-time    = np.arange(0, timeData.max(), 0.01)
+time    = np.arange(0, timeData.max(), 0.001)
 thrust  = np.empty(len(time))
 massEng = np.empty(len(time))
 

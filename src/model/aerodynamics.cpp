@@ -43,11 +43,11 @@ void Aerodynamics::init(const double&      refArea       ,
     std::vector<double> cdPowerOnData  = process_numpy_array(cdPowerOnArray);
 
     // Setup interpolation objects
-    cpTotalInterp_   .init(indData, cpTotalData   , BILINEAR);
-    clPowerOffInterp_.init(indData, clPowerOffData, BILINEAR);
-    cdPowerOffInterp_.init(indData, cdPowerOffData, BILINEAR);
-    clPowerOnInterp_ .init(indData, clPowerOnData , BILINEAR);
-    cdPowerOnInterp_ .init(indData, cdPowerOnData , BILINEAR);
+    cpTotalInterp_   .init(indData, cpTotalData   , Interp::BILINEAR);
+    clPowerOffInterp_.init(indData, clPowerOffData, Interp::BILINEAR);
+    cdPowerOffInterp_.init(indData, cdPowerOffData, Interp::BILINEAR);
+    clPowerOnInterp_ .init(indData, clPowerOnData , Interp::BILINEAR);
+    cdPowerOnInterp_ .init(indData, cdPowerOnData , Interp::BILINEAR);
 
     refArea_ = refArea;
 
