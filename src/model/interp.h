@@ -25,22 +25,12 @@ std::vector<double> process_numpy_array(const numpyArray& array);
 
 //---------------------------------------------------------------------------//
 
-
-struct ParamsPCHIP
-{
-    std::vector<double> h;   // Inter-element spacing (dx)
-    std::vector<double> del; // Inter-element slopes (dy/dx)
-    std::vector<double> d;   // Polynominal derivatives (P'(x))
-};
-
-//---------------------------------------------------------------------------//
-
 class Interp
 {
 
     public:
 
-        enum interpMethod
+        enum Method
         {
             NONE     = 0, // TODO: NEAREST method?
             LINEAR   = 1,
@@ -48,7 +38,14 @@ class Interp
             BILINEAR = 3
         };
 
-        void init(std::vector<std::vector<double>> xData, std::vector<double> yData, interpMethod method);
+        struct Pchip
+        {
+            std::vector<double> h;   // Inter-element spacing (dx)
+            std::vector<double> del; // Inter-element slopes (dy/dx)
+            std::vector<double> d;   // Polynominal derivatives (P'(x))
+        };
+
+        void init(std::vector<std::vector<double>> xData, std::vector<double> yData, Method method);
         double update(double xq);
         double update(std::vector<double> xq);
 
@@ -75,11 +72,12 @@ class Interp
         std::vector<double> yData_;
 
         // Interpolation method enumeration
-        interpMethod method_; 
+        Method method_; 
 
         // Number of independent table lookup variables
         size_t nDim_;
 
+        // Independent data array sizes
         std::vector<size_t> xSize_;
 
         // Independent data min values
@@ -92,6 +90,6 @@ class Interp
         std::vector<size_t> iS_;
 
         // PCHIP method parameters
-        ParamsPCHIP pchip_;
+        Pchip pchip_;
 
 };

@@ -30,7 +30,7 @@ std::vector<double> process_numpy_array(const numpyArray& array)
 
 //---------------------------------------------------------------------------//
 
-void Interp::init(std::vector<std::vector<double>> xData, std::vector<double> yData, interpMethod method)
+void Interp::init(std::vector<std::vector<double>> xData, std::vector<double> yData, Method method)
 {
 
     xData_  = xData;
