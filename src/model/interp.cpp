@@ -222,8 +222,8 @@ void Interp::init_pchip()
     if (sgn(pchip_.d[nX-1]) != sgn(pchip_.del[nX-2])) {pchip_.d[nX-1] = 0.0;}
 
     // 2C. Derivatives at all other points:
-    //     If signs of adjacent linear slopes (delta) don't match or are zero, set derivative to zero;
-    //     otherwise, if signs match compute derivative as weighted average
+    //     If signs of adjacent linear slopes (delta), compute derivative (d) as weighted average;
+    //     otherwise, if signs don't match or are zero, set derivative to zero
     double w1, w2;
 
     for (size_t iX=1; iX<(nX-1); iX++)
@@ -233,6 +233,10 @@ void Interp::init_pchip()
             w1 = 2*pchip_.h[iX] + pchip_.h[iX-1];
             w2 = pchip_.h[iX] + 2*pchip_.h[iX-1];
             pchip_.d[iX] = (w1 + w2)/(w1/pchip_.del[iX-1] + w2/pchip_.del[iX]);
+        }
+        else
+        {
+            pchip_.d[iX] = 0.0;
         }
     }
 
