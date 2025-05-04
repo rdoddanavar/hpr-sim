@@ -75,6 +75,8 @@ void Flight::update()
 
         flightTerm_ = (this->*termEval_)(); // TODO: chain logic with apogeeFlag
 
+        // TODO: exit condition for nan, or if termEval is never satisfied
+
     }
 }
 
