@@ -22,7 +22,7 @@ import model
 
 # Path setup
 rootPath   = pathlib.Path(__file__).parent.parent.parent
-inputPath  = rootPath / "input"
+inputPath  = rootPath / "input" / "unit_test"
 outputPath = rootPath / "output" / "test_engine"
 
 if os.path.exists(outputPath):
@@ -50,7 +50,7 @@ timeData, thrustData, massData = preproc_engine.load(inputPath / "AeroTech_J450D
 engine.init(timeData, thrustData, massData)
 
 # Test model
-time    = np.arange(0, timeData.max(), 0.01)
+time    = np.arange(0, timeData.max(), 0.001)
 thrust  = np.empty(len(time))
 massEng = np.empty(len(time))
 

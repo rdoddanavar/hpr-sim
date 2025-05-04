@@ -1,8 +1,8 @@
-// System libraries
+// System headers
 
-// External libraries
+// External headers
 
-// Project headers
+// Internal headers
 #include "model.h"
 
 //---------------------------------------------------------------------------//

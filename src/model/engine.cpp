@@ -1,49 +1,31 @@
-// System libraries
+// System headers
 // <none>
 
-// External libraries
-#include "pybind11/numpy.h"
-#include "gsl/interpolation/gsl_interp.h"
-#include "gsl/interpolation/gsl_spline.h"
+// External headers
+// <none>
 
-// Project headers
+// Internal headers
+#include "interp.h"
 #include "model.h"
-#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
-void Engine::init(numpyArray& timeInit  , 
-                  numpyArray& thrustInit, 
-                  numpyArray& massInit  ) 
+void Engine::init(const numpyArray& timeArray  ,
+                  const numpyArray& thrustArray,
+                  const numpyArray& massArray  )
 {
 
-    py::buffer_info timeBuff   = timeInit.request();
-    py::buffer_info thrustBuff = thrustInit.request();
-    py::buffer_info massBuff   = massInit.request();
+    std::vector<double> timeData   = process_numpy_array(timeArray);
+    std::vector<double> thrustData = process_numpy_array(thrustArray);
+    std::vector<double> massData   = process_numpy_array(massArray);
 
-    const size_t nTime = timeBuff.size;
+    thrustInterp_.init({timeData}, thrustData, Interp::PCHIP);
+    massInterp_.init({timeData}, massData, Interp::PCHIP);
 
-    if (timeBuff.ndim != 1 || thrustBuff.ndim != 1 || massBuff.ndim != 1)
-    {
-        throw std::runtime_error("Input arrays must be 1-D");
-    }
+    thrust_  = thrustInterp_.update(0.0);
+    massEng_ = massInterp_.update(0.0);
 
-    if (thrustBuff.size != nTime || massBuff.size != nTime)
-    {
-        throw std::runtime_error("Input arrays must have identical lengths");
-    }
-
-    double* timeData   = (double*) timeBuff.ptr;
-    double* thrustData = (double*) thrustBuff.ptr;
-    double* massData   = (double*) massBuff.ptr;
-
-    interp1d_init(thrustSpline, timeData, thrustData, nTime, timeAcc);
-    interp1d_init(massSpline  , timeData, massData  , nTime, timeAcc);
-
-    thrust  = interp1d_eval(thrustSpline, 0.0, timeAcc);
-    massEng = interp1d_eval(massSpline  , 0.0, timeAcc);
-
-    timeMax = timeData[nTime-1];
+    timeMax_ = timeData.back();
 
     isInit_ = true;
 
@@ -54,9 +36,9 @@ void Engine::init(numpyArray& timeInit  ,
 void Engine::set_state_fields()
 {
 
-    state->emplace("thrust" , &thrust);
-    state->emplace("massEng", &massEng);
-    state->emplace("isBurnout", &isBurnout);
+    state->emplace("thrust" , &thrust_);
+    state->emplace("massEng", &massEng_);
+    state->emplace("isBurnout", &isBurnout_);
 
 }
 
@@ -69,38 +51,21 @@ void Engine::update()
 
     double time = *state->at("time");
 
-    if (!isBurnout)
+    if (!isBurnout_)
     {
 
-        thrust  = interp1d_eval(thrustSpline, time, timeAcc);
-        massEng = interp1d_eval(massSpline  , time, timeAcc);
+        thrust_  = thrustInterp_.update(time);
+        massEng_ = massInterp_.update(time);
 
-        if (time >= timeMax)
+        if (time >= timeMax_)
         {
-            isBurnout = 1.0;
+            isBurnout_ = 1.0;
         }
 
     }
     else
     {
-        thrust = 0.0;
-    }
-
-}
-
-//---------------------------------------------------------------------------//
-
-Engine::~Engine()
-{
-
-    if (isInit_)
-    {
-        
-        gsl_spline_free(thrustSpline);
-        gsl_spline_free(massSpline);
-
-        gsl_interp_accel_free(timeAcc);
-
+        thrust_ = 0.0;
     }
 
 }

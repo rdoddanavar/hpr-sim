@@ -1,33 +1,26 @@
 #pragma once
 
-// System libraries
+// System headers
 #include <cstdio>
+#include <set>
 #include <string>
 #include <vector>
-#include <set>
 
-// External libraries
-#include "pybind11/pybind11.h"
-#include "pybind11/numpy.h"
-#include "gsl/interpolation/gsl_interp.h"
-#include "gsl/interpolation/gsl_spline.h"
-#include "gsl/interpolation/gsl_spline2d.h"
-#include "gsl/ode-initval2/gsl_odeiv2.h"
+// External headers
 #include "eigen/Eigen/Core"
 
-// Project headers
+// Internal headers
+#include "interp.h"
+#include "odeint.h"
 #include "telem.h"
-#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
 // Macros
 
 // Namespaces
-namespace py = pybind11;
 
 // Type aliases
-using numpyArray = py::array_t<double, py::array::c_style | py::array::forcecast>;
 
 //---------------------------------------------------------------------------//
 
@@ -113,29 +106,25 @@ class Engine : public Model
 
     public:
 
-        void init(numpyArray& timeInit  , 
-                  numpyArray& thrustInit, 
-                  numpyArray& massInit  );
+        void init(const numpyArray& timeArray  ,
+                  const numpyArray& thrustArray,
+                  const numpyArray& massArray  );
 
         void set_state_fields() override;
         void update() override;
 
-        ~Engine(); // Destructor
-
     private:
 
         // State variables
-        double thrust;
-        double massEng;
-        double isBurnout;
+        double thrust_ {0.0};
+        double massEng_ {0.0};
+        double isBurnout_ {0.0};
 
         // Miscellaneous
-        gsl_spline* thrustSpline;
-        gsl_spline* massSpline;
+        double timeMax_ {0.0};
 
-        gsl_interp_accel* timeAcc;
-
-        double timeMax; 
+        Interp thrustInterp_;
+        Interp massInterp_;
 
 };
 
@@ -235,44 +224,39 @@ class Aerodynamics : public Model
 
     public:
 
-        void init(const double&      refAreaInit  ,
-                  const numpyArray& machInit      ,
-                  const numpyArray& alphaInit     ,
-                  const numpyArray& cpTotalInit   ,
-                  const numpyArray& clPowerOffInit,
-                  const numpyArray& cdPowerOffInit,
-                  const numpyArray& clPowerOnInit ,
-                  const numpyArray& cdPowerOnInit );
+        void init(const double&     refArea        ,
+                  const numpyArray& machArray      ,
+                  const numpyArray& alphaArray     ,
+                  const numpyArray& cpTotalArray   ,
+                  const numpyArray& clPowerOffArray,
+                  const numpyArray& cdPowerOffArray,
+                  const numpyArray& clPowerOnArray ,
+                  const numpyArray& cdPowerOnArray );
 
         void set_state_fields() override;
         void update() override;
 
-        ~Aerodynamics(); // Destructor
-
     private:
 
         // State variables
-        double dynamicPressure; // [N/m^2]
-        double mach;            // [-]
-        double reynolds;        // [-]
-        double alphaT;          // [rad]
-        double dragCoeff;       // [-]
-        double liftCoeff;       // [-]
-        double centerPressure;  // [m]
-        double dragForce;       // [N]
-        double liftForce;       // [N]
+        double dynamicPressure_; // [N/m^2]
+        double mach_;            // [-]
+        double reynolds_;        // [-]
+        double alphaT_;          // [rad]
+        double dragCoeff_;       // [-]
+        double liftCoeff_;       // [-]
+        double centerPressure_;  // [m]
+        double dragForce_;       // [N]
+        double liftForce_;       // [N]
 
         // Miscellaneous
-        double refArea; // [m^2]
+        double refArea_; // [m^2]
 
-        gsl_spline2d* cpTotalSpline;
-        gsl_spline2d* clPowerOffSpline;
-        gsl_spline2d* cdPowerOffSpline;
-        gsl_spline2d* clPowerOnSpline;
-        gsl_spline2d* cdPowerOnSpline;
-
-        gsl_interp_accel* machAcc;
-        gsl_interp_accel* alphaAcc;
+        Interp cpTotalInterp_;
+        Interp clPowerOffInterp_;
+        Interp cdPowerOffInterp_;
+        Interp clPowerOnInterp_;
+        Interp cdPowerOnInterp_;
 
         // Eigen::Vector3d forceAero;  // Force  [N]
         // Eigen::Vector3d momentAero; // Moment [N*m]

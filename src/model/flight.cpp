@@ -1,14 +1,13 @@
-// System libraries
+// System headers
 #include <string>
 
-// External libraries
+// External headers
 #include "gsl/ode-initval2/gsl_odeiv2.h"
 #include "gsl/err/gsl_errno.h"
 
-// Project headers
+// Internal headers
 #include "model.h"
 #include "telem.h"
-#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
@@ -75,6 +74,8 @@ void Flight::update()
         telem->update();
 
         flightTerm_ = (this->*termEval_)(); // TODO: chain logic with apogeeFlag
+
+        // TODO: exit condition for nan, or if termEval is never satisfied
 
     }
 }

@@ -1,10 +1,10 @@
-// System libraries
+// System headers
 
-// External libraries
+// External headers
 #include "pybind11/pybind11.h"
 #include "pybind11/stl.h"
 
-// Project headers
+// Internal headers
 #include "model.h"
 #include "telem.h"
 

@@ -1,117 +1,55 @@
-// System libraries
+// System headers
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <vector>
-#include <algorithm>
 
-// External libraries
+// External headers
 #include "pybind11/numpy.h"
-#include "gsl/interpolation/gsl_interp2d.h"
-#include "gsl/interpolation/gsl_spline2d.h"
 
-// Project headers
+// Internal headers
 #include "model.h"
-#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
-void Aerodynamics::init(const double&      refAreaInit  ,
-                        const numpyArray& machInit      ,
-                        const numpyArray& alphaInit     ,
-                        const numpyArray& cpTotalInit   ,
-                        const numpyArray& clPowerOffInit,
-                        const numpyArray& cdPowerOffInit,
-                        const numpyArray& clPowerOnInit ,
-                        const numpyArray& cdPowerOnInit )
+void Aerodynamics::init(const double&      refArea       ,
+                        const numpyArray& machArray      ,
+                        const numpyArray& alphaArray     ,
+                        const numpyArray& cpTotalArray   ,
+                        const numpyArray& clPowerOffArray,
+                        const numpyArray& cdPowerOffArray,
+                        const numpyArray& clPowerOnArray ,
+                        const numpyArray& cdPowerOnArray )
 {
 
-    refArea = refAreaInit;
-
-    py::buffer_info machBuff       = machInit.request();
-    py::buffer_info alphaBuff      = alphaInit.request();
-    py::buffer_info cpTotalBuff    = cpTotalInit.request();
-    py::buffer_info clPowerOffBuff = clPowerOffInit.request();
-    py::buffer_info cdPowerOffBuff = cdPowerOffInit.request();
-    py::buffer_info clPowerOnBuff  = clPowerOnInit.request();
-    py::buffer_info cdPowerOnBuff  = cdPowerOnInit.request();
-
-    if (machBuff.ndim       != 1 || alphaBuff.ndim      != 1 ||
-        cpTotalBuff.ndim    != 1 ||
-        clPowerOffBuff.ndim != 1 || cdPowerOffBuff.ndim != 1 ||
-        clPowerOnBuff.ndim  != 1 || cdPowerOnBuff.ndim  != 1 )
-    {
-        throw std::runtime_error("Input arrays must be 1-D");
-    }
-
-    const size_t nData = machBuff.size;
-
-    if (alphaBuff.size      != nData ||
-        cpTotalBuff.size    != nData ||
-        clPowerOffBuff.size != nData || cdPowerOffBuff.size != nData ||
-        clPowerOnBuff.size  != nData || cdPowerOnBuff.size  != nData )
-    {
-        throw std::runtime_error("Input arrays must have identical lengths");
-    }
-
-    // Extract data arrays
-    double* machData       = (double*) machBuff.ptr;
-    double* alphaData      = (double*) alphaBuff.ptr;
-    double* cpTotalData    = (double*) cpTotalBuff.ptr;
-    double* clPowerOffData = (double*) clPowerOffBuff.ptr;
-    double* cdPowerOffData = (double*) cdPowerOffBuff.ptr;
-    double* clPowerOnData  = (double*) clPowerOnBuff.ptr;
-    double* cdPowerOnData  = (double*) cdPowerOnBuff.ptr;
+    // Get independent data
+    std::vector<double> machData = process_numpy_array(machArray);
+    std::vector<double> alphaData = process_numpy_array(alphaArray);
 
     // Format independent data arrays into unique, monotonically increasing sequences
-    std::vector<double> machVec(machData, machData + nData);
-    std::vector<double> alphaVec(alphaData, alphaData + nData);
+    std::sort(machData.begin(), machData.end());
+    std::sort(alphaData.begin(), alphaData.end());
 
-    std::sort(machVec.begin(), machVec.end());
-    std::sort(alphaVec.begin(), alphaVec.end());
+    machData.erase(std::unique(machData.begin(), machData.end()), machData.end());
+    alphaData.erase(std::unique(alphaData.begin(), alphaData.end()), alphaData.end());
 
-    machVec.erase(std::unique(machVec.begin(), machVec.end()), machVec.end());
-    alphaVec.erase(std::unique(alphaVec.begin(), alphaVec.end()), alphaVec.end());
+    std::vector<std::vector<double>> indData = {machData, alphaData};
 
-    const size_t nMach  = machVec.size();
-    const size_t nAlpha = alphaVec.size();
+    // Get dependent data
+    std::vector<double> cpTotalData    = process_numpy_array(cpTotalArray);
+    std::vector<double> clPowerOffData = process_numpy_array(clPowerOffArray);
+    std::vector<double> cdPowerOffData = process_numpy_array(cdPowerOffArray);
+    std::vector<double> clPowerOnData  = process_numpy_array(clPowerOnArray);
+    std::vector<double> cdPowerOnData  = process_numpy_array(cdPowerOnArray);
 
-    // Dependent data arrays are given in row-major format
-    // Convert to column-major format to satisfy interpolation setup
+    // Setup interpolation objects
+    cpTotalInterp_   .init(indData, cpTotalData   , Interp::BILINEAR);
+    clPowerOffInterp_.init(indData, clPowerOffData, Interp::BILINEAR);
+    cdPowerOffInterp_.init(indData, cdPowerOffData, Interp::BILINEAR);
+    clPowerOnInterp_ .init(indData, clPowerOnData , Interp::BILINEAR);
+    cdPowerOnInterp_ .init(indData, cdPowerOnData , Interp::BILINEAR);
 
-    std::vector<double> cpTotalVec(nData);
-    std::vector<double> clPowerOffVec(nData);
-    std::vector<double> cdPowerOffVec(nData);
-    std::vector<double> clPowerOnVec(nData);
-    std::vector<double> cdPowerOnVec(nData);
-
-    size_t ix, iy, izRow, izCol;
-
-    for (ix = 0; ix < nMach; ix++)
-    {
-        for (iy = 0; iy < nAlpha; iy++)
-        {
-
-            izRow = ix*nAlpha + iy; // Row-major index 
-            izCol = iy*nMach  + ix; // Column-major index
-
-            cpTotalVec[izCol]    = cpTotalData[izRow];
-            clPowerOffVec[izCol] = clPowerOffData[izRow];
-            cdPowerOffVec[izCol] = cdPowerOffData[izRow];
-            clPowerOnVec[izCol]  = clPowerOnData[izRow];
-            cdPowerOnVec[izCol]  = cdPowerOnData[izRow];
-
-        }
-    }
-
-    // Setup interpolation
-    machAcc  = gsl_interp_accel_alloc();
-    alphaAcc = gsl_interp_accel_alloc();
-
-    interp2d_init(cpTotalSpline,    machVec.data(), alphaVec.data(), cpTotalVec.data(),    nMach, nAlpha);
-    interp2d_init(clPowerOffSpline, machVec.data(), alphaVec.data(), clPowerOffVec.data(), nMach, nAlpha);
-    interp2d_init(cdPowerOffSpline, machVec.data(), alphaVec.data(), cdPowerOffVec.data(), nMach, nAlpha);
-    interp2d_init(clPowerOnSpline,  machVec.data(), alphaVec.data(), clPowerOnVec.data(),  nMach, nAlpha);
-    interp2d_init(cdPowerOnSpline,  machVec.data(), alphaVec.data(), cdPowerOnVec.data(),  nMach, nAlpha);
+    refArea_ = refArea;
 
     isInit_ = true;
 
@@ -122,15 +60,15 @@ void Aerodynamics::init(const double&      refAreaInit  ,
 void Aerodynamics::set_state_fields()
 {
 
-    state->emplace("dynamicPressure", &dynamicPressure);
-    state->emplace("mach"           , &mach           );
-    state->emplace("reynolds"       , &reynolds       );
-    state->emplace("alphaT"         , &alphaT         );
-    state->emplace("dragCoeff"      , &dragCoeff      );
-    state->emplace("liftCoeff"      , &liftCoeff      );
-    state->emplace("centerPressure" , &centerPressure );
-    state->emplace("dragForce"      , &dragForce      );
-    state->emplace("liftForce"      , &liftForce      );
+    state->emplace("dynamicPressure", &dynamicPressure_);
+    state->emplace("mach"           , &mach_           );
+    state->emplace("reynolds"       , &reynolds_       );
+    state->emplace("alphaT"         , &alphaT_         );
+    state->emplace("dragCoeff"      , &dragCoeff_      );
+    state->emplace("liftCoeff"      , &liftCoeff_      );
+    state->emplace("centerPressure" , &centerPressure_ );
+    state->emplace("dragForce"      , &dragForce_      );
+    state->emplace("liftForce"      , &liftForce_      );
 
 }
 
@@ -153,50 +91,31 @@ void Aerodynamics::update()
 
     if (velT > 0.0)
     {
-        mach   = velT/a;
-        alphaT = acos(abs(u)/velT);
+        mach_   = velT/a;
+        alphaT_ = acos(abs(u)/velT);
     }
     else
     {
-        mach   = 0.0;
-        alphaT = 0.0;
+        mach_   = 0.0;
+        alphaT_ = 0.0;
     }
+
+    std::vector<double> indData = {mach_, alphaT_};
 
     if (*state->at("isBurnout"))
     {
-        dragCoeff = interp2d_eval(cdPowerOffSpline, mach, alphaT, machAcc, alphaAcc);
-        liftCoeff = interp2d_eval(clPowerOffSpline, mach, alphaT, machAcc, alphaAcc);
+        dragCoeff_ = cdPowerOffInterp_.update(indData);
+        liftCoeff_ = clPowerOffInterp_.update(indData);
     }
     else
     {
-        dragCoeff = interp2d_eval(cdPowerOnSpline, mach, alphaT, machAcc, alphaAcc);
-        liftCoeff = interp2d_eval(clPowerOnSpline, mach, alphaT, machAcc, alphaAcc);
+        dragCoeff_ = cdPowerOnInterp_.update(indData);
+        liftCoeff_ = clPowerOnInterp_.update(indData);
     }
 
     // Calculate aerodynamic quantities
-    dynamicPressure = 0.5*rho*pow(velT, 2.0);
-    dragForce       = dynamicPressure*dragCoeff*refArea;
-    liftForce       = dynamicPressure*liftCoeff*refArea;
-
-}
-
-//---------------------------------------------------------------------------//
-
-Aerodynamics::~Aerodynamics()
-{
-
-    if (isInit_)
-    {
-
-        gsl_spline2d_free(cpTotalSpline);
-        gsl_spline2d_free(clPowerOffSpline);
-        gsl_spline2d_free(cdPowerOffSpline);
-        gsl_spline2d_free(clPowerOnSpline);
-        gsl_spline2d_free(cdPowerOnSpline);
-
-        gsl_interp_accel_free(machAcc);
-        gsl_interp_accel_free(alphaAcc);
-
-    }
+    dynamicPressure_ = 0.5*rho*(velT*velT);
+    dragForce_       = dynamicPressure_*dragCoeff_*refArea_;
+    liftForce_       = dynamicPressure_*liftCoeff_*refArea_;
 
 }

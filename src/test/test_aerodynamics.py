@@ -23,7 +23,7 @@ import model
 
 # Path setup
 rootPath   = pathlib.Path(__file__).parent.parent.parent
-inputPath  = rootPath / "input"
+inputPath  = rootPath / "input" / "unit_test"
 outputPath = rootPath / "output" / "test_aerodynamics"
 
 if os.path.exists(outputPath):

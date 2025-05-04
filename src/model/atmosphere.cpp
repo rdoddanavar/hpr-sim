@@ -1,12 +1,11 @@
-// System libraries
+// System headers
 #include <cmath>
 
-// External libraries
-#include "gsl/interpolation/gsl_interp.h"
+// External headers
+// <none>
 
-// Project headers
+// Internal headers
 #include "model.h"
-#include "util_model.h"
 
 //---------------------------------------------------------------------------//
 
