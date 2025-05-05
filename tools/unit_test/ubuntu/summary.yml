@@ -1,4 +1,4 @@
-# 2025-05-03 17:18:46
+# 2025-05-04 21:23:09
 # hpr-sim v0.0.0
 # Run: 5/5
 ---
@@ -10,9 +10,9 @@ time:
         mean: 0.0
         std: 0.0
     max:
-        min: 62.115
-        max: 71.0
-        mean: 65.962
+        min: 62.112
+        max: 70.996
+        mean: 65.958
         std: 3.538
 thrust:
     unit: N
@@ -65,9 +65,9 @@ gravity:
 temperature:
     unit: K
     min:
-        min: 249.427
-        max: 258.633
-        mean: 254.701
+        min: 249.431
+        max: 258.637
+        mean: 254.705
         std: 3.65
     max:
         min: 288.15
@@ -77,10 +77,10 @@ temperature:
 pressure:
     unit: Pa
     min:
-        min: 47499.602
-        max: 57454.969
-        mean: 53136.209
-        std: 3967.372
+        min: 47503.641
+        max: 57458.926
+        mean: 53140.196
+        std: 3967.212
     max:
         min: 101325.0
         max: 101325.0
@@ -106,10 +106,10 @@ dynamicPressure:
         mean: 0.0
         std: 0.0
     max:
-        min: 54483.191
-        max: 71471.102
-        mean: 61738.291
-        std: 6735.51
+        min: 54478.285
+        max: 71468.039
+        mean: 61733.499
+        std: 6735.85
 mach:
     unit: null
     min:
@@ -154,10 +154,10 @@ dragForce:
         mean: 0.0
         std: 0.0
     max:
-        min: 230.412
-        max: 423.801
-        mean: 303.454
-        std: 75.693
+        min: 230.389
+        max: 423.7
+        mean: 303.389
+        std: 75.66
 liftForce:
     unit: N
     min:
@@ -197,15 +197,15 @@ linAccZ:
 linVelZ:
     unit: m/s
     min:
-        min: -341.623
-        max: -298.26
-        mean: -317.036
-        std: 17.268
+        min: -341.605
+        max: -298.243
+        mean: -317.018
+        std: 17.267
     max:
-        min: 287.194
-        max: 330.548
-        mean: 305.964
-        std: 17.264
+        min: 287.177
+        max: 330.531
+        mean: 305.948
+        std: 17.263
 linPosZ:
     unit: m
     min:
@@ -214,10 +214,10 @@ linPosZ:
         mean: 0.0
         std: 0.0
     max:
-        min: 4544.274
-        max: 5963.011
-        mean: 5150.174
-        std: 562.473
+        min: 4543.751
+        max: 5962.388
+        mean: 5149.609
+        std: 562.417
 isBurnout:
     unit: null
     min:
