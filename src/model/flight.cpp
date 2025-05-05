@@ -29,7 +29,7 @@ void Flight::init(double timeStep, std::string termField, std::string termLogic,
     odeSolver_.epsAbs = 1e-9;
     odeSolver_.epsRel = 1e-9;
 
-    odeSolver_.set_method("rkf45");
+    odeSolver_.set_method("rk4");
 
     odeSolver_.driver = gsl_odeiv2_driver_alloc_y_new(&odeSolver_.sys   ,
                                                       odeSolver_.method,
