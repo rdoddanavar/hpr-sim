@@ -1,11 +1,11 @@
-# 2025-05-03 17:32:52
+# 2025-05-04 22:13:48
 # hpr-sim v0.0.0
 # Run: 5/5
 ---
 time:
     unit: s
     min: 0.000
-    max: 68.759
+    max: 68.755
 thrust:
     unit: N
     min: 0.000
@@ -24,11 +24,11 @@ gravity:
     max: 9.795
 temperature:
     unit: K
-    min: 251.866
+    min: 251.870
     max: 288.150
 pressure:
     unit: Pa
-    min: 49989.148
+    min: 49993.492
     max: 101325.000
 density:
     unit: kg/m^3
@@ -37,7 +37,7 @@ density:
 dynamicPressure:
     unit: Pa
     min: 0.000
-    max: 66970.797
+    max: 66964.727
 mach:
     unit: null
     min: 0.000
@@ -53,7 +53,7 @@ dragCoeff:
 dragForce:
     unit: N
     min: 0.000
-    max: 356.233
+    max: 356.128
 liftForce:
     unit: N
     min: 0.000
@@ -68,12 +68,12 @@ linAccZ:
     max: 165.636
 linVelZ:
     unit: m/s
-    min: -330.690
-    max: 319.614
+    min: -330.671
+    max: 319.595
 linPosZ:
     unit: m
     min: 0.000
-    max: 5587.096
+    max: 5586.453
 isBurnout:
     unit: null
     min: 0.000
