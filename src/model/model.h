@@ -294,8 +294,6 @@ class EOM : public Model
 
 //---------------------------------------------------------------------------//
 
-int ode_update(double t, const double y[], double f[], void *params);
-
 class Flight : public Model
 {
 
@@ -305,9 +303,7 @@ class Flight : public Model
         void set_state_fields() override;
         void update() override;
 
-        ~Flight();
-
-        OdeSolver odeSolver_; // ODE solver settings & driver
+        OdeInt<2> odeint_; // ODE solver
 
     private:
 
