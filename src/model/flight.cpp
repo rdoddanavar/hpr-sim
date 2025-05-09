@@ -11,6 +11,8 @@
 
 //---------------------------------------------------------------------------//
 
+void ode_update(double t, double* y, double* f, void *params);
+
 void Flight::init(double timeStep, std::string termField, std::string termLogic, double termValue)
 {
 
@@ -18,6 +20,8 @@ void Flight::init(double timeStep, std::string termField, std::string termLogic,
     termField_ = termField;
     termValue_ = termValue;
     termEval_  = termEvalMap_[termLogic];
+
+    odeint_.init(timeStep_, &ode_update, this);
 
     isInit_ = true;
 
@@ -32,6 +36,25 @@ void Flight::set_state_fields()
 
 //---------------------------------------------------------------------------//
 
+void ode_update(double t, double* y, double* f, void *params)
+{
+
+    Model*    flight = static_cast<Model*>(params);
+    stateMap* state  = flight->state;
+
+    // Set current state
+    *state->at("time")    = t;
+    *state->at("linPosZ") = y[0];
+    *state->at("linVelZ") = y[1];
+
+    flight->update_deps();
+
+    // Set state derivatives for solver
+    f[0] = y[1];
+    f[1] = *state->at("linAccZ");
+
+}
+
 void Flight::update()
 {
 
@@ -41,15 +64,16 @@ void Flight::update()
     telem->update();
 
     // Solve ODE system
-    double y[] = {*state->at("linPosZ"),
-                  *state->at("linVelZ")};
 
     while (!flightTerm_)
     {
 
         double ti = ++iStep*timeStep_;
 
-        odeint_.update();
+        double* y = odeint_.update(ti);
+
+        *state->at("linPosZ") = y[0];
+        *state->at("linVelZ") = y[1];
 
         update_deps(); // Reset state to correct time step
 

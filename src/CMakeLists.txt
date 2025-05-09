@@ -10,7 +10,6 @@ set(SRC
     "./model/flight.cpp"
     "./model/telem.cpp"
     "./model/interp.cpp"
-    "./model/odeint.cpp"
 )
 
 pybind11_add_module(model MODULE ${SRC})
