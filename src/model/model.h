@@ -303,7 +303,7 @@ class Flight : public Model
         void set_state_fields() override;
         void update() override;
 
-        OdeInt<2> odeint_; // ODE solver
+        OdeInt<2> odeInt_; // ODE solver
 
     private:
 

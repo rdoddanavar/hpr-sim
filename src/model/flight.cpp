@@ -21,7 +21,7 @@ void Flight::init(double timeStep, std::string termField, std::string termLogic,
     termValue_ = termValue;
     termEval_  = termEvalMap_[termLogic];
 
-    odeint_.init(timeStep_, &ode_update, this);
+    odeInt_.init(timeStep_, &ode_update, this);
 
     isInit_ = true;
 
@@ -59,21 +59,20 @@ void Flight::update()
 {
 
     // Initialize state
-    int iStep = 0;
     update_deps();
     telem->update();
 
     // Solve ODE system
+    odeInt_.y_[0] = *state->at("linPosZ");
+    odeInt_.y_[1] = *state->at("linVelZ");
 
     while (!flightTerm_)
     {
 
-        double ti = ++iStep*timeStep_;
+        odeInt_.update(time_);
 
-        double* y = odeint_.update(ti);
-
-        *state->at("linPosZ") = y[0];
-        *state->at("linVelZ") = y[1];
+        *state->at("linPosZ") = odeInt_.y_[0];
+        *state->at("linVelZ") = odeInt_.y_[1];
 
         update_deps(); // Reset state to correct time step
 
