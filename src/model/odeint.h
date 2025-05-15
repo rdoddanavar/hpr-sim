@@ -8,7 +8,7 @@
 #include "eigen/Eigen/Core"
 
 // Internal headers
-
+// <none>
 
 //---------------------------------------------------------------------------//
 
@@ -21,19 +21,19 @@ class OdeInt
     public:
 
         void init(double dt, OdeFun odeFun, void* params);
-        void update(double t);
+        double update();
 
         Eigen::Matrix<double, N, 1> y_;
+        Eigen::Matrix<double, N, 1> f_;
 
     private:
 
-        Eigen::Matrix<double, N, 1> f_;
+        double t_;
+        double dt_;
 
         OdeFun odeFun_ {nullptr};
 
-        void* params_;
-
-        double dt_;
+        void* params_ {nullptr};
 
         Eigen::Matrix<double, N, 1> k1;
         Eigen::Matrix<double, N, 1> k2;
@@ -54,28 +54,32 @@ void OdeInt<N>::init(double dt, OdeFun odeFun, void* params)
 }
 
 template<size_t N>
-void OdeInt<N>::update(double t)
+double OdeInt<N>::update()
 {
 
+    // Perform Runge-Kutta method (4th order)
     Eigen::Matrix<double, N, 1> y;
 
     y = y_;
-    odeFun_(t, y.data(), f_.data(), params_);
+    odeFun_(t_, y.data(), f_.data(), params_);
     k1 = f_;
 
     y = y_ + k1*dt_/2;
-    odeFun_(t + dt_/2, y.data(), f_.data(), params_);
+    odeFun_(t_ + dt_/2, y.data(), f_.data(), params_);
     k2 = f_;
 
     y = y_ + k2*dt_/2;
-    odeFun_(t + dt_/2, y.data(), f_.data(), params_);
+    odeFun_(t_ + dt_/2, y.data(), f_.data(), params_);
     k3 = f_;
 
     y = y_ + k3*dt_;
-    odeFun_(t + dt_, y.data(), f_.data(), params_);
+    odeFun_(t_ + dt_, y.data(), f_.data(), params_);
     k4 = f_;
 
-    // Update state
+    // Update time and state
+    t_ += dt_;
     y_ += dt_/6*(k1 + 2*k2 + 2*k3 + k4);
+
+    return t_;
 
 }

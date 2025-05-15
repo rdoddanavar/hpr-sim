@@ -69,7 +69,7 @@ void Flight::update()
     while (!flightTerm_)
     {
 
-        odeInt_.update(time_);
+        time_ = odeInt_.update();
 
         *state->at("linPosZ") = odeInt_.y_[0];
         *state->at("linVelZ") = odeInt_.y_[1];
