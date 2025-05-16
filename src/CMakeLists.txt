@@ -13,5 +13,5 @@ set(SRC
 )
 
 pybind11_add_module(model MODULE ${SRC})
-target_link_libraries(model PUBLIC gsl fmt)
+target_link_libraries(model PUBLIC fmt)
 target_include_directories(model PUBLIC "${CMAKE_SOURCE_DIR}/lib")

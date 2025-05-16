@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # Multiprocessing support for PyInstaller
     mp.freeze_support()
 
-    inputPath  = pathlib.Path("input/unit_test.yml")
+    inputPath  = pathlib.Path("input/unit_test/unit_test.yml")
     outputPath = pathlib.Path("output")
 
     # Run program

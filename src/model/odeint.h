@@ -5,43 +5,81 @@
 #include <string>
 
 // External headers
-#include "gsl/ode-initval2/gsl_odeiv2.h"
+#include "eigen/Eigen/Core"
 
 // Internal headers
 // <none>
 
 //---------------------------------------------------------------------------//
 
-const std::map<std::string, const gsl_odeiv2_step_type*> odeMethods = 
+typedef void (*OdeFun)(double t, double* y, double* f, void* params);
+
+template<size_t N>
+class OdeInt
 {
 
-    // Explicit solvers only
-    {"rk2"  , gsl_odeiv2_step_rk2  },
-    {"rk4"  , gsl_odeiv2_step_rk4  },
-    {"rkf45", gsl_odeiv2_step_rkf45},
-    {"rkck" , gsl_odeiv2_step_rkck },
-    {"rk8pd", gsl_odeiv2_step_rk8pd},
+    public:
+
+        void init(double dt, OdeFun odeFun, void* params);
+        double update();
+
+        Eigen::Matrix<double, N, 1> y_;
+        Eigen::Matrix<double, N, 1> f_;
+
+    private:
+
+        double t_;
+        double dt_;
+
+        OdeFun odeFun_ {nullptr};
+
+        void* params_ {nullptr};
+
+        Eigen::Matrix<double, N, 1> k1;
+        Eigen::Matrix<double, N, 1> k2;
+        Eigen::Matrix<double, N, 1> k3;
+        Eigen::Matrix<double, N, 1> k4;
+
+        bool isInit_ {false};
 
 };
 
-//---------------------------------------------------------------------------//
+template<size_t N>
 
-struct OdeSolver
+void OdeInt<N>::init(double dt, OdeFun odeFun, void* params)
+{
+    dt_     = dt;
+    odeFun_ = odeFun;
+    params_ = params;
+}
+
+template<size_t N>
+double OdeInt<N>::update()
 {
 
-    gsl_odeiv2_system  sys;
-    gsl_odeiv2_driver* driver;
+    // Perform Runge-Kutta method (4th order)
+    Eigen::Matrix<double, N, 1> y;
 
-    size_t dim;
-    double hStart;
-    double epsAbs;
-    double epsRel;
+    y = y_;
+    odeFun_(t_, y.data(), f_.data(), params_);
+    k1 = f_;
 
-    const gsl_odeiv2_step_type* method;
+    y = y_ + k1*dt_/2;
+    odeFun_(t_ + dt_/2, y.data(), f_.data(), params_);
+    k2 = f_;
 
-    void set_method(std::string name)
-    {
-        method = odeMethods.at(name);
-    }
+    y = y_ + k2*dt_/2;
+    odeFun_(t_ + dt_/2, y.data(), f_.data(), params_);
+    k3 = f_;
 
-};
+    y = y_ + k3*dt_;
+    odeFun_(t_ + dt_, y.data(), f_.data(), params_);
+    k4 = f_;
+
+    // Update time and state
+    t_ += dt_;
+    y_ += dt_/6*(k1 + 2*k2 + 2*k3 + k4);
+
+    return t_;
+
+}
