@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # System modules
 import sys
 import argparse

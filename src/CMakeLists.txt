@@ -1,4 +1,4 @@
-# "model" module
+# PYBIND11 module: "model"
 
 set(SRC "./model/model_bind.cpp"
         "./model/test.cpp"
@@ -22,7 +22,7 @@ target_link_libraries(model PUBLIC ${DEP})
 
 #-----------------------------------------------------------------------------#
 
-# "util_model" shared library
+# Shared library: "util_model"
 
 set(SRC "./util/util_model_interp.cpp")
 

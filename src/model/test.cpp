@@ -9,7 +9,7 @@
 
 void Test::init(std::vector<std::string> stateFieldsInit)
 {
-    
+
     stateFields = stateFieldsInit;
     stateData   = std::vector<double>(stateFields.size());
     set_state();

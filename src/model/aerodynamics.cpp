@@ -16,9 +16,9 @@
 //---------------------------------------------------------------------------//
 
 void Aerodynamics::init(double      refAreaInit   ,
-                        numpyArray& machInit      , 
+                        numpyArray& machInit      ,
                         numpyArray& alphaInit     ,
-                        numpyArray& cpTotalInit   , 
+                        numpyArray& cpTotalInit   ,
                         numpyArray& clPowerOffInit,
                         numpyArray& cdPowerOffInit,
                         numpyArray& clPowerOnInit ,
@@ -142,9 +142,9 @@ void Aerodynamics::update()
     update_deps();
 
     // Get state data
-    double u   = *state->at("linVelZ");
-    double v   = *state->at("linVelY");
-    double w   = *state->at("linVelX");
+    double u   = *state->at("u");
+    double v   = *state->at("v");
+    double w   = *state->at("w");
     double a   = *state->at("speedSound");
     double rho = *state->at("density");
 

@@ -6,7 +6,7 @@ const:
     pi: 3.141592653589793
 #-----------------------------------------------------------------------------#
 exec:
-    mode: montecarlo
+    mode: nominal
     seed: 0
     numMC: 5
     numProc: 4
@@ -23,6 +23,7 @@ mass:
         dist:
             name: normal
             param: [5.0, 0.5]
+    centerGravX: 0.0
 geodetic:
     latitude:
         value: 32.269798 # SARA launch site: (32.269798, -111.274751)
@@ -38,4 +39,11 @@ aerodynamics:
     refArea:
         value: 12.566
         unit: in^2
+eom:
+    launchAz:
+        value: 90.0
+        unit: deg
+    launchEl:
+        value: 45.0
+        unit: deg
 ...

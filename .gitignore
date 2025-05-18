@@ -1,12 +1,12 @@
+# System config
+.vscode
+
 # Python aritifacts
 __pycache__
 *.pyc
 
 # Sphinx artifiacts
 doc/_build/*
-
-# System config
-.vscode
 
 # Simulation output
 output/*
