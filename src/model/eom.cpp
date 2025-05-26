@@ -11,20 +11,45 @@
 
 //---------------------------------------------------------------------------//
 
-void EOM::init()
+void EOM::init(double launchAz, double launchEl)
 {
 
     // Initialize vectors
-    force  = Eigen::Vector3d::Zero();
-    moment = Eigen::Vector3d::Zero();
+    // B: "body"
+    // E: "earth" (flat earth, non-rotating, ENU frame)
 
-    linAcc = Eigen::Vector3d::Zero();
-    linVel = Eigen::Vector3d::Zero();
-    linPos = Eigen::Vector3d::Zero();
+    forceB  = Eigen::Vector3d::Zero(); // fx, fy, fz
+    linAccB = Eigen::Vector3d::Zero(); // uDot, vDot, wDot
+    linVelB = Eigen::Vector3d::Zero(); // u, v, w
+    linVelE = Eigen::Vector3d::Zero(); // xDot, yDot, zDot
+    linPosE = Eigen::Vector3d::Zero(); // x, y, z
 
-    angAcc = Eigen::Vector3d::Zero();
-    angVel = Eigen::Vector3d::Zero();
-    angPos = Eigen::Vector3d::Zero();
+    momentB = Eigen::Vector3d::Zero(); // mx, my, mz
+    angAccB = Eigen::Vector3d::Zero(); // wxDot, wyDot, wzDot
+    angVelB = Eigen::Vector3d::Zero(); // wx, wy, wz
+    angVelE = Eigen::Vector3d::Zero(); // phiDot, thetaDot, psiDot
+    angPosE = Eigen::Vector3d::Zero(); // phi, theta, psi
+
+    q    = Eigen::Quaterniond::Identity(); // q0, q1, q2, q3
+    qDot = Eigen::Vector4d::Zero(); // q0Dot, q1Dot, q2Dot, q3Dot
+
+    // Set initial states
+    double cgX = 0.0;//*state->at("cgX");
+
+    linPosE[0] = cgX*sin(launchAz); // East
+    linPosE[1] = cgX*cos(launchAz); // North
+    linPosE[2] = cgX*sin(launchEl); // Up
+
+    angPosE[0] = 0.0;               // Roll
+    angPosE[1] = launchAz;          // Pitch
+    angPosE[2] = M_PI/2 - launchAz; // Yaw
+
+    flightPath = angPosE[2];
+
+    // TODO: verify Eigen operations
+    q = Eigen::AngleAxisd(angPosE[0], Eigen::Vector3d::UnitX())
+      * Eigen::AngleAxisd(angPosE[1], Eigen::Vector3d::UnitY())
+      * Eigen::AngleAxisd(angPosE[2], Eigen::Vector3d::UnitZ());
 
     isInit_ = true;
 
@@ -35,15 +60,55 @@ void EOM::init()
 void EOM::set_state_fields()
 {
 
-    state->emplace("forceZ", &force[2]);
+    // Linear dynamics
 
-    state->emplace("linAccZ", &linAcc[2]);
+    state->emplace("forceXB", &forceB[0] );
+    state->emplace("forceYB", &forceB[1] );
+    state->emplace("forceZB", &forceB[2] );
 
-    state->emplace("linVelX", &linVel[0]);   
-    state->emplace("linVelY", &linVel[1]);
-    state->emplace("linVelZ", &linVel[2]);
+    state->emplace("uDot"   , &linAccB[0]);
+    state->emplace("vDot"   , &linAccB[1]);
+    state->emplace("wDot"   , &linAccB[2]);
 
-    state->emplace("linPosZ", &linPos[2]);
+    state->emplace("u"      , &linVelB[0]);
+    state->emplace("v"      , &linVelB[1]);
+    state->emplace("w"      , &linVelB[2]);
+
+    state->emplace("xDot"   , &linVelE[0]);
+    state->emplace("yDot"   , &linVelE[1]);
+    state->emplace("zDot"   , &linVelE[2]);
+
+    state->emplace("x"      , &linPosE[0]);
+    state->emplace("y"      , &linPosE[1]);
+    state->emplace("z"      , &linPosE[2]);
+
+    // Angular dynamics
+
+    state->emplace("momentXB", &momentB[0]);
+    state->emplace("momentYB", &momentB[1]);
+    state->emplace("momentZB", &momentB[2]);
+
+    state->emplace("pDot"    , &angAccB[0]);
+    state->emplace("qDot"    , &angAccB[1]);
+    state->emplace("rDot"    , &angAccB[2]);
+
+    state->emplace("p"       , &angVelB[0]);
+    state->emplace("q"       , &angVelB[1]);
+    state->emplace("r"       , &angVelB[2]);
+
+    state->emplace("phi"     , &angPosE[0]);
+    state->emplace("theta"   , &angPosE[1]);
+    state->emplace("psi"     , &angPosE[2]);
+
+    state->emplace("q0Dot"   , &qDot[0]   );
+    state->emplace("q1Dot"   , &qDot[1]   );
+    state->emplace("q2Dot"   , &qDot[2]   );
+    state->emplace("q3Dot"   , &qDot[3]   );
+
+    state->emplace("q0"      , &q[0]      );
+    state->emplace("q1"      , &q[1]      );
+    state->emplace("q2"      , &q[2]      );
+    state->emplace("q3"      , &q[3]      );
 
 }
 
@@ -59,13 +124,19 @@ void EOM::update()
     double mass    = *state->at("mass");
     double gravity = *state->at("gravity");
 
-    force[2] = thrust - mass*gravity;
+    double forceGrav = mass*gravity;
+
+    Eigen::Vector3d fThrust = {thrust, 0.0, 0.0};
+
+    Eigen::Vector3d fGrav = {0.0, 0.0, -mass*gravity};
+    // Rotate fGrav to body frame
+    forceB = fThrust + fGrav;
 
     // Ground contact condition at launch
 
-    if ((force[2] < 0.0) && (!launchFlag))
+    if ((forceB[0] < 0.0) && (!launchFlag))
     {
-        force[2] = 0.0;
+        forceB = Eigen::Vector3d::Zero();
     }
     else if (!launchFlag)
     {
@@ -73,6 +144,11 @@ void EOM::update()
     }
 
     // Linear EOM
-    linAcc = force / mass;
+    linAccB = (forceB/mass); //- angVelB.cross(linVelB);
+
+    // Populate states
+    // linVelB --> linVelE
+    // angVelB --> qDot
+    // q       --> angPosE 
 
 }

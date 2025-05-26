@@ -87,7 +87,7 @@ void Aerodynamics::update()
     double rho = *state->at("density");
 
     // Perform table lookups
-    double velT = sqrt(pow(u, 2.0) + pow(v, 2.0) + pow(w, 2.0));
+    double velT = sqrt(pow(u, 2) + pow(v, 2) + pow(w, 2));
 
     if (velT > 0.0)
     {

@@ -19,6 +19,13 @@ flight:
     termField: linPosZ
     termLogic: leq
     termValue: 0.0
+eom:
+    launchAz:
+        value: 90
+        unit: deg
+    launchEl:
+        value: 90
+        unit: deg
 engine:
     inputPath: input/unit_test/AeroTech_J450DM.eng
 mass:
@@ -28,6 +35,10 @@ mass:
         dist:
             name: normal
             param: [5.0, 0.5]
+    centerGravX: 0.0
+    inertiaX: 0.0
+    inertiaY: 0.0
+    inertiaZ: 0.0
 geodetic:
     latitude:
         value: 32.269798 # SARA launch site: (32.269798, -111.274751)

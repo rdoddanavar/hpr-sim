@@ -36,6 +36,8 @@ def run(inputParams: dict, outputPath: pathlib.Path, callback=None) -> None:
 
     :param outputPath: File path for simulation data output
     :type outputPath: pathlib.Path
+
+    :param callback: Document me
     """
 
     # Pre-processing
@@ -149,7 +151,7 @@ class ProgBar(tqdm.tqdm):
 
         self.callback = callback
 
-def cli_status(progBar, result):
+def cli_status(progBar: ProgBar, result: object) -> None:
 
     progBar.update()
 
@@ -158,7 +160,7 @@ def cli_status(progBar, result):
 
 #------------------------------------------------------------------------------#
 
-def run_sim_mc(inputParams, outputPath, modelData, iRun, seedRun):
+def run_sim_mc(inputParams: dict, outputPath: pathlib.Path, modelData: dict, iRun: int, seedRun: int) -> None:
 
     inputParamsMC = copy.deepcopy(inputParams)
     inputParamsMC["exec"]["seed"]["value"] = seedRun
@@ -167,7 +169,7 @@ def run_sim_mc(inputParams, outputPath, modelData, iRun, seedRun):
 
 #------------------------------------------------------------------------------#
 
-def run_sim(inputParams, outputPath, modelData, iRun):
+def run_sim(inputParams: dict, outputPath: pathlib.Path, modelData: dict, iRun: int) -> None:
 
     # Create model instances
     engine       = model.Engine()
@@ -215,6 +217,7 @@ def run_sim(inputParams, outputPath, modelData, iRun):
                 modelData["engine"]["mass"]  )
 
     massBody = inputParams["mass"]["massBody"]["value"]
+    # TODO: Rest of mass props initialization
     mass.init(massBody)
 
     latitude = inputParams["geodetic"]["latitude"]["value"]
@@ -235,7 +238,9 @@ def run_sim(inputParams, outputPath, modelData, iRun):
                       modelData["aerodynamics"]["aero"]["clPowerOn"] ,
                       modelData["aerodynamics"]["aero"]["cdPowerOn"] )
 
-    eom.init()
+    launchAz = inputParams["eom"]["launchAz"]["value"]
+    launchEl = inputParams["eom"]["launchEl"]["value"]
+    eom.init(launchAz, launchEl)
 
     timeStep  = inputParams["flight"]["timeStep"]["value"]
     termField = inputParams["flight"]["termField"]["value"]
@@ -250,7 +255,7 @@ def run_sim(inputParams, outputPath, modelData, iRun):
 
 #------------------------------------------------------------------------------#
 
-def write_input(inputParams, outputPath, iRun):
+def write_input(inputParams: dict, outputPath: pathlib.Path, iRun: int) -> None:
 
     # Write input *.yml
     # Archives montecarlo draw for run recreation
@@ -298,7 +303,7 @@ def write_input(inputParams, outputPath, iRun):
 
 #------------------------------------------------------------------------------#
 
-def write_mc_summary(inputParams, outputPath):
+def write_mc_summary(inputParams: dict, outputPath: pathlib.Path) -> None:
 
     filePath = outputPath / "summary.yml"
     dir      = filePath.parent

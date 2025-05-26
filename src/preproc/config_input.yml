@@ -90,6 +90,19 @@ flight:
         min: -.inf
         max: .inf
         isRand: false
+eom:
+    launchAz:
+        type: float
+        quantity: angle
+        unit: rad
+        min: 0.0
+        max: 2*3.14159265359
+    launchEl:
+        type: float
+        quantity: angle
+        unit: rad
+        min: 0.0
+        max: 3.14159265359/2
 engine:
     inputPath:
         type: str
@@ -99,6 +112,34 @@ mass:
         type: float
         quantity: mass
         unit: kg
+        min: 0.0
+        max: .inf
+        isRand: true
+    centerGravX:
+        type: float
+        quantity: length
+        unit: m
+        min: 0.0
+        max: .inf
+        isRand: true
+    inertiaX:
+        type: float
+        quantity: inertia
+        unit: kg*m^2
+        min: 0.0
+        max: .inf
+        isRand: true
+    inertiaY:
+        type: float
+        quantity: inertia
+        unit: kg*m^2
+        min: 0.0
+        max: .inf
+        isRand: true
+    inertiaZ:
+        type: float
+        quantity: inertia
+        unit: kg*m^2
         min: 0.0
         max: .inf
         isRand: true
