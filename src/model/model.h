@@ -8,6 +8,7 @@
 
 // External headers
 #include "eigen/Eigen/Core"
+#include "eigen/Eigen/Geometry"
 
 // Internal headers
 #include "interp.h"
@@ -288,7 +289,7 @@ class EOM : public Model
         Eigen::Vector3d angVelB; // Angular velocity     BODY [rad/s]
         Eigen::Vector3d angPosE; // Angular position     ENU  [rad] Euler
 
-        Eigen::Quaternion q;
+        Eigen::Quaterniond q;
         Eigen::Vector4d qDot;
 
         bool launchFlag = false;

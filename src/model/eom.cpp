@@ -27,11 +27,10 @@ void EOM::init(double launchAz, double launchEl)
     momentB = Eigen::Vector3d::Zero(); // mx, my, mz
     angAccB = Eigen::Vector3d::Zero(); // wxDot, wyDot, wzDot
     angVelB = Eigen::Vector3d::Zero(); // wx, wy, wz
-    angVelE = Eigen::Vector3d::Zero(); // phiDot, thetaDot, psiDot
     angPosE = Eigen::Vector3d::Zero(); // phi, theta, psi
 
-    q    = Eigen::Quaterniond::Identity(); // q0, q1, q2, q3
-    qDot = Eigen::Vector4d::Zero(); // q0Dot, q1Dot, q2Dot, q3Dot
+    q    = Eigen::Quaterniond::Identity(); // qw, qx, qy, qz
+    qDot = Eigen::Vector4d::Zero(); // qwDot, qxDot, qyDot, qzDot
 
     // Set initial states
     double cgX = 0.0;//*state->at("cgX");
@@ -43,8 +42,6 @@ void EOM::init(double launchAz, double launchEl)
     angPosE[0] = 0.0;               // Roll
     angPosE[1] = launchAz;          // Pitch
     angPosE[2] = M_PI/2 - launchAz; // Yaw
-
-    flightPath = angPosE[2];
 
     // TODO: verify Eigen operations
     q = Eigen::AngleAxisd(angPosE[0], Eigen::Vector3d::UnitX())
@@ -100,15 +97,15 @@ void EOM::set_state_fields()
     state->emplace("theta"   , &angPosE[1]);
     state->emplace("psi"     , &angPosE[2]);
 
-    state->emplace("q0Dot"   , &qDot[0]   );
-    state->emplace("q1Dot"   , &qDot[1]   );
-    state->emplace("q2Dot"   , &qDot[2]   );
-    state->emplace("q3Dot"   , &qDot[3]   );
+    state->emplace("qwDot"   , &qDot[0]   );
+    state->emplace("qxDot"   , &qDot[1]   );
+    state->emplace("qyDot"   , &qDot[2]   );
+    state->emplace("qzDot"   , &qDot[3]   );
 
-    state->emplace("q0"      , &q[0]      );
-    state->emplace("q1"      , &q[1]      );
-    state->emplace("q2"      , &q[2]      );
-    state->emplace("q3"      , &q[3]      );
+    state->emplace("qw"      , &q.w()     );
+    state->emplace("qx"      , &q.x()     );
+    state->emplace("qy"      , &q.y()     );
+    state->emplace("qz"      , &q.z()     );
 
 }
 

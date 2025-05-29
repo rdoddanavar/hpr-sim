@@ -54,10 +54,10 @@ void ode_update(double t, double* y, double* f, void *params)
     *state->at("p" ) = y[ 6];
     *state->at("q" ) = y[ 7];
     *state->at("r" ) = y[ 8];
-    *state->at("q0") = y[ 9];
-    *state->at("q1") = y[10]; 
-    *state->at("q2") = y[11];
-    *state->at("q3") = y[12];
+    *state->at("qw") = y[ 9];
+    *state->at("qx") = y[10]; 
+    *state->at("qy") = y[11];
+    *state->at("qz") = y[12];
 
     flight->update_deps();
 
@@ -71,10 +71,10 @@ void ode_update(double t, double* y, double* f, void *params)
     f[ 6] = *state->at("pDot" );
     f[ 7] = *state->at("qDot" );
     f[ 8] = *state->at("rDot" );
-    f[ 9] = *state->at("q0Dot");
-    f[10] = *state->at("q1Dot");
-    f[11] = *state->at("q2Dot");
-    f[12] = *state->at("q3Dot");
+    f[ 9] = *state->at("qwDot");
+    f[10] = *state->at("qxDot");
+    f[11] = *state->at("qyDot");
+    f[12] = *state->at("qzDot");
 
 }
 
@@ -95,10 +95,10 @@ void Flight::update()
     odeInt_.y_[ 6] = *state->at("p" );
     odeInt_.y_[ 7] = *state->at("q" );
     odeInt_.y_[ 8] = *state->at("r" );
-    odeInt_.y_[ 9] = *state->at("q0");
-    odeInt_.y_[10] = *state->at("q1");
-    odeInt_.y_[11] = *state->at("q2");
-    odeInt_.y_[12] = *state->at("q3");
+    odeInt_.y_[ 9] = *state->at("qw");
+    odeInt_.y_[10] = *state->at("qx");
+    odeInt_.y_[11] = *state->at("qy");
+    odeInt_.y_[12] = *state->at("qz");
 
     while (!flightTerm_)
     {
@@ -114,10 +114,10 @@ void Flight::update()
         *state->at("p" ) = odeInt_.y_[ 6];
         *state->at("q" ) = odeInt_.y_[ 7];
         *state->at("r" ) = odeInt_.y_[ 8];
-        *state->at("q0") = odeInt_.y_[ 9];
-        *state->at("q1") = odeInt_.y_[10]; 
-        *state->at("q2") = odeInt_.y_[11];
-        *state->at("q3") = odeInt_.y_[12];
+        *state->at("qw") = odeInt_.y_[ 9];
+        *state->at("qx") = odeInt_.y_[10]; 
+        *state->at("qy") = odeInt_.y_[11];
+        *state->at("qz") = odeInt_.y_[12];
 
         update_deps(); // Reset state to correct time step
 
