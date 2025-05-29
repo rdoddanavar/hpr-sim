@@ -44,9 +44,9 @@ void EOM::init(double launchAz, double launchEl)
     angPosE[2] = M_PI/2 - launchAz; // Yaw
 
     // TODO: verify Eigen operations
-    q = Eigen::AngleAxisd(angPosE[0], Eigen::Vector3d::UnitX())
+    q = Eigen::AngleAxisd(angPosE[2], Eigen::Vector3d::UnitZ())
       * Eigen::AngleAxisd(angPosE[1], Eigen::Vector3d::UnitY())
-      * Eigen::AngleAxisd(angPosE[2], Eigen::Vector3d::UnitZ());
+      * Eigen::AngleAxisd(angPosE[0], Eigen::Vector3d::UnitX());
 
     isInit_ = true;
 
@@ -123,11 +123,13 @@ void EOM::update()
 
     double forceGrav = mass*gravity;
 
-    Eigen::Vector3d fThrust = {thrust, 0.0, 0.0};
+    Eigen::Vector3d fThrustB = {thrust, 0.0, 0.0};
 
-    Eigen::Vector3d fGrav = {0.0, 0.0, -mass*gravity};
+    Eigen::Vector3d fGravE = {0.0, 0.0, -mass*gravity};
+    q.normalize();
+    Eigen::Vector3d fGravB = q * fGravE;
     // Rotate fGrav to body frame
-    forceB = fThrust + fGrav;
+    forceB = fThrustB + fGravE;
 
     // Ground contact condition at launch
 
@@ -141,11 +143,15 @@ void EOM::update()
     }
 
     // Linear EOM
-    linAccB = (forceB/mass); //- angVelB.cross(linVelB);
+    linAccB = forceB / mass - angVelB.cross(linVelB);
+
+    // Rotational EOM
+    // get aero moments
+    // angAccB = 
 
     // Populate states
-    // linVelB --> linVelE
+    linVelB = q.conjugate() * linVelE;
     // angVelB --> qDot
-    // q       --> angPosE 
+    angPosE = q.toRotationMatrix().eulerAngles(2, 1, 0);
 
 }
