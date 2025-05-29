@@ -14,14 +14,6 @@ project(hpr-sim DESCRIPTION "High Power Rocktry - Flight Simulation"
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# GNU GSL - minimize build
-set(NO_AMPL_BINDINGS  true)
-set(GSL_DISABLE_TESTS true)
-
-set(BUILDLIBS "interpolation"
-              "ode-initval2"
-              )
-
 #-----------------------------------------------------------------------------#
 
 # SOURCE SUBDIRECTORIES

@@ -93,7 +93,6 @@ Managed through `git submodule`; included with repository by default:
 |----------|----------|-------------------------------|----------------------------------- |
 | eigen    | `3.4.0`  | Linear algebra utilities      | https://gitlab.com/libeigen/eigen  |
 | fmt      | `11.0.2` | String formatting & output    | https://github.com/fmtlib/fmt      |
-| gsl      | `2.7.0`  | Scientific/numerical utilties | https://github.com/ampl/gsl        |
 | pybind11 | `2.12.0` | Python/C++ bindings           | https://github.com/pybind/pybind11 |
 
 ## Directory Index
