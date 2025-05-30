@@ -146,8 +146,12 @@ void EOM::update()
     linAccB = forceB / mass - angVelB.cross(linVelB);
 
     // Rotational EOM
-    // get aero moments
-    // angAccB = 
+    Eigen::Matrix3d inertia = Eigen::Matrix3d::Zero();
+    inertia(0,0) = *state->at("inertiaX");
+    inertia(1,1) = *state->at("inertiaY");
+    inertia(2,2) = *state->at("inertiaZ");
+
+    angAccB = inertia.inverse() * (momentB - angVelB.cross(inertia * angVelB));
 
     // Populate states
     linVelB = q.conjugate() * linVelE;
