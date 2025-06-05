@@ -121,6 +121,7 @@ void EOM::update()
     double mass    = *state->at("mass");
     double gravity = *state->at("gravity");
 
+    // Get forces and moments
     double forceGrav = mass*gravity;
 
     Eigen::Vector3d fThrustB = {thrust, 0.0, 0.0};
@@ -145,6 +146,9 @@ void EOM::update()
     // Linear EOM
     linAccB = forceB / mass - angVelB.cross(linVelB);
 
+    // Get earth frame velocity
+    linVelE = q.conjugate() * linVelB;
+
     // Rotational EOM
     Eigen::Matrix3d inertia = Eigen::Matrix3d::Zero();
     inertia(0,0) = *state->at("inertiaX");
@@ -153,9 +157,22 @@ void EOM::update()
 
     angAccB = inertia.inverse() * (momentB - angVelB.cross(inertia * angVelB));
 
-    // Populate states
-    linVelB = q.conjugate() * linVelE;
-    // angVelB --> qDot
+    // Get quaternion rate for attitude propogation
+    double wx = angVelB[0];
+    double wy = angVelB[1];
+    double wz = angVelB[2];
+
+    Eigen::Matrix4d wMat {
+        { 0, -wx, -wy, -wz},
+        {wx,   0,  wz, -wy},
+        {wy, -wz,   0,  wx},
+        {wz,  wy, -wx,   0}
+    };
+
+    Eigen::Vector4d qVec = {q.w(), q.x(), q.y(), q.z()};
+    qDot = wMat*qVec;
+
+    // Get Euler angles for convenience
     angPosE = q.toRotationMatrix().eulerAngles(2, 1, 0);
 
 }

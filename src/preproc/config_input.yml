@@ -97,12 +97,14 @@ eom:
         unit: rad
         min: 0.0
         max: 2*3.14159265359
+        isRand: true
     launchEl:
         type: float
         quantity: angle
         unit: rad
         min: 0.0
         max: 3.14159265359/2
+        isRand: true
 engine:
     inputPath:
         type: str
