@@ -117,7 +117,7 @@ void Telem::update()
         {
             for (const auto& field : telemFields_)
             {
-                if (state_[field])
+                if (state_[field]) // Protect against bad field
                 {
                     stateTelemMin_[field] = static_cast<TELEM_TYPE>(*state_[field]);
                     stateTelemMax_[field] = static_cast<TELEM_TYPE>(*state_[field]);
@@ -134,6 +134,20 @@ void Telem::update()
         throw std::runtime_error("Telem object not initialized");
     }
 
+}
+
+//----------------------------------------------------------------------------//
+
+bool Telem::is_nan()
+{
+    for (const auto& field : telemFields_)
+    {
+        if (state_[field]) // Protect against bad field
+        {
+            if (std::isnan(*state_[field])) {return true;}
+        }
+    }
+    return false;
 }
 
 //----------------------------------------------------------------------------//
@@ -394,10 +408,10 @@ std::vector<std::string> Telem::telemFields_ =
     "dragCoeff"      ,
     "dragForce"      ,
     "liftForce"      ,
-    "forceZ"         ,
-    "linAccZ"        ,
-    "linVelZ"        ,
-    "linPosZ"        ,
+    "forceXB"        ,
+    "uDot"           ,
+    "zDot"           ,
+    "z"              ,
     "isBurnout"      ,
 };
 

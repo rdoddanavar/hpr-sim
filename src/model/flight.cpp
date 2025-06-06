@@ -123,7 +123,7 @@ void Flight::update()
 
         telem->update();
 
-        flightTerm_ = (this->*termEval_)(); // TODO: chain logic with apogeeFlag
+        flightTerm_ = (this->*termEval_)() || telem->is_nan(); // TODO: chain logic with apogeeFlag
 
         // TODO: exit condition for nan, or if termEval is never satisfied
 

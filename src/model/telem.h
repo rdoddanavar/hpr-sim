@@ -26,6 +26,7 @@ class Telem
         ~Telem();
 
         void update();
+        bool is_nan();
         void interp_boundary(std::string targetField, double targetPoint);
         void finalize();
 

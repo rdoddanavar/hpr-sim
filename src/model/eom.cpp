@@ -130,7 +130,7 @@ void EOM::update()
     q.normalize();
     Eigen::Vector3d fGravB = q * fGravE;
     // Rotate fGrav to body frame
-    forceB = fThrustB + fGravE;
+    forceB = fThrustB + fGravB;
 
     // Ground contact condition at launch
 

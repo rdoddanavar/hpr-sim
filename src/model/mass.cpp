@@ -14,8 +14,11 @@ void Mass::init(double massBody, double inertiaX, double inertiaY, double inerti
 
     massBody_ = massBody;
     inertiaX_ = inertiaX;
-    inertiaX_ = inertiaY;
-    inertiaX_ = inertiaZ;
+    inertiaY_ = inertiaY;
+    inertiaZ_ = inertiaZ;
+
+    // TODO: mass and inertias cannot be zero, validate these inputs
+    // Consider adding <, <=, >, >= conditions in input file preprocessing
 
     isInit_ = true;
 
