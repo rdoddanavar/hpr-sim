@@ -136,17 +136,20 @@ class Mass : public Model
 
     public:
 
-        void init(double massBodyInit);
+        void init(double massBody, double inertiaX, double inertiaY, double inertiaZ);
         void set_state_fields() override;
         void update() override;
 
     private:
 
         // State variables
-        double mass;
+        double mass_;
+        double inertiaX_;
+        double inertiaY_;
+        double inertiaZ_;
 
         // Miscellaneous
-        double massBody;
+        double massBody_;
 
 };
 

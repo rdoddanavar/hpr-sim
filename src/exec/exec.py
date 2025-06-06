@@ -217,8 +217,10 @@ def run_sim(inputParams: dict, outputPath: pathlib.Path, modelData: dict, iRun: 
                 modelData["engine"]["mass"]  )
 
     massBody = inputParams["mass"]["massBody"]["value"]
-    # TODO: Rest of mass props initialization
-    mass.init(massBody)
+    inertiaX = inputParams["mass"]["inertiaX"]["value"]
+    inertiaY = inputParams["mass"]["inertiaY"]["value"]
+    inertiaZ = inputParams["mass"]["inertiaZ"]["value"]
+    mass.init(massBody, inertiaX, inertiaY, inertiaZ)
 
     latitude = inputParams["geodetic"]["latitude"]["value"]
     altitude = inputParams["geodetic"]["altitude"]["value"]

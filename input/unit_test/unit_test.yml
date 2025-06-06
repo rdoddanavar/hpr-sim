@@ -9,14 +9,14 @@ exec:
     mcMode: montecarlo
     seed: 0
     numMC: 5
-    procMode: parallel
+    procMode: serial #parallel
     numProc: 4
     telemMode: npy
     telemPrec: 3
     telemPlot: true
 flight:
     timeStep: 0.01
-    termField: linPosZ
+    termField: z
     termLogic: leq
     termValue: 0.0
 eom:
@@ -36,9 +36,9 @@ mass:
             name: normal
             param: [5.0, 0.5]
     centerGravX: 0.0
-    inertiaX: 0.0
-    inertiaY: 0.0
-    inertiaZ: 0.0
+    inertiaX: 1.0
+    inertiaY: 1.0
+    inertiaZ: 1.0
 geodetic:
     latitude:
         value: 32.269798 # SARA launch site: (32.269798, -111.274751)

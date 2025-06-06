@@ -56,7 +56,7 @@ void Geodetic::update()
 
     update_deps();
 
-    altitudeAGL = *state->at("linPosZ");
+    altitudeAGL = *state->at("z");
     altitudeMSL = altitudeMSL0 + altitudeAGL;
     wgs84();
 

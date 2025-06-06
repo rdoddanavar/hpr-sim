@@ -9,10 +9,13 @@
 
 //---------------------------------------------------------------------------//
 
-void Mass::init(double massBodyInit) 
+void Mass::init(double massBody, double inertiaX, double inertiaY, double inertiaZ) 
 {
 
-    massBody = massBodyInit;
+    massBody_ = massBody;
+    inertiaX_ = inertiaX;
+    inertiaX_ = inertiaY;
+    inertiaX_ = inertiaZ;
 
     isInit_ = true;
 
@@ -22,7 +25,12 @@ void Mass::init(double massBodyInit)
 
 void Mass::set_state_fields()
 {
-    state->emplace("mass" , &mass);
+
+    state->emplace("mass" , &mass_);
+    state->emplace("inertiaX" , &inertiaX_);
+    state->emplace("inertiaY" , &inertiaY_);
+    state->emplace("inertiaZ" , &inertiaZ_);
+
 }
 
 //---------------------------------------------------------------------------//
@@ -34,6 +42,6 @@ void Mass::update()
 
     double massEng = *state->at("massEng");
 
-    mass = massBody + massEng;
+    mass_ = massBody_ + massEng;
 
 }
