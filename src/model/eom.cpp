@@ -41,7 +41,7 @@ void EOM::init(double launchAz, double launchEl)
 
     angPosE[0] = 0.0;               // Roll
     angPosE[1] = launchAz;          // Pitch
-    angPosE[2] = M_PI/2 - launchAz; // Yaw
+    angPosE[2] = M_PI_2 - launchAz; // Yaw
 
     // TODO: verify Eigen operations
     q = Eigen::AngleAxisd(angPosE[2], Eigen::Vector3d::UnitZ())
