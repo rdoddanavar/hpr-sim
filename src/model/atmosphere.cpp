@@ -47,10 +47,10 @@ void Atmosphere::init(double tempInit, double pressInit)
 void Atmosphere::set_state_fields()
 {
 
-    state->emplace("temperature", &temperature);
-    state->emplace("pressure", &pressure);
-    state->emplace("density", &density);
-    state->emplace("speedSound", &speedSound);
+    state->emplace("temperature"     , &temperature     );
+    state->emplace("pressure"        , &pressure        );
+    state->emplace("density"         , &density         );
+    state->emplace("speedSound"      , &speedSound      );
     state->emplace("dynamicViscosity", &dynamicViscosity);
 
 }

@@ -3,9 +3,13 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 // External headers
 #include "pybind11/numpy.h"
+#include "eigen/Eigen/Core"
+#include "eigen/Eigen/Geometry"
+#include "eigen/Eigen/LU"
 
 // Internal headers
 #include "model.h"
@@ -50,6 +54,7 @@ void Aerodynamics::init(const double&      refArea       ,
     cdPowerOnInterp_ .init(indData, cdPowerOnData , Interp::BILINEAR);
 
     refArea_ = refArea;
+    refDia_  = 2.0*sqrt(refArea_/M_PI);
 
     isInit_ = true;
 
@@ -64,11 +69,21 @@ void Aerodynamics::set_state_fields()
     state->emplace("mach"           , &mach_           );
     state->emplace("reynolds"       , &reynolds_       );
     state->emplace("alphaT"         , &alphaT_         );
+    state->emplace("phiA"           , &phiA_           );
     state->emplace("dragCoeff"      , &dragCoeff_      );
     state->emplace("liftCoeff"      , &liftCoeff_      );
     state->emplace("centerPressure" , &centerPressure_ );
+    state->emplace("staticMargin"   , &staticMargin_   );
     state->emplace("dragForce"      , &dragForce_      );
     state->emplace("liftForce"      , &liftForce_      );
+    state->emplace("axialForce"     , &axialForce_     );
+    state->emplace("normalForce"    , &normalForce_    );
+    state->emplace("aeroForceX"     , &aeroForce_(0)   );
+    state->emplace("aeroForceY"     , &aeroForce_(1)   );
+    state->emplace("aeroForceZ"     , &aeroForce_(2)   );
+    state->emplace("aeroMomentX"    , &aeroMoment_(0)  );
+    state->emplace("aeroMomentY"    , &aeroMoment_(1)  );
+    state->emplace("aeroMomentZ"    , &aeroMoment_(2)  );
 
 }
 
@@ -80,25 +95,26 @@ void Aerodynamics::update()
     update_deps();
 
     // Get state data
-    double u   = *state->at("u");
-    double v   = *state->at("v");
-    double w   = *state->at("w");
+    double u   = *state->at("linVelXB");
+    double v   = *state->at("linVelYB");
+    double w   = *state->at("linVelZB");
     double a   = *state->at("speedSound");
     double rho = *state->at("density");
+    double mu  = *state->at("dynamicViscosity");
 
-    // Perform table lookups
+    // double u = *state->at("linVelXB") - *state->at("windXB");
+    // double v = *state->at("linVelYB") - *state->at("windYB");
+    // double w = *state->at("linVelZB") - *state->at("windZB");
+
     double velT = sqrt(pow(u, 2) + pow(v, 2) + pow(w, 2));
 
-    if (velT > 0.0)
-    {
-        mach_   = velT/a;
-        alphaT_ = acos(abs(u)/velT);
-    }
-    else
-    {
-        mach_   = 0.0;
-        alphaT_ = 0.0;
-    }
+    dynamicPressure_ = 0.5*rho*pow(velT, 2);
+    reynolds_ = rho*velT*refDia_/mu; // TODO: check ref length
+
+    // Perform table lookups
+    mach_   = velT/a;
+    alphaT_ = acos(abs(u)/velT);
+    phiA_   = atan2(v, w);
 
     std::vector<double> indData = {mach_, alphaT_};
 
@@ -113,9 +129,39 @@ void Aerodynamics::update()
         liftCoeff_ = clPowerOnInterp_.update(indData);
     }
 
-    // Calculate aerodynamic quantities
-    dynamicPressure_ = 0.5*rho*(velT*velT);
-    dragForce_       = dynamicPressure_*dragCoeff_*refArea_;
-    liftForce_       = dynamicPressure_*liftCoeff_*refArea_;
+    // Dimensionalize forces
+    dragForce_ = dynamicPressure_*dragCoeff_*refArea_;
+    liftForce_ = dynamicPressure_*liftCoeff_*refArea_;
+
+    // Perform rotations
+    Eigen::AngleAxisd rotAlphaT(alphaT_, Eigen::Vector3d::UnitY());
+    Eigen::AngleAxisd rotPhiA  (phiA_  , Eigen::Vector3d::UnitX());
+
+    Eigen::Vector3d forceDYL = {dragForce_ , 0.0, liftForce_};
+    Eigen::Vector3d forceAYN = rotAlphaT*forceDYL;
+
+    axialForce_  = forceAYN(0);
+    normalForce_ = forceAYN(2);
+
+    Eigen::Vector3d forceXYZ = {-axialForce_, 0.0, -normalForce_};
+
+    // TODO: check this rotation
+    aeroForce_ = rotPhiA*forceXYZ; // Body frame
+
+    // Compute aerodynamic moment
+    centerPressure_ = cpTotalInterp_.update(indData);
+
+    Eigen::Vector3d cpXYZ = {-centerPressure_, 0.0, 0.0};
+
+    Eigen::Vector3d cgXYZ = {
+        *state->at("centerGravX"),
+        *state->at("centerGravY"),
+        *state->at("centerGravZ")
+    };
+
+    Eigen::Vector3d momArm = cgXYZ - cpXYZ;
+
+    staticMargin_ = momArm(0) / refDia_;
+    aeroMoment_   = aeroForce_.cross(momArm);
 
 }

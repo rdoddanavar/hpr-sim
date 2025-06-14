@@ -9,10 +9,15 @@
 
 //---------------------------------------------------------------------------//
 
-void Mass::init(double massBody, double inertiaX, double inertiaY, double inertiaZ) 
+void Mass::init(double massBody, double centerGravX, double inertiaX, double inertiaY, double inertiaZ) 
 {
 
     massBody_ = massBody;
+
+    centerGravX_ = centerGravX;
+    centerGravY_ = 0.0;
+    centerGravZ_ = 0.0;
+
     inertiaX_ = inertiaX;
     inertiaY_ = inertiaY;
     inertiaZ_ = inertiaZ;
@@ -29,10 +34,13 @@ void Mass::init(double massBody, double inertiaX, double inertiaY, double inerti
 void Mass::set_state_fields()
 {
 
-    state->emplace("mass" , &mass_);
-    state->emplace("inertiaX" , &inertiaX_);
-    state->emplace("inertiaY" , &inertiaY_);
-    state->emplace("inertiaZ" , &inertiaZ_);
+    state->emplace("mass"       , &mass_       );
+    state->emplace("centerGravX", &centerGravX_);
+    state->emplace("centerGravY", &centerGravY_);
+    state->emplace("centerGravZ", &centerGravZ_);
+    state->emplace("inertiaX"   , &inertiaX_   );
+    state->emplace("inertiaY"   , &inertiaY_   );
+    state->emplace("inertiaZ"   , &inertiaZ_   );
 
 }
 

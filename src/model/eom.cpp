@@ -27,10 +27,11 @@ void EOM::init(double launchAz, double launchEl)
     momentB = Eigen::Vector3d::Zero(); // mx, my, mz
     angAccB = Eigen::Vector3d::Zero(); // wxDot, wyDot, wzDot
     angVelB = Eigen::Vector3d::Zero(); // wx, wy, wz
-    angPosE = Eigen::Vector3d::Zero(); // phi, theta, psi
 
-    q    = Eigen::Quaterniond::Identity(); // qw, qx, qy, qz
-    qDot = Eigen::Vector4d::Zero(); // qwDot, qxDot, qyDot, qzDot
+    euler   = Eigen::Vector3d::Zero(); // phi, theta, psi
+
+    quat    = Eigen::Quaterniond::Identity(); // q0, q1, q2, q3
+    quatDot = Eigen::Vector4d::Zero();        // q0Dot, q1Dot, q2Dot, q3Dot
 
     // Set initial states
     double cgX = 0.0;//*state->at("cgX");
@@ -39,14 +40,14 @@ void EOM::init(double launchAz, double launchEl)
     linPosE(1) = cgX*cos(launchAz); // North
     linPosE(2) = cgX*sin(launchEl); // Up
 
-    angPosE(0) = 0.0;               // Roll
-    angPosE(1) = launchAz;          // Pitch
-    angPosE(2) = M_PI_2 - launchAz; // Yaw
+    // TODO: check alignment with ENU frame
+    euler(0) = 0.0;               // Roll
+    euler(1) = launchEl;         // Pitch
+    euler(2) = M_PI_2 - launchAz; // Yaw
 
-    // TODO: verify Eigen operations
-    q = Eigen::AngleAxisd(angPosE(2), Eigen::Vector3d::UnitZ())
-      * Eigen::AngleAxisd(angPosE(1), Eigen::Vector3d::UnitY())
-      * Eigen::AngleAxisd(angPosE(0), Eigen::Vector3d::UnitX());
+    quat = Eigen::AngleAxisd(euler(2), Eigen::Vector3d::UnitZ())
+         * Eigen::AngleAxisd(euler(1), Eigen::Vector3d::UnitY())
+         * Eigen::AngleAxisd(euler(0), Eigen::Vector3d::UnitX());
 
     isInit_ = true;
 
@@ -59,25 +60,25 @@ void EOM::set_state_fields()
 
     // Linear dynamics
 
-    state->emplace("forceXB", &forceB(0) );
-    state->emplace("forceYB", &forceB(1) );
-    state->emplace("forceZB", &forceB(2) );
+    state->emplace("forceXB" , &forceB(0) );
+    state->emplace("forceYB" , &forceB(1) );
+    state->emplace("forceZB" , &forceB(2) );
 
-    state->emplace("uDot"   , &linAccB(0));
-    state->emplace("vDot"   , &linAccB(1));
-    state->emplace("wDot"   , &linAccB(2));
+    state->emplace("linAccXB", &linAccB(0));
+    state->emplace("linAccYB", &linAccB(1));
+    state->emplace("linAccZB", &linAccB(2));
 
-    state->emplace("u"      , &linVelB(0));
-    state->emplace("v"      , &linVelB(1));
-    state->emplace("w"      , &linVelB(2));
+    state->emplace("linVelXB", &linVelB(0));
+    state->emplace("linVelYB", &linVelB(1));
+    state->emplace("linVelZB", &linVelB(2));
 
-    state->emplace("xDot"   , &linVelE(0));
-    state->emplace("yDot"   , &linVelE(1));
-    state->emplace("zDot"   , &linVelE(2));
+    state->emplace("linVelXE", &linVelE(0));
+    state->emplace("linVelYE", &linVelE(1));
+    state->emplace("linVelZE", &linVelE(2));
 
-    state->emplace("x"      , &linPosE(0));
-    state->emplace("y"      , &linPosE(1));
-    state->emplace("z"      , &linPosE(2));
+    state->emplace("linPosXE", &linPosE(0));
+    state->emplace("linPosYE", &linPosE(1));
+    state->emplace("linPosZE", &linPosE(2));
 
     // Angular dynamics
 
@@ -85,27 +86,27 @@ void EOM::set_state_fields()
     state->emplace("momentYB", &momentB(1));
     state->emplace("momentZB", &momentB(2));
 
-    state->emplace("pDot"    , &angAccB(0));
-    state->emplace("qDot"    , &angAccB(1));
-    state->emplace("rDot"    , &angAccB(2));
+    state->emplace("angAccXB", &angAccB(0));
+    state->emplace("angAccYB", &angAccB(1));
+    state->emplace("angAccZB", &angAccB(2));
 
-    state->emplace("p"       , &angVelB(0));
-    state->emplace("q"       , &angVelB(1));
-    state->emplace("r"       , &angVelB(2));
+    state->emplace("angVelXB", &angVelB(0));
+    state->emplace("angVelYB", &angVelB(1));
+    state->emplace("angVelZB", &angVelB(2));
 
-    state->emplace("phi"     , &angPosE(0));
-    state->emplace("theta"   , &angPosE(1));
-    state->emplace("psi"     , &angPosE(2));
+    state->emplace("phi"     , &euler(0)  );
+    state->emplace("theta"   , &euler(1)  );
+    state->emplace("psi"     , &euler(2)  );
 
-    state->emplace("qwDot"   , &qDot(0)   );
-    state->emplace("qxDot"   , &qDot(1)   );
-    state->emplace("qyDot"   , &qDot(2)   );
-    state->emplace("qzDot"   , &qDot(3)   );
+    state->emplace("q0Dot"   , &quatDot(0));
+    state->emplace("q1Dot"   , &quatDot(1));
+    state->emplace("q2Dot"   , &quatDot(2));
+    state->emplace("q3Dot"   , &quatDot(3));
 
-    state->emplace("qw"      , &q.w()     );
-    state->emplace("qx"      , &q.x()     );
-    state->emplace("qy"      , &q.y()     );
-    state->emplace("qz"      , &q.z()     );
+    state->emplace("q0"      , &quat.w()  );
+    state->emplace("q1"      , &quat.x()  );
+    state->emplace("q2"      , &quat.y()  );
+    state->emplace("q3"      , &quat.z()  );
 
 }
 
@@ -127,8 +128,8 @@ void EOM::update()
     Eigen::Vector3d fThrustB = {thrust, 0.0, 0.0};
 
     Eigen::Vector3d fGravE = {0.0, 0.0, -mass*gravity};
-    q.normalize();
-    Eigen::Vector3d fGravB = q * fGravE;
+    quat.normalize();
+    Eigen::Vector3d fGravB = quat * fGravE;
     // Rotate fGrav to body frame
     forceB = fThrustB + fGravB;
 
@@ -143,11 +144,13 @@ void EOM::update()
         launchFlag = true;
     }
 
+    // TODO: Rail force/moment constraint
+
     // Linear EOM
     linAccB = forceB / mass - angVelB.cross(linVelB);
 
     // Get earth frame velocity
-    linVelE = q.conjugate() * linVelB;
+    linVelE = quat.conjugate() * linVelB;
 
     // Rotational EOM
     Eigen::Matrix3d inertia = Eigen::Matrix3d::Zero();
@@ -157,22 +160,24 @@ void EOM::update()
 
     angAccB = inertia.inverse() * (momentB - angVelB.cross(inertia * angVelB));
 
-    // Get quaternion rate for attitude propogation
+    // Get matrix of body rates
     double wx = angVelB[0];
     double wy = angVelB[1];
     double wz = angVelB[2];
 
-    Eigen::Matrix4d wMat {
+    Eigen::Matrix4d rateMat
+    {
         { 0, -wx, -wy, -wz},
         {wx,   0,  wz, -wy},
         {wy, -wz,   0,  wx},
         {wz,  wy, -wx,   0}
     };
 
-    Eigen::Vector4d qVec = {q.w(), q.x(), q.y(), q.z()};
-    qDot = wMat*qVec;
+    // Compute quaternion derivative for attitude propogation
+    Eigen::Vector4d quatVec = {quat.w(), quat.x(), quat.y(), quat.z()};
+    quatDot = rateMat*quatVec;
 
     // Get Euler angles for convenience
-    angPosE = q.toRotationMatrix().eulerAngles(2, 1, 0);
+    euler = quat.toRotationMatrix().eulerAngles(2, 1, 0);
 
 }

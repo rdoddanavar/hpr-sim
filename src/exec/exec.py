@@ -216,11 +216,12 @@ def run_sim(inputParams: dict, outputPath: pathlib.Path, modelData: dict, iRun: 
                 modelData["engine"]["thrust"],
                 modelData["engine"]["mass"]  )
 
-    massBody = inputParams["mass"]["massBody"]["value"]
-    inertiaX = inputParams["mass"]["inertiaX"]["value"]
-    inertiaY = inputParams["mass"]["inertiaY"]["value"]
-    inertiaZ = inputParams["mass"]["inertiaZ"]["value"]
-    mass.init(massBody, inertiaX, inertiaY, inertiaZ)
+    massBody    = inputParams["mass"]["massBody"]["value"]
+    centerGravX = inputParams["mass"]["centerGrav"]["value"]
+    inertiaX    = inputParams["mass"]["inertiaX"]["value"]
+    inertiaY    = inputParams["mass"]["inertiaY"]["value"]
+    inertiaZ    = inputParams["mass"]["inertiaZ"]["value"]
+    mass.init(massBody, centerGravX, inertiaX, inertiaY, inertiaZ)
 
     latitude = inputParams["geodetic"]["latitude"]["value"]
     altitude = inputParams["geodetic"]["altitude"]["value"]

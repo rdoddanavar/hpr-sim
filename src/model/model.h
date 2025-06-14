@@ -136,7 +136,7 @@ class Mass : public Model
 
     public:
 
-        void init(double massBody, double inertiaX, double inertiaY, double inertiaZ);
+        void init(double massBody, double centerGravX, double inertiaX, double inertiaY, double inertiaZ);
         void set_state_fields() override;
         void update() override;
 
@@ -144,6 +144,11 @@ class Mass : public Model
 
         // State variables
         double mass_;
+
+        double centerGravX_;
+        double centerGravY_;
+        double centerGravZ_;
+
         double inertiaX_;
         double inertiaY_;
         double inertiaZ_;
@@ -247,13 +252,21 @@ class Aerodynamics : public Model
         double mach_;            // [-]
         double reynolds_;        // [-]
         double alphaT_;          // [rad]
+        double phiA_;            // [rad]
         double dragCoeff_;       // [-]
         double liftCoeff_;       // [-]
-        double centerPressure_;  // [m]
         double dragForce_;       // [N]
         double liftForce_;       // [N]
+        double axialForce_;      // [N]
+        double normalForce_;     // [N]
+        double centerPressure_;  // [m]
+        double staticMargin_;    // [-]
+
+        Eigen::Vector3d aeroForce_;  // [N]
+        Eigen::Vector3d aeroMoment_; // [N*m]
 
         // Miscellaneous
+        double refDia_;  // [m]
         double refArea_; // [m^2]
 
         Interp cpTotalInterp_;
@@ -281,19 +294,20 @@ class EOM : public Model
     private:
 
         // State variables
-        Eigen::Vector3d forceB;  // Force                BODY [N]
-        Eigen::Vector3d linAccB; // Linear acceleration  BODY [m/s^2]
-        Eigen::Vector3d linVelB; // Linear velocity      BODY [m/s]
-        Eigen::Vector3d linVelE; // Linear velocity      ENU  [m/s]
-        Eigen::Vector3d linPosE; // Linear position      ENU  [m]
+        Eigen::Vector3d forceB;     // Force                (BODY) [N]
+        Eigen::Vector3d linAccB;    // Linear acceleration  (BODY) [m/s^2]
+        Eigen::Vector3d linVelB;    // Linear velocity      (BODY) [m/s]
+        Eigen::Vector3d linVelE;    // Linear velocity      (ENU)  [m/s]
+        Eigen::Vector3d linPosE;    // Linear position      (ENU)  [m]
 
-        Eigen::Vector3d momentB; // Moment               BODY [N*m]
-        Eigen::Vector3d angAccB; // Angular acceleration BODY [rad/s^2]
-        Eigen::Vector3d angVelB; // Angular velocity     BODY [rad/s]
-        Eigen::Vector3d angPosE; // Angular position     ENU  [rad] Euler
+        Eigen::Vector3d momentB;    // Moment               (BODY) [N*m]
+        Eigen::Vector3d angAccB;    // Angular acceleration (BODY) [rad/s^2]
+        Eigen::Vector3d angVelB;    // Angular velocity     (BODY) [rad/s]
 
-        Eigen::Quaterniond q;
-        Eigen::Vector4d qDot;
+        Eigen::Vector3d euler;      // Euler angles (321) [rad] 
+
+        Eigen::Quaterniond quat;    // Quaternion ENU to BODY
+        Eigen::Vector4d    quatDot; // Quaternion derivative
 
         bool launchFlag = false;
 
