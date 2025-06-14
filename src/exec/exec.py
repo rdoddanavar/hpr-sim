@@ -217,7 +217,7 @@ def run_sim(inputParams: dict, outputPath: pathlib.Path, modelData: dict, iRun: 
                 modelData["engine"]["mass"]  )
 
     massBody    = inputParams["mass"]["massBody"]["value"]
-    centerGravX = inputParams["mass"]["centerGrav"]["value"]
+    centerGravX = inputParams["mass"]["centerGravX"]["value"]
     inertiaX    = inputParams["mass"]["inertiaX"]["value"]
     inertiaY    = inputParams["mass"]["inertiaY"]["value"]
     inertiaZ    = inputParams["mass"]["inertiaZ"]["value"]

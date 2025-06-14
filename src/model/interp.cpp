@@ -112,6 +112,7 @@ void Interp::init_linear()
 
 double Interp::update(double xq)
 {
+    // TODO: exception handling for NAN input
     double yq;
     switch (method_)
     {

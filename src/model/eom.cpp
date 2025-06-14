@@ -41,8 +41,8 @@ void EOM::init(double launchAz, double launchEl)
     linPosE(2) = cgX*sin(launchEl); // Up
 
     // TODO: check alignment with ENU frame
-    euler(0) = 0.0;               // Roll
-    euler(1) = launchEl;         // Pitch
+    euler(0) = M_PI;              // Roll
+    euler(1) = -launchEl;         // Pitch
     euler(2) = M_PI_2 - launchAz; // Yaw
 
     quat = Eigen::AngleAxisd(euler(2), Eigen::Vector3d::UnitZ())

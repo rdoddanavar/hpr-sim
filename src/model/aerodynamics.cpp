@@ -113,7 +113,7 @@ void Aerodynamics::update()
 
     // Perform table lookups
     mach_   = velT/a;
-    alphaT_ = acos(abs(u)/velT);
+    alphaT_ = (velT > 0.0) ? acos(abs(u)/velT) : 0.0;
     phiA_   = atan2(v, w);
 
     std::vector<double> indData = {mach_, alphaT_};
