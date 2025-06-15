@@ -409,7 +409,7 @@ std::vector<std::string> Telem::telemFields_ =
     "dragForce"      ,
     "liftForce"      ,
     "forceXB"        ,
-    "linAccZB"       ,
+    "linAccXB"       ,
     "linVelZE"       ,
     "linPosZE"       ,
     "isBurnout"      ,

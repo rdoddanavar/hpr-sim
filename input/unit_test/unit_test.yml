@@ -9,14 +9,14 @@ exec:
     mcMode: montecarlo
     seed: 0
     numMC: 5
-    procMode: serial #parallel
+    procMode: parallel
     numProc: 4
     telemMode: npy
     telemPrec: 3
     telemPlot: true
 flight:
     timeStep: 0.01
-    termField: z
+    termField: linPosZE
     termLogic: leq
     termValue: 0.0
 eom:
