@@ -105,6 +105,13 @@ eom:
         min: 0.0
         max: 1.57079632679489661923
         isRand: true
+    railLength:
+        type: float
+        quantity: length
+        unit: m
+        min: 0.0
+        max: .inf
+        isRand: true
 engine:
     inputPath:
         type: str
@@ -142,6 +149,13 @@ mass:
         type: float
         quantity: inertia
         unit: kg*m^2
+        min: 0.0
+        max: .inf
+        isRand: true
+    bodyLength:
+        type: float
+        quantity: length
+        unit: m
         min: 0.0
         max: .inf
         isRand: true

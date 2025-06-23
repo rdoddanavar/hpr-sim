@@ -136,7 +136,7 @@ class Mass : public Model
 
     public:
 
-        void init(double massBody, double centerGravX, double inertiaX, double inertiaY, double inertiaZ);
+        void init(double massBody, double bodyLength, double centerGravX, double inertiaX, double inertiaY, double inertiaZ);
         void set_state_fields() override;
         void update() override;
 
@@ -144,6 +144,8 @@ class Mass : public Model
 
         // State variables
         double mass_;
+
+        double bodyLength_;
 
         double centerGravX_;
         double centerGravY_;
@@ -287,7 +289,7 @@ class EOM : public Model
 
     public:
 
-        void init(double launchAz, double launchEl);
+        void init(double launchAz, double launchEl, double railLength);
         void set_state_fields() override;
         void update() override;
 
@@ -309,7 +311,9 @@ class EOM : public Model
         Eigen::Quaterniond quat;    // Quaternion ENU to BODY
         Eigen::Vector4d    quatDot; // Quaternion derivative
 
-        bool launchFlag = false;
+        double railLength_;
+        double railPosInit_;
+        bool flagRailExit_ = false;
 
 };
 

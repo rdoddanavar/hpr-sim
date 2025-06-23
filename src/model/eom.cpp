@@ -11,7 +11,7 @@
 
 //---------------------------------------------------------------------------//
 
-void EOM::init(double launchAz, double launchEl)
+void EOM::init(double launchAz, double launchEl, double railLength)
 {
 
     // Initialize vectors
@@ -34,13 +34,16 @@ void EOM::init(double launchAz, double launchEl)
     quatDot = Eigen::Vector4d::Zero();        // q0Dot, q1Dot, q2Dot, q3Dot
 
     // Set initial states
-    double cgX = 0.0;//*state->at("cgX");
+    railLength_  = railLength;
+    railPosInit_ = *state->at("bodyLength") + *state->at("centerGravX");
 
-    linPosE(0) = cgX*sin(launchAz); // East
-    linPosE(1) = cgX*cos(launchAz); // North
-    linPosE(2) = cgX*sin(launchEl); // Up
+    // TODO: resolve launch height, airframe length
+    linPosE(0) = railPosInit_*sin(launchAz); // East
+    linPosE(1) = railPosInit_*cos(launchAz); // North
+    linPosE(2) = railPosInit_*sin(launchEl); // Up
 
     // TODO: check alignment with ENU frame
+    // Euler should be ENU --> Body
     euler(0) = M_PI;              // Roll
     euler(1) = -launchEl;         // Pitch
     euler(2) = M_PI_2 - launchAz; // Yaw
@@ -48,6 +51,8 @@ void EOM::init(double launchAz, double launchEl)
     quat = Eigen::AngleAxisd(euler(2), Eigen::Vector3d::UnitZ())
          * Eigen::AngleAxisd(euler(1), Eigen::Vector3d::UnitY())
          * Eigen::AngleAxisd(euler(0), Eigen::Vector3d::UnitX());
+
+    flagRailExit_ = false;
 
     isInit_ = true;
 
@@ -118,33 +123,55 @@ void EOM::update()
     update_deps();
 
     // Populate vectors
-    double thrust  = *state->at("thrust");
-    double mass    = *state->at("mass");
-    double gravity = *state->at("gravity");
+    double mass        = *state->at("mass");
+    double gravity     = *state->at("gravity");
+    double thrust      = *state->at("thrust");
+    double aeroForceX  = *state->at("aeroForceX");
+    double aeroForceY  = *state->at("aeroForceY");
+    double aeroForceZ  = *state->at("aeroForceZ");
+    double aeroMomentX = *state->at("aeroMomentX");
+    double aeroMomentY = *state->at("aeroMomentY");
+    double aeroMomentZ = *state->at("aeroMomentZ");
 
     // Get forces and moments
-    double forceGrav = mass*gravity;
+    Eigen::Vector3d fThrustB = {thrust     , 0.0        , 0.0          };
+    Eigen::Vector3d fGravE   = {0.0        , 0.0        , -mass*gravity};
+    Eigen::Vector3d fAeroB   = {aeroForceX , aeroForceY , aeroForceZ   };
+    Eigen::Vector3d mAeroB   = {aeroMomentX, aeroMomentY, aeroMomentZ  };
 
-    Eigen::Vector3d fThrustB = {thrust, 0.0, 0.0};
-
-    Eigen::Vector3d fGravE = {0.0, 0.0, -mass*gravity};
+    // Rotate gravity to body frame
     quat.normalize();
-    Eigen::Vector3d fGravB = quat * fGravE;
-    // Rotate fGrav to body frame
-    forceB = fThrustB + fGravB;
+    Eigen::Vector3d fGravB = quat*fGravE;
 
-    // Ground contact condition at launch
+    // Get net force
+    forceB = fThrustB + fGravB + fAeroB;
 
-    if ((forceB(0) < 0.0) && (!launchFlag))
+    // Get net moment
+    momentB = mAeroB;
+
+    // Assess and apply launch rail constraints
+
+    if (!flagRailExit_)
     {
-        forceB = Eigen::Vector3d::Zero();
-    }
-    else if (!launchFlag)
-    {
-        launchFlag = true;
-    }
 
-    // TODO: Rail force/moment constraint
+        Eigen::Vector3d linPosB = quat*linPosE;
+
+        if ((linPosB(0) - railPosInit_) >= railLength_)
+        {
+            // Assumes motion is constrained by rail until entire body exits
+            flagRailExit_ = true;
+        }
+        else
+        {
+            // Constraint all motion except that along rail in positive direction
+            forceB(0)  = (forceB(0) < 0.0)? 0.0 : forceB(0);
+            forceB(1)  = 0.0;
+            forceB(2)  = 0.0;
+            momentB(0) = 0.0;
+            momentB(0) = 0.0;
+            momentB(0) = 0.0;
+        }
+    }
 
     // Linear EOM
     linAccB = forceB / mass - angVelB.cross(linVelB);

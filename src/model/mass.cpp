@@ -9,10 +9,12 @@
 
 //---------------------------------------------------------------------------//
 
-void Mass::init(double massBody, double centerGravX, double inertiaX, double inertiaY, double inertiaZ) 
+void Mass::init(double massBody, double bodyLength, double centerGravX, double inertiaX, double inertiaY, double inertiaZ) 
 {
 
     massBody_ = massBody;
+
+    bodyLength_ = bodyLength_;
 
     centerGravX_ = centerGravX;
     centerGravY_ = 0.0;
@@ -35,6 +37,7 @@ void Mass::set_state_fields()
 {
 
     state->emplace("mass"       , &mass_       );
+    state->emplace("bodyLength" , &bodyLength_ );
     state->emplace("centerGravX", &centerGravX_);
     state->emplace("centerGravY", &centerGravY_);
     state->emplace("centerGravZ", &centerGravZ_);
@@ -54,5 +57,7 @@ void Mass::update()
     double massEng = *state->at("massEng");
 
     mass_ = massBody_ + massEng;
+
+    // TODO: model CG and inertia change due to fuel burn
 
 }

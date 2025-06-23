@@ -26,6 +26,9 @@ eom:
     launchEl:
         value: 90
         unit: deg
+    railLength:
+        value: 12.0
+        unit: ft
 engine:
     inputPath: input/unit_test/AeroTech_J450DM.eng
 mass:
@@ -39,6 +42,9 @@ mass:
     inertiaX: 1.0
     inertiaY: 1.0
     inertiaZ: 1.0
+    bodyLength:
+        value: 52.5
+        unit: in
 geodetic:
     latitude:
         value: 32.269798 # SARA launch site: (32.269798, -111.274751)

@@ -217,11 +217,12 @@ def run_sim(inputParams: dict, outputPath: pathlib.Path, modelData: dict, iRun: 
                 modelData["engine"]["mass"]  )
 
     massBody    = inputParams["mass"]["massBody"]["value"]
+    bodyLength  = inputParams["mass"]["bodyLength"]["value"]
     centerGravX = inputParams["mass"]["centerGravX"]["value"]
     inertiaX    = inputParams["mass"]["inertiaX"]["value"]
     inertiaY    = inputParams["mass"]["inertiaY"]["value"]
     inertiaZ    = inputParams["mass"]["inertiaZ"]["value"]
-    mass.init(massBody, centerGravX, inertiaX, inertiaY, inertiaZ)
+    mass.init(massBody, bodyLength, centerGravX, inertiaX, inertiaY, inertiaZ)
 
     latitude = inputParams["geodetic"]["latitude"]["value"]
     altitude = inputParams["geodetic"]["altitude"]["value"]
@@ -253,7 +254,7 @@ def run_sim(inputParams: dict, outputPath: pathlib.Path, modelData: dict, iRun: 
 
     # Execute flight
     flight.update()
-    telem.interp_boundary("linPosZ", 0.0)
+    telem.interp_boundary(termField, termValue)
     telem.finalize()
 
 #------------------------------------------------------------------------------#
