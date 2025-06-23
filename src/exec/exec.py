@@ -242,9 +242,10 @@ def run_sim(inputParams: dict, outputPath: pathlib.Path, modelData: dict, iRun: 
                       modelData["aerodynamics"]["aero"]["clPowerOn"] ,
                       modelData["aerodynamics"]["aero"]["cdPowerOn"] )
 
-    launchAz = inputParams["eom"]["launchAz"]["value"]
-    launchEl = inputParams["eom"]["launchEl"]["value"]
-    eom.init(launchAz, launchEl)
+    launchAz   = inputParams["eom"]["launchAz"]["value"]
+    launchEl   = inputParams["eom"]["launchEl"]["value"]
+    railLength = inputParams["eom"]["railLength"]["value"]
+    eom.init(launchAz, launchEl, railLength)
 
     timeStep  = inputParams["flight"]["timeStep"]["value"]
     termField = inputParams["flight"]["termField"]["value"]
