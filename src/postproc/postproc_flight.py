@@ -58,7 +58,7 @@ def plot_pdf(outputPath: pathlib.Path, events: bool=True) -> None:
         ax.grid(True)
 
         if events:
-            ax.legend(handles=[hRailExit, hBurnout, hApogee], fontsize="x-small")
+            ax.legend(handles=[hRailExit, hBurnout, hApogee], fontsize="x-small", loc="upper right")
 
         pdfOut.savefig(fig)
         plt.close()
