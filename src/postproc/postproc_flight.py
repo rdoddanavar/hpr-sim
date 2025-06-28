@@ -34,26 +34,17 @@ def plot_pdf(outputPath: pathlib.Path, events: bool=True) -> None:
                 # Mark event: Rail Exit
                 iRailExit = np.argmax(run["data"]["flagRailExit"])
                 tRailExit = run["data"]["time"][iRailExit]
-                ax.axvline(tRailExit, color="black", linestyle="-", linewidth=1.0)
-                ax.text(tRailExit+0.1, ax.get_ylim()[1], "Rail Exit", 
-                        fontweight="bold", fontsize="x-small", rotation="vertical", 
-                        horizontalalignment="left",verticalalignment="top", color="black")
+                hRailExit = ax.axvline(tRailExit, color="black", linestyle="-", linewidth=1.0, label="Rail Exit")
 
                 # Mark event: Burnout
                 iBurnout = np.argmax(run["data"]["flagBurnout"])
                 tBurnout = run["data"]["time"][iBurnout]
-                ax.axvline(tBurnout, color="red", linestyle="-", linewidth=1.0)
-                ax.text(tBurnout+0.1, ax.get_ylim()[1], "Burnout", 
-                        fontweight="bold", fontsize="x-small", rotation="vertical", 
-                        horizontalalignment="left",verticalalignment="top", color="red")
+                hBurnout = ax.axvline(tBurnout, color="red", linestyle="-", linewidth=1.0, label="Burnout")
 
                 # Mark event: Apogee
                 iApogee = np.argmax(run["data"]["flagApogee"])
                 tApogee = run["data"]["time"][iApogee]
-                ax.axvline(tApogee, color="green", linestyle="-", linewidth=1.0)
-                ax.text(tApogee+0.1, ax.get_ylim()[1], "Apogee", 
-                        fontweight="bold", fontsize="x-small", rotation="vertical", 
-                        horizontalalignment="left",verticalalignment="top", color="green")
+                hApogee = ax.axvline(tApogee, color="green", linestyle="-", linewidth=1.0, label="Apogee")
 
                 # Mark event: Drogue Deploy
 
@@ -65,6 +56,9 @@ def plot_pdf(outputPath: pathlib.Path, events: bool=True) -> None:
         ax.set_ylabel(f"{field} [{unit}]")
         ax.set_title(f"{outputPath.stem}: {field}")
         ax.grid(True)
+
+        if events:
+            ax.legend(handles=[hRailExit, hBurnout, hApogee], fontsize="x-small")
 
         pdfOut.savefig(fig)
         plt.close()
