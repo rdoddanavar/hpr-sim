@@ -14,7 +14,7 @@ void Mass::init(double massBody, double bodyLength, double centerGravX, double i
 
     massBody_ = massBody;
 
-    bodyLength_ = bodyLength_;
+    bodyLength_ = bodyLength;
 
     centerGravX_ = centerGravX;
     centerGravY_ = 0.0;

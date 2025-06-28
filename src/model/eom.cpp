@@ -37,11 +37,6 @@ void EOM::init(double launchAz, double launchEl, double railLength)
     railLength_  = railLength;
     railPosInit_ = *state->at("bodyLength") + *state->at("centerGravX");
 
-    // TODO: resolve launch height, airframe length
-    linPosE(0) = railPosInit_*sin(launchAz); // East
-    linPosE(1) = railPosInit_*cos(launchAz); // North
-    linPosE(2) = railPosInit_*sin(launchEl); // Up
-
     // TODO: check alignment with ENU frame
     // Euler should be ENU --> Body
     euler(0) = M_PI;              // Roll
@@ -51,6 +46,9 @@ void EOM::init(double launchAz, double launchEl, double railLength)
     quat = Eigen::AngleAxisd(euler(2), Eigen::Vector3d::UnitZ())
          * Eigen::AngleAxisd(euler(1), Eigen::Vector3d::UnitY())
          * Eigen::AngleAxisd(euler(0), Eigen::Vector3d::UnitX());
+
+    Eigen::Vector3d linPosB = {railPosInit_, 0.0, 0.0};
+    linPosE = quat.conjugate() * linPosB;
 
     flagRailExit_ = false;
 
