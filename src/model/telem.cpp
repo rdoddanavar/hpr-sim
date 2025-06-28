@@ -412,8 +412,10 @@ std::vector<std::string> Telem::telemFields_ =
     "linAccXB"       ,
     "linVelZE"       ,
     "linPosZE"       ,
+    "altitudeAGL"    ,
     "flagBurnout"    ,
     "flagRailExit"   ,
+    "flagApogee"     ,
 };
 
 //----------------------------------------------------------------------------//
@@ -438,6 +440,8 @@ std::vector<std::string> Telem::telemUnits_ =
     "m/s^2" ,
     "m/s"   ,
     "m"     ,
+    "m"     ,
+    ""      ,
     ""      ,
     ""      ,
 };

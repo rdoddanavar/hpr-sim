@@ -46,6 +46,7 @@ void Geodetic::set_state_fields()
     state->emplace("altitudeGP", &altitudeGP);
     state->emplace("gravity", &gravity);
     state->emplace("gravity0", &gravity0);
+    state->emplace("flagApogee", &flagApogee_);
 
 }
 
@@ -59,6 +60,11 @@ void Geodetic::update()
     altitudeAGL = *state->at("linPosZE");
     altitudeMSL = altitudeMSL0 + altitudeAGL;
     wgs84();
+
+    if (*state->at("flagBurnout") && (*state->at("linVelZE") < 0.0))
+    {
+        flagApogee_ = true;
+    }
 
 }
 

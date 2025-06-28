@@ -111,6 +111,8 @@ void EOM::set_state_fields()
     state->emplace("q2"      , &quat.y()  );
     state->emplace("q3"      , &quat.z()  );
 
+    state->emplace("flagRailExit", &flagRailExit_);
+
 }
 
 //---------------------------------------------------------------------------//

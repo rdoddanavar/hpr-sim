@@ -183,6 +183,7 @@ class Geodetic : public Model
         double altitudeGP;  // [m]
         double gravity;     // [m/s^2]
         double gravity0;    // [m/s^2]
+        double flagApogee_; // [-]
 
         // Miscellaneous
         double a2;           // [m^2]
@@ -313,7 +314,7 @@ class EOM : public Model
 
         double railLength_;
         double railPosInit_;
-        bool flagRailExit_ = false;
+        double flagRailExit_ {0.0};
 
 };
 

@@ -10,7 +10,7 @@ import util_yaml
 
 #------------------------------------------------------------------------------#
 
-def plot_pdf(outputPath: pathlib.Path) -> None:
+def plot_pdf(outputPath: pathlib.Path, events: bool=True) -> None:
 
     telem  = load_dir(outputPath)
     fields = telem[0]["data"].keys()
@@ -24,21 +24,53 @@ def plot_pdf(outputPath: pathlib.Path) -> None:
         fig, ax = plt.subplots()
 
         for run in telem:
+
             x = run["data"]["time"]
             y = run["data"][field]
-            ax.plot(x, y, color='b')
+            ax.plot(x, y, color="blue")
+
+            if events:
+
+                # Mark event: Rail Exit
+                iRailExit = np.argmax(run["data"]["flagRailExit"])
+                tRailExit = run["data"]["time"][iRailExit]
+                ax.axvline(tRailExit, color="black", linestyle="-", linewidth=1.0)
+                ax.text(tRailExit+0.1, ax.get_ylim()[1], "Rail Exit", 
+                        fontweight="bold", fontsize="x-small", rotation="vertical", 
+                        horizontalalignment="left",verticalalignment="top", color="black")
+
+                # Mark event: Burnout
+                iBurnout = np.argmax(run["data"]["flagBurnout"])
+                tBurnout = run["data"]["time"][iBurnout]
+                ax.axvline(tBurnout, color="red", linestyle="-", linewidth=1.0)
+                ax.text(tBurnout+0.1, ax.get_ylim()[1], "Burnout", 
+                        fontweight="bold", fontsize="x-small", rotation="vertical", 
+                        horizontalalignment="left",verticalalignment="top", color="red")
+
+                # Mark event: Apogee
+                iApogee = np.argmax(run["data"]["flagApogee"])
+                tApogee = run["data"]["time"][iApogee]
+                ax.axvline(tApogee, color="green", linestyle="-", linewidth=1.0)
+                ax.text(tApogee+0.1, ax.get_ylim()[1], "Apogee", 
+                        fontweight="bold", fontsize="x-small", rotation="vertical", 
+                        horizontalalignment="left",verticalalignment="top", color="green")
+
+                # Mark event: Drogue Deploy
+
+                # Mark event: Main Deploy
 
         unit = telem[0]["units"][field]
 
         ax.set_xlabel("time [s]")
         ax.set_ylabel(f"{field} [{unit}]")
         ax.set_title(f"{outputPath.stem}: {field}")
+        ax.grid(True)
 
         pdfOut.savefig(fig)
+        plt.close()
 
     # Cleanup
     pdfOut.close()
-    plt.close('all')
 
 #------------------------------------------------------------------------------#
 
