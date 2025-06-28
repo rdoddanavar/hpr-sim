@@ -112,8 +112,12 @@ void Interp::init_linear()
 
 double Interp::update(double xq)
 {
-    // TODO: exception handling for NAN input
+
+    // Return NAN for bad lookup, prevents search from hanging
+    if (std::isnan(xq)) {return std::nan("");}
+
     double yq;
+
     switch (method_)
     {
         case LINEAR:
@@ -130,6 +134,12 @@ double Interp::update(double xq)
 
 double Interp::update(std::vector<double> xq)
 {
+
+    for (double xqi : xq)
+    {
+        // Return NAN for bad lookup, prevents search from hanging
+        if (std::isnan(xqi)) {return std::nan("");}
+    }
 
     double yq;
 

@@ -118,7 +118,7 @@ void Aerodynamics::update()
 
     std::vector<double> indData = {mach_, alphaT_};
 
-    if (*state->at("isBurnout"))
+    if (*state->at("flagBurnout"))
     {
         dragCoeff_ = cdPowerOffInterp_.update(indData);
         liftCoeff_ = clPowerOffInterp_.update(indData);

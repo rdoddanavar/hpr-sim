@@ -44,7 +44,7 @@ telem.init(outputPath.as_posix(), "# test_aerodynamics.py", 3)
 aerodynamics.init_state(telem)
 
 # Initialize models
-stateFields = ["linVelZ", "linVelY", "linVelX", "speedSound", "density", "isBurnout"]
+stateFields = ["linVelZ", "linVelY", "linVelX", "speedSound", "density", "flagBurnout"]
 test.init(stateFields)
 
 (machData, alphaData, aeroData) = preproc_aerodynamics.load_csv(inputPath / "patriot_aerodynamics.csv")
@@ -73,7 +73,7 @@ for iAlpha in range(len(alphaRng)):
     test.set_state_data("linVelX", linVelX)
     test.set_state_data("speedSound", speedSound)
     test.set_state_data("density", density)
-    test.set_state_data("isBurnout", 1.0)
+    test.set_state_data("flagBurnout", 1.0)
 
     aerodynamics.update()
     telem.update()
@@ -111,7 +111,7 @@ for iMach in range(len(machRng)):
     test.set_state_data("linVelX", linVelX)
     test.set_state_data("speedSound", speedSound)
     test.set_state_data("density", density)
-    test.set_state_data("isBurnout", 1.0)
+    test.set_state_data("flagBurnout", 1.0)
 
     aerodynamics.update()
     telem.update()

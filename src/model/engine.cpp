@@ -38,7 +38,7 @@ void Engine::set_state_fields()
 
     state->emplace("thrust" , &thrust_);
     state->emplace("massEng", &massEng_);
-    state->emplace("isBurnout", &isBurnout_);
+    state->emplace("flagBurnout", &flagBurnout_);
 
 }
 
@@ -51,7 +51,7 @@ void Engine::update()
 
     double time = *state->at("time");
 
-    if (!isBurnout_)
+    if (!flagBurnout_)
     {
 
         thrust_  = thrustInterp_.update(time);
@@ -59,7 +59,7 @@ void Engine::update()
 
         if (time >= timeMax_)
         {
-            isBurnout_ = 1.0;
+            flagBurnout_ = 1.0;
         }
 
     }

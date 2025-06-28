@@ -119,7 +119,7 @@ class Engine : public Model
         // State variables
         double thrust_ {0.0};
         double massEng_ {0.0};
-        double isBurnout_ {0.0};
+        double flagBurnout_ {0.0};
 
         // Miscellaneous
         double timeMax_ {0.0};
