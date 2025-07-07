@@ -128,7 +128,7 @@ mass:
         type: float
         quantity: length
         unit: m
-        min: 0.0
+        min: -.inf
         max: .inf
         isRand: true
     inertiaX:

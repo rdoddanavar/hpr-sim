@@ -34,7 +34,7 @@ def plot_pdf(outputPath: pathlib.Path, events: bool=True) -> None:
                 # Mark event: Rail Exit
                 iRailExit = np.argmax(run["data"]["flagRailExit"])
                 tRailExit = run["data"]["time"][iRailExit]
-                hRailExit = ax.axvline(tRailExit, color="black", linestyle="-", linewidth=1.0, label="Rail Exit")
+                hRailExit = ax.axvline(tRailExit, color="magenta", linestyle="-", linewidth=1.0, label="Rail Exit")
 
                 # Mark event: Burnout
                 iBurnout = np.argmax(run["data"]["flagBurnout"])

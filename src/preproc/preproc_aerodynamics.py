@@ -48,9 +48,11 @@ def load_rasaero(inputPath, outputPath, machMax):
     aeroData["cdPowerOff"] = np.zeros((nAlpha, nMach))
     aeroData["clPowerOn"]  = np.zeros((nAlpha, nMach))
     aeroData["cdPowerOn"]  = np.zeros((nAlpha, nMach))
-    
+
     iAlpha = 0
     iMach  = 0
+
+    in2m = 0.0254
 
     for filePath in filePaths:
         with open(filePath, 'r') as file:
@@ -78,10 +80,11 @@ def load_rasaero(inputPath, outputPath, machMax):
                     elif blockCount == 3:
                         continue
                     elif blockCount == 4:
-                        
+
                         alphaData[iAlpha] = float(words[1])
-                        
-                        aeroData["cpTotal"][iAlpha][iMach] = float(words[3]) 
+
+                        # Center of pressure is output as in by default; convert to m
+                        aeroData["cpTotal"][iAlpha][iMach] = float(words[3])*in2m
 
                     elif blockCount == 5:
 
@@ -97,10 +100,10 @@ def load_rasaero(inputPath, outputPath, machMax):
                         iMach += 1
 
                 else:
-                    
+
                     # Contains alpha characters, ignore
                     continue
-        
+
         # File finished, increment alpha, reset mach no. 
         iAlpha += 1
         iMach   = 0
