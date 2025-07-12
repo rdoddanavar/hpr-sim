@@ -46,7 +46,7 @@ void EOM::init(double launchAz, double launchEl, double railLength)
     quat = Eigen::AngleAxisd(euler(2), Eigen::Vector3d::UnitZ())
          * Eigen::AngleAxisd(euler(1), Eigen::Vector3d::UnitY())
          * Eigen::AngleAxisd(euler(0), Eigen::Vector3d::UnitX());
-    
+
     quat.normalize();
     Eigen::Vector3d linPosB = {railPosInit_, 0.0, 0.0};
     linPosE = quat.conjugate() * linPosB;
@@ -203,9 +203,12 @@ void EOM::update()
 
     // Compute quaternion derivative for attitude propogation
     Eigen::Vector4d quatVec = {quat.w(), quat.x(), quat.y(), quat.z()};
-    quatDot = rateMat*quatVec;
+    quatDot = 0.5*rateMat*quatVec;
 
     // Get Euler angles for convenience
-    euler = quat.toRotationMatrix().eulerAngles(2, 1, 0);
+    Eigen::Vector3d rot321 = quat.toRotationMatrix().eulerAngles(2, 1, 0);
+    euler(0) = rot321[2];
+    euler(1) = rot321[1];
+    euler(2) = rot321[0];
 
 }
