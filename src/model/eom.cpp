@@ -189,9 +189,9 @@ void EOM::update()
     angAccB = inertia.inverse() * (momentB - angVelB.cross(inertia * angVelB));
 
     // Get matrix of body rates
-    double wx = angVelB[0];
-    double wy = angVelB[1];
-    double wz = angVelB[2];
+    double wx = angVelB.x();
+    double wy = angVelB.y();
+    double wz = angVelB.z();
 
     Eigen::Matrix4d rateMat
     {
@@ -205,10 +205,19 @@ void EOM::update()
     Eigen::Vector4d quatVec = {quat.w(), quat.x(), quat.y(), quat.z()};
     quatDot = 0.5*rateMat*quatVec;
 
-    // Get Euler angles for convenience
+    // Get unwrapped Euler angles for convenience
     Eigen::Vector3d rot321 = quat.toRotationMatrix().eulerAngles(2, 1, 0);
-    euler(0) = rot321[2];
-    euler(1) = rot321[1];
-    euler(2) = rot321[0];
+
+    for (int ieul = 0; ieul < 3; ieul++)
+    {
+
+        double deul = rot321[ieul] - euler[ieul];
+
+        if      (deul >  M_PI) {deul -= 2.0 * M_PI;}
+        else if (deul < -M_PI) {deul += 2.0 * M_PI;}
+
+        euler[ieul] += deul;
+
+    }
 
 }

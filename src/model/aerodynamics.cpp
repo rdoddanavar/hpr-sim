@@ -70,6 +70,8 @@ void Aerodynamics::set_state_fields()
     state->emplace("reynolds"       , &reynolds_       );
     state->emplace("alphaT"         , &alphaT_         );
     state->emplace("phiA"           , &phiA_           );
+    state->emplace("alpha"          , &alpha_          );
+    state->emplace("betaE"          , &betaE_          );
     state->emplace("dragCoeff"      , &dragCoeff_      );
     state->emplace("liftCoeff"      , &liftCoeff_      );
     state->emplace("centerPressure" , &centerPressure_ );
@@ -98,6 +100,9 @@ void Aerodynamics::update()
     double u   = *state->at("linVelXB");
     double v   = *state->at("linVelYB");
     double w   = *state->at("linVelZB");
+    double p   = *state->at("angVelXB");
+    double q   = *state->at("angVelYB");
+    double r   = *state->at("angVelZB");
     double a   = *state->at("speedSound");
     double rho = *state->at("density");
     double mu  = *state->at("dynamicViscosity");
@@ -113,8 +118,10 @@ void Aerodynamics::update()
 
     // Perform table lookups
     mach_   = velT/a;
-    alphaT_ = (velT > 0.0) ? acos(abs(u)/velT) : 0.0;
+    alphaT_ = (velT > 0.0) ? acos(u/velT) : 0.0;
     phiA_   = atan2(v, w);
+    alpha_  = atan2(w, u);
+    betaE_  = atan2(v, u);
 
     std::vector<double> indData = {mach_, alphaT_};
 
@@ -138,30 +145,27 @@ void Aerodynamics::update()
     Eigen::AngleAxisd rotPhiA  (phiA_  , Eigen::Vector3d::UnitX());
 
     Eigen::Vector3d forceDYL = {dragForce_ , 0.0, liftForce_};
-    Eigen::Vector3d forceAYN = rotAlphaT*forceDYL;
+    Eigen::Vector3d forceAYN = rotAlphaT*rotPhiA*forceDYL;
 
     axialForce_  = forceAYN(0);
     normalForce_ = forceAYN(2);
 
-    Eigen::Vector3d forceXYZ = {-axialForce_, 0.0, -normalForce_};
-
-    // TODO: check this rotation
-    aeroForce_ = rotPhiA*forceXYZ; // Body frame
+    Eigen::Vector3d aeroForce_ = {-forceAYN.x(), forceAYN.y(), -forceAYN.z()};
 
     // Compute aerodynamic moment
     centerPressure_ = cpTotalInterp_.update(indData);
+    staticMargin_   = centerPressure_ / refDia_;
 
     Eigen::Vector3d cpXYZ = {-centerPressure_, 0.0, 0.0};
-
     Eigen::Vector3d cgXYZ = {
         *state->at("centerGravX"),
         *state->at("centerGravY"),
         *state->at("centerGravZ")
     };
 
-    Eigen::Vector3d momArm = cgXYZ - cpXYZ;
-
-    staticMargin_ = momArm(0) / refDia_;
-    aeroMoment_   = aeroForce_.cross(momArm);
+    Eigen::Vector3d momArm = cpXYZ - cgXYZ;
+    Eigen::Vector3d angVelB = {p, q, r};
+    aeroMoment_   = momArm.cross(aeroForce_) - 0.001 * angVelB; // TODO: real damping
+    aeroMoment_.x() = 0.0; // Enforce for numerics
 
 }

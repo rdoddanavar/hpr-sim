@@ -6,12 +6,12 @@ const:
     pi: 3.141592653589793
 #-----------------------------------------------------------------------------#
 exec:
-    mcMode: montecarlo
+    mcMode: nominal
     seed: 0
-    numMC: 5
+    numMC: 25
     procMode: parallel
     numProc: 4
-    telemMode: npy
+    telemMode: mat
     telemPrec: 3
     telemPlot: true
 flight:
@@ -24,7 +24,7 @@ eom:
         value: 90
         unit: deg
     launchEl:
-        value: 90
+        value: 75
         unit: deg
     railLength:
         value: 12.0
@@ -33,18 +33,20 @@ engine:
     inputPath: input/unit_test/AeroTech_J450DM.eng
 mass:
     massBody:
-        value: 5.0
-        unit: lbm
+        value: 2697
+        unit: g
         dist:
             name: normal
-            param: [5.0, 0.5]
-    centerGravX: 0.0
-    inertiaX: 1.0
-    inertiaY: 1.0
-    inertiaZ: 1.0
+            param: [2697, 100]
+    centerGravX:
+        value: -69.8
+        unit: cm
+    inertiaX: 0.003
+    inertiaY: 1.015
+    inertiaZ: 1.015
     bodyLength:
-        value: 52.5
-        unit: in
+        value: 133
+        unit: cm
 geodetic:
     latitude:
         value: 32.269798 # SARA launch site: (32.269798, -111.274751)

@@ -256,6 +256,8 @@ class Aerodynamics : public Model
         double reynolds_;        // [-]
         double alphaT_;          // [rad]
         double phiA_;            // [rad]
+        double alpha_;           // [rad]
+        double betaE_;           // [rad]
         double dragCoeff_;       // [-]
         double liftCoeff_;       // [-]
         double dragForce_;       // [N]
